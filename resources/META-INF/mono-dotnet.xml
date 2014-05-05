@@ -15,13 +15,12 @@
   -->
 
 <idea-plugin>
-	<id>org.mustbe.consulo.ikvm</id>
-	<name>IKVM.NET</name>
-	<depends>org.consulo.java</depends>
-	<depends>org.mustbe.consulo.dotnet.core</depends>
-	<depends config-file="mono-dotnet.xml" optional="true">org.mustbe.consulo.dotnet.mono</depends>
-
 	<extensions defaultExtensionNs="com.intellij">
-		<sdkType implementation="org.mustbe.consulo.ikvm.bundle.IkvmBundleType"/>
+		<moduleExtensionProvider key="mono-ikvm"
+								 parentKey="mono-dotnet"
+								 name="Java (IKVM.NET)"
+								 icon="/icons/java.png"
+								 immutableClass="org.mustbe.consulo.ikvm.mono.module.extension.MonoIkvmModuleExtension"
+								 mutableClass="org.mustbe.consulo.ikvm.mono.module.extension.MonoIkvmMutableModuleExtension"/>
 	</extensions>
 </idea-plugin>

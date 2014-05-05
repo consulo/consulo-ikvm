@@ -22,6 +22,7 @@ import java.util.List;
 
 import javax.swing.Icon;
 
+import org.consulo.lombok.annotations.LazyInstance;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.mustbe.consulo.java.JavaIcons;
@@ -33,6 +34,7 @@ import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.projectRoots.SdkModificator;
 import com.intellij.openapi.projectRoots.SdkType;
 import com.intellij.openapi.roots.OrderRootType;
+import com.intellij.openapi.util.SystemInfo;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.util.ArchiveVfsUtil;
 
@@ -42,6 +44,30 @@ import com.intellij.openapi.vfs.util.ArchiveVfsUtil;
  */
 public class IkvmBundleType extends SdkType
 {
+	@NotNull
+	@LazyInstance
+	public static IkvmBundleType getInstance()
+	{
+		return EP_NAME.findExtension(IkvmBundleType.class);
+	}
+
+	public static String getExecutable(String sdkHome)
+	{
+		if(SystemInfo.isWindows)
+		{
+			File file = new File(sdkHome + "/bin/ikvm.bat");
+			if(file.exists())
+			{
+				return file.getAbsolutePath();
+			}
+			return sdkHome + "/bin/ikvm.exe";
+		}
+		else
+		{
+			return sdkHome + "/bin/ikvm";
+		}
+	}
+
 	public IkvmBundleType()
 	{
 		super("IKVM");
@@ -64,7 +90,7 @@ public class IkvmBundleType extends SdkType
 	@Override
 	public boolean isValidSdkHome(String path)
 	{
-		return new File(path, "bin/ikvm.exe").exists();
+		return new File(getExecutable(path)).exists();
 	}
 
 	@Override
@@ -95,7 +121,7 @@ public class IkvmBundleType extends SdkType
 	public String getVersionString(String sdkHome)
 	{
 		List<String> args = new ArrayList<String>(2);
-		args.add(sdkHome + "/bin/ikvm.exe");
+		args.add(getExecutable(sdkHome));
 		args.add("-version");
 		try
 		{
