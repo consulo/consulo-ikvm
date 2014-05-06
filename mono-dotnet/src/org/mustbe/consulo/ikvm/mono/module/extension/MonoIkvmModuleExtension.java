@@ -22,12 +22,19 @@ import org.jetbrains.annotations.Nullable;
 import org.mustbe.consulo.ikvm.bundle.IkvmBundleType;
 import org.mustbe.consulo.ikvm.module.extension.IkvmModuleExtension;
 import org.mustbe.consulo.mono.csharp.module.extension.InnerMonoModuleExtension;
+import com.intellij.compiler.impl.ModuleChunk;
+import com.intellij.openapi.projectRoots.JavaSdk;
 import com.intellij.openapi.projectRoots.Sdk;
+import com.intellij.openapi.projectRoots.SdkModificator;
+import com.intellij.openapi.projectRoots.SdkTable;
 import com.intellij.openapi.projectRoots.SdkType;
 import com.intellij.openapi.projectRoots.impl.SdkImpl;
 import com.intellij.openapi.roots.ModifiableRootModel;
+import com.intellij.openapi.roots.OrderRootType;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.vfs.util.ArchiveVfsUtil;
 import com.intellij.pom.java.LanguageLevel;
+import com.intellij.util.PathsList;
 
 /**
  * @author VISTALL
@@ -44,10 +51,26 @@ public class MonoIkvmModuleExtension extends InnerMonoModuleExtension<MonoIkvmMo
 	protected Sdk createSdk(VirtualFile virtualFile)
 	{
 		SdkImpl sdk = new SdkImpl("Mono IKVM.NET", IkvmBundleType.getInstance());
-		VirtualFile virtualFile1 = virtualFile.getParent().getParent().getParent();
-		sdk.setHomePath(virtualFile1.getPath());
+		VirtualFile mainMonoPath = virtualFile.getParent().getParent().getParent();
+		sdk.setHomePath(mainMonoPath.getPath());
 		sdk.setBundled();
 		sdk.setVersionString(IkvmBundleType.getInstance().getVersionString(sdk));
+
+		SdkModificator sdkModificator = sdk.getSdkModificator();
+		for(String library : IkvmBundleType.ourLibraries)
+		{
+			VirtualFile libraryFile = mainMonoPath.findFileByRelativePath("lib/mono/ikvm/" + library);
+			if(libraryFile != null)
+			{
+				VirtualFile archiveLibraryFile = ArchiveVfsUtil.getArchiveRootForLocalFile(libraryFile);
+				if(archiveLibraryFile != null)
+				{
+					sdkModificator.addRoot(archiveLibraryFile, OrderRootType.CLASSES);
+				}
+			}
+		}
+
+		sdkModificator.commitChanges();
 		return sdk;
 	}
 
@@ -76,6 +99,23 @@ public class MonoIkvmModuleExtension extends InnerMonoModuleExtension<MonoIkvmMo
 	@Override
 	public Sdk getSdkForCompilation()
 	{
-		return null;
+		return SdkTable.getInstance().findBundleSdkByType(JavaSdk.class);
+	}
+
+	@NotNull
+	@Override
+	public String getCompilationClasspath(@NotNull ModuleChunk moduleChunk)
+	{
+		Sdk sdkForCompilation = getSdkForCompilation();
+		PathsList classpath = new PathsList();
+		classpath.addVirtualFiles(sdkForCompilation.getRootProvider().getFiles(OrderRootType.CLASSES));
+		return classpath.getPathsString();
+	}
+
+	@NotNull
+	@Override
+	public String getCompilationBootClasspath(@NotNull ModuleChunk moduleChunk)
+	{
+		return "";
 	}
 }

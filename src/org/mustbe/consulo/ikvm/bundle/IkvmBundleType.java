@@ -44,6 +44,13 @@ import com.intellij.openapi.vfs.util.ArchiveVfsUtil;
  */
 public class IkvmBundleType extends SdkType
 {
+	public static String[] ourLibraries = new String[]{
+			"IKVM.OpenJDK.Core.dll",
+			"IKVM.OpenJDK.Util.dll",
+			"IKVM.OpenJDK.Text.dll",
+			//"IKVM.Runtime.dll"
+	};
+
 	@NotNull
 	@LazyInstance
 	public static IkvmBundleType getInstance()
