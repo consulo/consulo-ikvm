@@ -27,9 +27,11 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.mustbe.consulo.java.JavaIcons;
 import com.intellij.execution.ExecutionException;
+import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.execution.process.ProcessOutput;
 import com.intellij.execution.util.ExecUtil;
 import com.intellij.openapi.projectRoots.JavaSdk;
+import com.intellij.openapi.projectRoots.JavaSdkType;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.projectRoots.SdkModificator;
 import com.intellij.openapi.projectRoots.SdkType;
@@ -42,7 +44,7 @@ import com.intellij.openapi.vfs.util.ArchiveVfsUtil;
  * @author VISTALL
  * @since 05.05.14
  */
-public class IkvmBundleType extends SdkType
+public class IkvmBundleType extends SdkType implements JavaSdkType
 {
 	public static String[] ourLibraries = new String[]{
 			"IKVM.OpenJDK.Core.dll",
@@ -159,5 +161,31 @@ public class IkvmBundleType extends SdkType
 	public String getPresentableName()
 	{
 		return "IKVM.NET";
+	}
+
+	@Override
+	public String getBinPath(Sdk sdk)
+	{
+		return sdk.getHomePath() + "/bin";
+	}
+
+	@Override
+	public String getToolsPath(Sdk sdk)
+	{
+		return null;
+	}
+
+	@Override
+	public void setupCommandLine(@NotNull GeneralCommandLine commandLine, @NotNull Sdk sdk)
+	{
+		if(new File(sdk.getHomePath(), "bin/IKVM.OpenJDK.Core.dll").exists())   // microsoft .net
+		{
+			commandLine.setExePath(sdk.getHomePath() + "/bin/ikvm.exe");
+		}
+		else  // mono .net
+		{
+			commandLine.setExePath(sdk.getHomePath() + "/bin/mono");
+			commandLine.addParameter(sdk.getHomePath() + "/lib/ikvm/ikvm.exe");
+		}
 	}
 }

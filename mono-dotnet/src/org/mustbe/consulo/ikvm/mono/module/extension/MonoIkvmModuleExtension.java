@@ -85,7 +85,7 @@ public class MonoIkvmModuleExtension extends InnerMonoModuleExtension<MonoIkvmMo
 	@Override
 	public LanguageLevel getLanguageLevel()
 	{
-		return LanguageLevel.HIGHEST;
+		return LanguageLevel.JDK_1_6;
 	}
 
 	@NotNull

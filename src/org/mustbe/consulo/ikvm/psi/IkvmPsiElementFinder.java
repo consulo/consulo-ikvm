@@ -22,25 +22,24 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.consulo.java.module.extension.JavaModuleExtension;
+import org.consulo.psi.PsiPackage;
+import org.consulo.psi.PsiPackageManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.mustbe.consulo.csharp.lang.psi.impl.stub.index.MemberByNamespaceQNameIndex;
-import org.mustbe.consulo.dotnet.psi.DotNetFieldDeclaration;
 import org.mustbe.consulo.dotnet.psi.DotNetNamedElement;
 import org.mustbe.consulo.dotnet.psi.DotNetTypeDeclaration;
 import org.mustbe.consulo.dotnet.resolve.DotNetPsiFacade;
-import com.intellij.ide.highlighter.JavaFileType;
+import org.mustbe.consulo.ikvm.psi.stubBuilding.JavaClassStubBuilder;
+import org.mustbe.consulo.ikvm.psi.stubBuilding.StubBuilder;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.PsiClass;
-import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementFinder;
-import com.intellij.psi.PsiFile;
-import com.intellij.psi.PsiFileFactory;
 import com.intellij.psi.PsiJavaPackage;
-import com.intellij.psi.impl.light.LightClass;
+import com.intellij.psi.PsiManager;
+import com.intellij.psi.impl.file.PsiPackageImpl;
 import com.intellij.psi.search.GlobalSearchScope;
-import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.containers.ContainerUtil;
 
 /**
@@ -51,10 +50,31 @@ public class IkvmPsiElementFinder extends PsiElementFinder
 {
 	private final Project myProject;
 
-	private Map<DotNetTypeDeclaration, PsiClass>  myCache = new HashMap<DotNetTypeDeclaration, PsiClass>();
+	private Map<DotNetTypeDeclaration, PsiClass> myCache = new HashMap<DotNetTypeDeclaration, PsiClass>();
+
 	public IkvmPsiElementFinder(Project project)
 	{
 		myProject = project;
+	}
+
+	@Nullable
+	@Override
+	public PsiJavaPackage findPackage(@NotNull String qualifiedName)
+	{
+		if(qualifiedName.equals("cli"))
+		{
+			return new PsiPackageImpl(PsiManager.getInstance(myProject), PsiPackageManager.getInstance(myProject), JavaModuleExtension.class, qualifiedName);
+		}
+		return super.findPackage(qualifiedName);
+	}
+
+	@NotNull
+	@Override
+	public PsiPackage[] getSubPackages(
+			@NotNull PsiJavaPackage psiPackage, @NotNull GlobalSearchScope scope)
+	{
+		System.out.println(psiPackage.getQualifiedName());
+		return super.getSubPackages(psiPackage, scope);
 	}
 
 	@Nullable
@@ -86,24 +106,14 @@ public class IkvmPsiElementFinder extends PsiElementFinder
 			}
 			else
 			{
-				if(type.getName().contains("$"))
+				JavaClassStubBuilder build = StubBuilder.build(type);
+				if(build == null)
 				{
 					continue;
 				}
-				StringBuilder builder = toJavaStub(type);
-				PsiClass classFromText = createJavaFile(builder);
-
-				LightClass lightClass = new LightClass(classFromText){
-					@NotNull
-					@Override
-					public PsiElement getNavigationElement()
-					{
-						return type;
-					}
-				};
-				lightClass.setNavigationElement(type);
-				classes.add(lightClass);
-				myCache.put(type, lightClass);
+				PsiClass value = build.buildToPsi(null);
+				classes.add(value);
+				myCache.put(type, value);
 			}
 		}
 		return ContainerUtil.toArray(classes, PsiClass.ARRAY_FACTORY);
@@ -112,14 +122,10 @@ public class IkvmPsiElementFinder extends PsiElementFinder
 
 	@NotNull
 	@Override
-	public PsiClass[] getClasses(
-			@NotNull PsiJavaPackage psiPackage, @NotNull GlobalSearchScope scope)
+	public PsiClass[] getClasses(@NotNull PsiJavaPackage psiPackage, @NotNull GlobalSearchScope scope)
 	{
-
-
 		Collection<DotNetNamedElement> dotNetNamedElements = MemberByNamespaceQNameIndex.getInstance().get(psiPackage.getQualifiedName(), myProject,
 				scope);
-
 
 		List<PsiClass> list = new ArrayList<PsiClass>();
 		for(DotNetNamedElement dotNetNamedElement : dotNetNamedElements)
@@ -127,63 +133,24 @@ public class IkvmPsiElementFinder extends PsiElementFinder
 			if(dotNetNamedElement instanceof DotNetTypeDeclaration)
 			{
 				final DotNetTypeDeclaration type = (DotNetTypeDeclaration) dotNetNamedElement;
-				if(type.getName().contains("$"))
-				{
-					continue;
-				}
 				PsiClass psiClass = myCache.get(type);
 				if(psiClass != null)
 				{
 					list.add(psiClass);
 					continue;
 				}
-				StringBuilder builder = toJavaStub(type);
-				PsiClass classFromText = createJavaFile(builder);
 
-				LightClass lightClass = new LightClass(classFromText){
-					@NotNull
-					@Override
-					public PsiElement getNavigationElement()
-					{
-						return type;
-					}
-				};
-				//lightClass.setNavigationElement(type);
+				JavaClassStubBuilder build = StubBuilder.build(type);
+				if(build == null)
+				{
+					continue;
+				}
 
-				myCache.put(type, lightClass);
-				list.add(lightClass);
+				PsiClass value = build.buildToPsi(null);
+				myCache.put(type, value);
+				list.add(value);
 			}
 		}
 		return list.toArray(new PsiClass[list.size()]);
-	}
-
-	private StringBuilder toJavaStub(DotNetTypeDeclaration type)
-	{
-		StringBuilder builder = new StringBuilder();
-
-		String presentableParentQName = type.getPresentableParentQName();
-		if(!StringUtil.isEmpty(presentableParentQName))
-		{
-			builder.append("package ").append(presentableParentQName).append(";");
-		}
-
-		builder.append("public class ").append(type.getName()).append(" {\n");
-
-		for(DotNetNamedElement dotNetNamedElement : type.getMembers())
-		{
-			if(dotNetNamedElement instanceof DotNetFieldDeclaration)
-			{
-				builder.append("public ").append(((DotNetFieldDeclaration) dotNetNamedElement).getType().toTypeRef().getQualifiedText()).append(" " +
-						"").append(dotNetNamedElement.getName()).append(";\n");
-			}
-		}
-		builder.append("}");
-		return builder;
-	}
-
-	private PsiClass createJavaFile(StringBuilder text)
-	{
-		PsiFile fileFromText = PsiFileFactory.getInstance(myProject).createFileFromText("dummy.java", JavaFileType.INSTANCE, text);
-		return PsiTreeUtil.findChildOfType(fileFromText, PsiClass.class, false);
 	}
 }
