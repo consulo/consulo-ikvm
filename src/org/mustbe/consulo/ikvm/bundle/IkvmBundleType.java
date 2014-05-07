@@ -50,7 +50,7 @@ public class IkvmBundleType extends SdkType implements JavaSdkType
 			"IKVM.OpenJDK.Core.dll",
 			"IKVM.OpenJDK.Util.dll",
 			"IKVM.OpenJDK.Text.dll",
-			//"IKVM.Runtime.dll"
+			"IKVM.Runtime.dll"
 	};
 
 	@NotNull
