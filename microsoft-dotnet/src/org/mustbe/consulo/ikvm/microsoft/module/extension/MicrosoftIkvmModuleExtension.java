@@ -5,7 +5,9 @@ import org.consulo.module.extension.ModuleExtensionWithSdk;
 import org.consulo.module.extension.impl.ModuleExtensionWithSdkImpl;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.mustbe.consulo.dotnet.compiler.DotNetCompilerOptionsBuilder;
 import org.mustbe.consulo.ikvm.bundle.IkvmBundleType;
+import org.mustbe.consulo.ikvm.compiler.IkvmCompilerOptionsBuilder;
 import org.mustbe.consulo.ikvm.module.extension.IkvmModuleExtension;
 import com.intellij.compiler.impl.ModuleChunk;
 import com.intellij.openapi.projectRoots.JavaSdk;
@@ -77,5 +79,12 @@ public class MicrosoftIkvmModuleExtension extends ModuleExtensionWithSdkImpl<Mic
 	public String getCompilationBootClasspath(@NotNull ModuleChunk moduleChunk)
 	{
 		return "";
+	}
+
+	@NotNull
+	@Override
+	public DotNetCompilerOptionsBuilder createCompilerOptionsBuilder()
+	{
+		return new IkvmCompilerOptionsBuilder("bin/ikvmc.exe");
 	}
 }

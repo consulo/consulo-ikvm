@@ -19,7 +19,9 @@ package org.mustbe.consulo.ikvm.mono.module.extension;
 import org.consulo.java.platform.module.extension.SpecialDirLocation;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.mustbe.consulo.dotnet.compiler.DotNetCompilerOptionsBuilder;
 import org.mustbe.consulo.ikvm.bundle.IkvmBundleType;
+import org.mustbe.consulo.ikvm.compiler.IkvmCompilerOptionsBuilder;
 import org.mustbe.consulo.ikvm.module.extension.IkvmModuleExtension;
 import org.mustbe.consulo.mono.csharp.module.extension.InnerMonoModuleExtension;
 import com.intellij.compiler.impl.ModuleChunk;
@@ -121,5 +123,14 @@ public class MonoIkvmModuleExtension extends InnerMonoModuleExtension<MonoIkvmMo
 	public String getCompilationBootClasspath(@NotNull ModuleChunk moduleChunk)
 	{
 		return "";
+	}
+
+	@NotNull
+	@Override
+	public DotNetCompilerOptionsBuilder createCompilerOptionsBuilder()
+	{
+		IkvmCompilerOptionsBuilder ikvmCompilerOptionsBuilder = new IkvmCompilerOptionsBuilder("bin/mono");
+		ikvmCompilerOptionsBuilder.addExtraParameter(getSdk().getHomePath() + "/lib/ikvm/ikvmc.exe");
+		return ikvmCompilerOptionsBuilder;
 	}
 }

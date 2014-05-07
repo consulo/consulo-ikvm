@@ -17,6 +17,8 @@
 package org.mustbe.consulo.ikvm.module.extension;
 
 import org.consulo.java.module.extension.JavaModuleExtension;
+import org.jetbrains.annotations.NotNull;
+import org.mustbe.consulo.dotnet.compiler.DotNetCompilerOptionsBuilder;
 
 /**
  * @author VISTALL
@@ -24,4 +26,6 @@ import org.consulo.java.module.extension.JavaModuleExtension;
  */
 public interface IkvmModuleExtension<T extends IkvmModuleExtension<T>> extends JavaModuleExtension<T>
 {
+	@NotNull
+	DotNetCompilerOptionsBuilder createCompilerOptionsBuilder();
 }

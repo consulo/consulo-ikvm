@@ -28,5 +28,6 @@
 
 	<extensions defaultExtensionNs="com.intellij">
 		<sdkType implementation="org.mustbe.consulo.ikvm.bundle.IkvmBundleType"/>
+		<compiler implementation="org.mustbe.consulo.ikvm.compiler.IkvmCompiler" order="after java-compiler" />
 	</extensions>
 </idea-plugin>
