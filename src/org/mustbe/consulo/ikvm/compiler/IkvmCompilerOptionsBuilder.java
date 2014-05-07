@@ -26,6 +26,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.mustbe.consulo.dotnet.compiler.DotNetCompilerMessage;
 import org.mustbe.consulo.dotnet.compiler.DotNetCompilerOptionsBuilder;
+import org.mustbe.consulo.dotnet.compiler.DotNetCompilerUtil;
 import org.mustbe.consulo.dotnet.compiler.DotNetMacros;
 import org.mustbe.consulo.dotnet.module.MainConfigurationLayer;
 import org.mustbe.consulo.dotnet.module.extension.DotNetModuleExtension;
@@ -39,6 +40,7 @@ import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
+import lombok.val;
 
 /**
  * @author VISTALL
@@ -108,15 +110,17 @@ public class IkvmCompilerOptionsBuilder implements DotNetCompilerOptionsBuilder
 				break;
 		}
 
+		addArgument("-nostdlib");
+
 		addArgument("-target:" + target);
 		String outputFile = DotNetMacros.extract(module, layerName, dotNetLayer);
 		addArgument("-out:" + outputFile);
 
-		/*val dependFiles = DotNetCompilerUtil.collectDependencies(module, layerName, dotNetLayer, false, false);
-		if(!dependFiles.isEmpty())
+		val dependFiles = DotNetCompilerUtil.collectDependencies(module, layerName, dotNetLayer, false, false);
+		for(String str : dependFiles)
 		{
-			addArgument("/reference:" + StringUtil.join(dependFiles, ","));
-		}*/
+			addArgument("-reference:" + StringUtil.unquoteString(str));
+		}
 
 		if(dotNetLayer.isAllowDebugInfo())
 		{
@@ -129,11 +133,12 @@ public class IkvmCompilerOptionsBuilder implements DotNetCompilerOptionsBuilder
 			addArgument("-main:" + mainType);
 		}
 
+		addArgument("-main:test.Main");
 		ModuleCompilerPathsManager pathsManager = ModuleCompilerPathsManager.getInstance(module);
 
 		String path = pathsManager.getCompilerOutput(ProductionContentFolderTypeProvider.getInstance()).getPath();
 		generalCommandLine.setWorkDirectory(path);
-		addArgument("-recurse:" + path);
+		addArgument("-recurse:" + path + "/");
 		File tempFile = FileUtil.createTempFile("consulo-ikvm-rsp", ".rsp");
 		for(String argument : myArguments)
 		{

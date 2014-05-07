@@ -85,6 +85,8 @@ public class MicrosoftIkvmModuleExtension extends ModuleExtensionWithSdkImpl<Mic
 	@Override
 	public DotNetCompilerOptionsBuilder createCompilerOptionsBuilder()
 	{
-		return new IkvmCompilerOptionsBuilder("bin/ikvmc.exe");
+		IkvmCompilerOptionsBuilder builder = new IkvmCompilerOptionsBuilder("bin/ikvmc.exe");
+		builder.addArgument("-nologo");
+		return builder;
 	}
 }
