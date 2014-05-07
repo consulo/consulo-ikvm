@@ -20,6 +20,7 @@
 	<depends>org.consulo.java</depends>
 	<depends>org.mustbe.consulo.dotnet.core</depends>
 	<depends config-file="mono-dotnet.xml" optional="true">org.mustbe.consulo.dotnet.mono</depends>
+	<depends config-file="microsoft-dotnet.xml" optional="true">org.mustbe.consulo.microsoft.dotnet</depends>
 
 	<extensions defaultExtensionNs="org.consulo.java">
 		<elementFinder implementation="org.mustbe.consulo.ikvm.psi.IkvmPsiElementFinder" />

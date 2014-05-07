@@ -1,0 +1,10 @@
+<idea-plugin>
+	<extensions defaultExtensionNs="com.intellij">
+		<moduleExtensionProvider key="microsoft-ikvm"
+								 parentKey="microsoft-dotnet"
+								 name="Java (IKVM.NET)"
+								 icon="/icons/java.png"
+								 immutableClass="org.mustbe.consulo.ikvm.microsoft.module.extension.MicrosoftIkvmModuleExtension"
+								 mutableClass="org.mustbe.consulo.ikvm.microsoft.module.extension.MicrosoftIkvmMutableModuleExtension"/>
+	</extensions>
+</idea-plugin>

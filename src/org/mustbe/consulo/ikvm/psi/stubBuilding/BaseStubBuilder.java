@@ -21,6 +21,9 @@ import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.mustbe.consulo.csharp.lang.psi.impl.source.resolve.type.CSharpLambdaTypeRef;
+import org.mustbe.consulo.csharp.lang.psi.impl.source.resolve.type.CSharpPointerTypeRef;
+import org.mustbe.consulo.dotnet.resolve.DotNetTypeRef;
 import com.intellij.psi.PsiElement;
 
 /**
@@ -52,6 +55,29 @@ public abstract class BaseStubBuilder<T extends PsiElement>
 			return str.replace("@", "");
 		}
 		return str;
+	}
+
+	@NotNull
+	public static String normalizeType(DotNetTypeRef type)
+	{
+		//TODO [VISTALL]
+		if(type instanceof CSharpLambdaTypeRef)
+		{
+			return "Func";
+		}
+		else if(type instanceof CSharpPointerTypeRef)
+		{
+			return "Pointer";
+		}
+		else if(type == DotNetTypeRef.ERROR_TYPE)
+		{
+			return "error";
+		}
+		String presentableText = type.getPresentableText();
+
+		presentableText = normalize(presentableText);
+
+		return presentableText;
 	}
 
 	@NotNull

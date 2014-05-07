@@ -18,6 +18,7 @@ package org.mustbe.consulo.ikvm.psi.stubBuilding;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.mustbe.consulo.dotnet.resolve.DotNetTypeRef;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiField;
@@ -30,7 +31,7 @@ import com.intellij.util.ArrayUtil;
  */
 public class JavaFieldStubBuilder extends BaseStubBuilder<PsiField>
 {
-	private String myType;
+	private DotNetTypeRef myType;
 
 	public JavaFieldStubBuilder(PsiElement navTarget, String name)
 	{
@@ -41,7 +42,7 @@ public class JavaFieldStubBuilder extends BaseStubBuilder<PsiField>
 	@Override
 	public PsiField buildToPsi(@Nullable PsiElement parent)
 	{
-		LightFieldBuilder builder = new LightFieldBuilder(normalize(myName), normalize(myType), myNavTarget);
+		LightFieldBuilder builder = new LightFieldBuilder(normalize(myName), normalizeType(myType), myNavTarget);
 		builder.setModifiers(ArrayUtil.toStringArray(myModifiers));
 		builder.setContainingClass((PsiClass) parent);
 		return builder;
@@ -54,10 +55,10 @@ public class JavaFieldStubBuilder extends BaseStubBuilder<PsiField>
 		{
 			builder.append(modifier).append(" ");
 		}
-		builder.append(normalize(myType)).append(" ").append(normalize(myName)).append(";");
+		builder.append(normalizeType(myType)).append(" ").append(normalize(myName)).append(";");
 	}
 
-	public JavaFieldStubBuilder withType(@NotNull String type)
+	public JavaFieldStubBuilder withType(@NotNull DotNetTypeRef type)
 	{
 		myType = type;
 		return this;

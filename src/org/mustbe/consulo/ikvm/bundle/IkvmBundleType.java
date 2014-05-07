@@ -113,15 +113,21 @@ public class IkvmBundleType extends SdkType implements JavaSdkType
 	{
 		SdkModificator sdkModificator = sdk.getSdkModificator();
 
-		VirtualFile ikvmApi = sdk.getHomeDirectory().findFileByRelativePath("lib/ikvm-api.jar");
-		if(ikvmApi != null)
+		VirtualFile homeDirectory = sdk.getHomeDirectory();
+		assert homeDirectory != null;
+		for(String library : ourLibraries)
 		{
-			VirtualFile ikvmJar = ArchiveVfsUtil.getArchiveRootForLocalFile(ikvmApi);
-			if(ikvmJar != null)
+			VirtualFile ikvmApi = homeDirectory.findFileByRelativePath("bin/" + library);
+			if(ikvmApi != null)
 			{
-				sdkModificator.addRoot(ikvmJar, OrderRootType.CLASSES);
+				VirtualFile ikvmJar = ArchiveVfsUtil.getArchiveRootForLocalFile(ikvmApi);
+				if(ikvmJar != null)
+				{
+					sdkModificator.addRoot(ikvmJar, OrderRootType.CLASSES);
+				}
 			}
 		}
+
 		sdkModificator.commitChanges();
 	}
 
