@@ -16,7 +16,9 @@
 
 package org.mustbe.consulo.ikvm.psi;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
 import org.mustbe.consulo.csharp.lang.CSharpLanguage;
@@ -26,6 +28,7 @@ import org.mustbe.consulo.dotnet.psi.DotNetTypeDeclaration;
 import org.mustbe.consulo.dotnet.resolve.DotNetPsiFacade;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiClass;
+import com.intellij.psi.PsiElementFinder;
 import com.intellij.psi.PsiModifier;
 import com.intellij.psi.impl.java.stubs.index.JavaShortClassNameIndex;
 import com.intellij.psi.search.GlobalSearchScope;
@@ -49,18 +52,24 @@ public class IkvmDotNetPsiFacade extends DotNetPsiFacade.Adapter
 	public DotNetTypeDeclaration[] findTypes(
 			@NotNull String qName, @NotNull GlobalSearchScope searchScope, int genericCount)
 	{
-		/*List<DotNetTypeDeclaration> list = new ArrayList<DotNetTypeDeclaration>(2);
-		PsiClass[] classes = JavaPsiFacade.getInstance(myProject).findClasses(qName, searchScope);
-		for(PsiClass aClass : classes)
+		List<DotNetTypeDeclaration> list = new ArrayList<DotNetTypeDeclaration>(2);
+		for(PsiElementFinder psiElementFinder : PsiElementFinder.EP_NAME.getExtensions(myProject))
 		{
-			if(genericCount != -1 && aClass.getTypeParameters().length != genericCount)
+			if(psiElementFinder instanceof IkvmPsiElementFinder)
 			{
 				continue;
 			}
-			list.add(convert(aClass));
-		}  */
-		//return ContainerUtil.toArray(list, DotNetTypeDeclaration.ARRAY_FACTORY);
-		return DotNetTypeDeclaration.EMPTY_ARRAY;
+			PsiClass[] classes1 = psiElementFinder.findClasses(qName, searchScope);
+			for(PsiClass psiClass : classes1)
+			{
+				if(genericCount != -1 && psiClass.getTypeParameters().length != genericCount)
+				{
+					continue;
+				}
+				list.add(convert(psiClass));
+			}
+		}
+		return ContainerUtil.toArray(list, DotNetTypeDeclaration.ARRAY_FACTORY);
 	}
 
 	@NotNull
@@ -99,6 +108,7 @@ public class IkvmDotNetPsiFacade extends DotNetPsiFacade.Adapter
 		{
 			typeDeclarationBuilder.addModifier(CSharpModifier.PUBLIC);
 		}
+
 		return typeDeclarationBuilder;
 	}
 }
