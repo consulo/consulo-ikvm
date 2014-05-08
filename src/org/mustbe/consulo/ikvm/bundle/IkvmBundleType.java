@@ -30,7 +30,6 @@ import com.intellij.execution.ExecutionException;
 import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.execution.process.ProcessOutput;
 import com.intellij.execution.util.ExecUtil;
-import com.intellij.openapi.projectRoots.JavaSdk;
 import com.intellij.openapi.projectRoots.JavaSdkType;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.projectRoots.SdkModificator;
@@ -105,7 +104,7 @@ public class IkvmBundleType extends SdkType implements JavaSdkType
 	@Override
 	public boolean isRootTypeApplicable(OrderRootType type)
 	{
-		return JavaSdk.getInstance().isRootTypeApplicable(type);
+		return type == OrderRootType.CLASSES;
 	}
 
 	@Override
