@@ -116,10 +116,11 @@ public class IkvmCompilerOptionsBuilder implements DotNetCompilerOptionsBuilder
 		String outputFile = DotNetMacros.extract(module, layerName, dotNetLayer);
 		addArgument("-out:" + outputFile);
 
-		val dependFiles = DotNetCompilerUtil.collectDependencies(module, layerName, dotNetLayer, false, false);
-		for(String str : dependFiles)
+		val dependFiles = DotNetCompilerUtil.collectDependencies(module, true);
+
+		for(File file : dependFiles)
 		{
-			addArgument("-reference:" + StringUtil.unquoteString(str));
+			addArgument("-reference:" + file.getAbsolutePath());
 		}
 
 		if(dotNetLayer.isAllowDebugInfo())
