@@ -134,7 +134,6 @@ public class IkvmCompilerOptionsBuilder implements DotNetCompilerOptionsBuilder
 			addArgument("-main:" + mainType);
 		}
 
-		addArgument("-main:test.Main");
 		ModuleCompilerPathsManager pathsManager = ModuleCompilerPathsManager.getInstance(module);
 
 		String path = pathsManager.getCompilerOutput(ProductionContentFolderTypeProvider.getInstance()).getPath();

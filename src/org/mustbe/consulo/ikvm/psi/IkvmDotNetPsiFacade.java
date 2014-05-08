@@ -21,17 +21,21 @@ import java.util.Collection;
 import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
-import org.mustbe.consulo.csharp.lang.CSharpLanguage;
 import org.mustbe.consulo.csharp.lang.psi.CSharpModifier;
+import org.mustbe.consulo.csharp.lang.psi.impl.light.builder.CSharpLightMethodDeclarationBuilder;
 import org.mustbe.consulo.csharp.lang.psi.impl.light.builder.CSharpLightTypeDeclarationBuilder;
+import org.mustbe.consulo.csharp.lang.psi.impl.source.resolve.type.CSharpNativeTypeRef;
 import org.mustbe.consulo.dotnet.psi.DotNetTypeDeclaration;
 import org.mustbe.consulo.dotnet.resolve.DotNetPsiFacade;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElementFinder;
+import com.intellij.psi.PsiMethod;
 import com.intellij.psi.PsiModifier;
 import com.intellij.psi.impl.java.stubs.index.JavaShortClassNameIndex;
 import com.intellij.psi.search.GlobalSearchScope;
+import com.intellij.psi.util.PsiMethodUtil;
+import com.intellij.util.ArrayUtil;
 import com.intellij.util.containers.ContainerUtil;
 
 /**
@@ -49,8 +53,7 @@ public class IkvmDotNetPsiFacade extends DotNetPsiFacade.Adapter
 
 	@NotNull
 	@Override
-	public DotNetTypeDeclaration[] findTypes(
-			@NotNull String qName, @NotNull GlobalSearchScope searchScope, int genericCount)
+	public DotNetTypeDeclaration[] findTypes(@NotNull String qName, @NotNull GlobalSearchScope searchScope, int genericCount)
 	{
 		List<DotNetTypeDeclaration> list = new ArrayList<DotNetTypeDeclaration>(2);
 		for(PsiElementFinder psiElementFinder : PsiElementFinder.EP_NAME.getExtensions(myProject))
@@ -70,6 +73,14 @@ public class IkvmDotNetPsiFacade extends DotNetPsiFacade.Adapter
 			}
 		}
 		return ContainerUtil.toArray(list, DotNetTypeDeclaration.ARRAY_FACTORY);
+	}
+
+	@NotNull
+	@Override
+	public String[] getAllTypeNames()
+	{
+		Collection<String> allKeys = JavaShortClassNameIndex.getInstance().getAllKeys(myProject);
+		return ArrayUtil.toStringArray(allKeys);
 	}
 
 	@NotNull
@@ -94,7 +105,7 @@ public class IkvmDotNetPsiFacade extends DotNetPsiFacade.Adapter
 	@NotNull
 	private DotNetTypeDeclaration convert(PsiClass aClass)
 	{
-		CSharpLightTypeDeclarationBuilder typeDeclarationBuilder = new CSharpLightTypeDeclarationBuilder(myProject, CSharpLanguage.INSTANCE);
+		CSharpLightTypeDeclarationBuilder typeDeclarationBuilder = new CSharpLightTypeDeclarationBuilder(myProject);
 		typeDeclarationBuilder.withName(aClass.getName());
 		if(aClass.isEnum())
 		{
@@ -104,11 +115,30 @@ public class IkvmDotNetPsiFacade extends DotNetPsiFacade.Adapter
 		{
 			typeDeclarationBuilder.withType(CSharpLightTypeDeclarationBuilder.Type.INTERFACE);
 		}
+
 		if(aClass.hasModifierProperty(PsiModifier.PUBLIC))
 		{
 			typeDeclarationBuilder.addModifier(CSharpModifier.PUBLIC);
 		}
 
+		for(PsiMethod psiMethod : aClass.getMethods())
+		{
+			if(PsiMethodUtil.isMainMethod(psiMethod))
+			{
+				CSharpLightMethodDeclarationBuilder methodDeclarationBuilder = new CSharpLightMethodDeclarationBuilder(myProject);
+				methodDeclarationBuilder.withName("Main");
+				methodDeclarationBuilder.withReturnType(CSharpNativeTypeRef.VOID);
+				methodDeclarationBuilder.addModifier(CSharpModifier.STATIC);
+				methodDeclarationBuilder.addModifier(CSharpModifier.PUBLIC);
+
+				/*CSharpLightParameterBuilder parameterBuilder = new CSharpLightParameterBuilder(myProject);
+				parameterBuilder.withName("p");
+				parameterBuilder.withTypeRef(new CSharpArrayTypeRef(new CSharpTypeDefTypeRef("System.String", 0), 0));
+				methodDeclarationBuilder.addParameter(parameterBuilder);  */
+
+				typeDeclarationBuilder.addMember(methodDeclarationBuilder);
+			}
+		}
 		return typeDeclarationBuilder;
 	}
 }
