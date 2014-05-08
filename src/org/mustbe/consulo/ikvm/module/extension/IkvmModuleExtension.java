@@ -17,15 +17,12 @@
 package org.mustbe.consulo.ikvm.module.extension;
 
 import org.consulo.java.module.extension.JavaModuleExtension;
-import org.jetbrains.annotations.NotNull;
-import org.mustbe.consulo.dotnet.compiler.DotNetCompilerOptionsBuilder;
+import org.mustbe.consulo.dotnet.module.extension.DotNetModuleLangExtension;
 
 /**
  * @author VISTALL
  * @since 05.05.14
  */
-public interface IkvmModuleExtension<T extends IkvmModuleExtension<T>> extends JavaModuleExtension<T>
+public interface IkvmModuleExtension<T extends IkvmModuleExtension<T>> extends JavaModuleExtension<T>, DotNetModuleLangExtension<T>
 {
-	@NotNull
-	DotNetCompilerOptionsBuilder createCompilerOptionsBuilder();
 }

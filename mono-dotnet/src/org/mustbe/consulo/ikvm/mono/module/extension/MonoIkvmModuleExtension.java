@@ -25,6 +25,8 @@ import org.mustbe.consulo.ikvm.compiler.IkvmCompilerOptionsBuilder;
 import org.mustbe.consulo.ikvm.module.extension.IkvmModuleExtension;
 import org.mustbe.consulo.mono.csharp.module.extension.InnerMonoModuleExtension;
 import com.intellij.compiler.impl.ModuleChunk;
+import com.intellij.ide.highlighter.JavaFileType;
+import com.intellij.openapi.fileTypes.LanguageFileType;
 import com.intellij.openapi.projectRoots.JavaSdk;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.projectRoots.SdkModificator;
@@ -123,6 +125,13 @@ public class MonoIkvmModuleExtension extends InnerMonoModuleExtension<MonoIkvmMo
 	public String getCompilationBootClasspath(@NotNull ModuleChunk moduleChunk)
 	{
 		return "";
+	}
+
+	@NotNull
+	@Override
+	public LanguageFileType getFileType()
+	{
+		return JavaFileType.INSTANCE;
 	}
 
 	@NotNull

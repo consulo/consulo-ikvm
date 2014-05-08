@@ -32,6 +32,5 @@
 
 	<extensions defaultExtensionNs="com.intellij">
 		<sdkType implementation="org.mustbe.consulo.ikvm.bundle.IkvmBundleType"/>
-		<compiler implementation="org.mustbe.consulo.ikvm.compiler.IkvmCompiler" order="after java-compiler" />
-	</extensions>
+		<compiler.sorter implementation="org.mustbe.consulo.ikvm.compiler.IkvmCompilerSorter" /	</extensions>
 </idea-plugin>
