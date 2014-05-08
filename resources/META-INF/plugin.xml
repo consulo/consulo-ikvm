@@ -26,6 +26,10 @@
 		<elementFinder implementation="org.mustbe.consulo.ikvm.psi.IkvmPsiElementFinder" />
 	</extensions>
 
+	<extensions defaultExtensionNs="org.mustbe.consulo.dotnet.core">
+		<psi.facade implementation="org.mustbe.consulo.ikvm.psi.IkvmDotNetPsiFacade" />
+	</extensions>
+
 	<extensions defaultExtensionNs="com.intellij">
 		<sdkType implementation="org.mustbe.consulo.ikvm.bundle.IkvmBundleType"/>
 		<compiler implementation="org.mustbe.consulo.ikvm.compiler.IkvmCompiler" order="after java-compiler" />
