@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.consulo.java.module.extension.JavaModuleExtension;
-import org.consulo.psi.PsiPackage;
 import org.consulo.psi.PsiPackageManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -49,12 +48,16 @@ import com.intellij.util.containers.ContainerUtil;
 public class IkvmPsiElementFinder extends PsiElementFinder
 {
 	private final Project myProject;
+	private final PsiManager myPsiManager;
+	private final PsiPackageManager myPsiPackageManager;
 
 	private Map<DotNetTypeDeclaration, PsiClass> myCache = new HashMap<DotNetTypeDeclaration, PsiClass>();
 
-	public IkvmPsiElementFinder(Project project)
+	public IkvmPsiElementFinder(Project project, PsiManager psiManager, PsiPackageManager psiPackageManager)
 	{
 		myProject = project;
+		myPsiManager = psiManager;
+		myPsiPackageManager = psiPackageManager;
 	}
 
 	@Nullable
@@ -63,17 +66,15 @@ public class IkvmPsiElementFinder extends PsiElementFinder
 	{
 		if(qualifiedName.equals("cli"))
 		{
-			return new PsiPackageImpl(PsiManager.getInstance(myProject), PsiPackageManager.getInstance(myProject), JavaModuleExtension.class, qualifiedName);
+			return new PsiPackageImpl(myPsiManager, myPsiPackageManager, JavaModuleExtension.class, qualifiedName);
 		}
 		return super.findPackage(qualifiedName);
 	}
 
 	@NotNull
 	@Override
-	public PsiPackage[] getSubPackages(
-			@NotNull PsiJavaPackage psiPackage, @NotNull GlobalSearchScope scope)
+	public PsiJavaPackage[] getSubPackages(@NotNull PsiJavaPackage psiPackage, @NotNull GlobalSearchScope scope)
 	{
-		System.out.println(psiPackage.getQualifiedName());
 		return super.getSubPackages(psiPackage, scope);
 	}
 
