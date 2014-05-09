@@ -28,6 +28,7 @@ import org.mustbe.consulo.csharp.lang.psi.impl.source.resolve.type.CSharpNativeT
 import org.mustbe.consulo.dotnet.psi.DotNetTypeDeclaration;
 import org.mustbe.consulo.dotnet.resolve.DotNetPsiFacade;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElementFinder;
 import com.intellij.psi.PsiMethod;
@@ -107,6 +108,7 @@ public class IkvmDotNetPsiFacade extends DotNetPsiFacade.Adapter
 	{
 		CSharpLightTypeDeclarationBuilder typeDeclarationBuilder = new CSharpLightTypeDeclarationBuilder(myProject);
 		typeDeclarationBuilder.withName(aClass.getName());
+		typeDeclarationBuilder.withParentQName(StringUtil.getPackageName(aClass.getQualifiedName()));
 		if(aClass.isEnum())
 		{
 			typeDeclarationBuilder.withType(CSharpLightTypeDeclarationBuilder.Type.ENUM);
