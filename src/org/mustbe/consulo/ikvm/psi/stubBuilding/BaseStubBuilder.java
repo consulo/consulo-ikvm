@@ -21,11 +21,17 @@ import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.mustbe.consulo.csharp.lang.psi.impl.source.resolve.type.CSharpArrayTypeRef;
 import org.mustbe.consulo.csharp.lang.psi.impl.source.resolve.type.CSharpLambdaTypeRef;
+import org.mustbe.consulo.csharp.lang.psi.impl.source.resolve.type.CSharpNativeTypeRef;
 import org.mustbe.consulo.csharp.lang.psi.impl.source.resolve.type.CSharpPointerTypeRef;
 import org.mustbe.consulo.dotnet.resolve.DotNetTypeRef;
+import org.mustbe.consulo.java.util.JavaClassNames;
 import com.intellij.openapi.util.Comparing;
+import com.intellij.psi.JavaPsiFacade;
+import com.intellij.psi.PsiArrayType;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiType;
 
 /**
  * @author VISTALL
@@ -59,30 +65,91 @@ public abstract class BaseStubBuilder<T extends PsiElement>
 	}
 
 	@NotNull
-	public static String normalizeType(DotNetTypeRef type)
+	public PsiType normalizeType(DotNetTypeRef type)
 	{
+		if(type == CSharpNativeTypeRef.VOID)
+		{
+			return PsiType.VOID;
+		}
+		else if(type == CSharpNativeTypeRef.SBYTE)
+		{
+			return PsiType.BYTE;
+		}
+		else if(type == CSharpNativeTypeRef.INT)
+		{
+			return PsiType.INT;
+		}
+		else if(type == CSharpNativeTypeRef.SHORT)
+		{
+			return PsiType.SHORT;
+		}
+		else if(type == CSharpNativeTypeRef.BOOL)
+		{
+			return PsiType.BOOLEAN;
+		}
+		else if(type == CSharpNativeTypeRef.LONG)
+		{
+			return PsiType.LONG;
+		}
+		else if(type == CSharpNativeTypeRef.FLOAT)
+		{
+			return PsiType.FLOAT;
+		}
+		else if(type == CSharpNativeTypeRef.DOUBLE)
+		{
+			return PsiType.DOUBLE;
+		}
+		else if(type == CSharpNativeTypeRef.CHAR)
+		{
+			return PsiType.CHAR;
+		}
+		else if(type == CSharpNativeTypeRef.STRING)
+		{
+			return fromText(JavaClassNames.JAVA_LANG_STRING);
+		}
+		else if(type == CSharpNativeTypeRef.OBJECT)
+		{
+			return fromText(JavaClassNames.JAVA_LANG_OBJECT);
+		}
+		else if(type instanceof CSharpArrayTypeRef)
+		{
+			return new PsiArrayType(normalizeType(((CSharpArrayTypeRef) type).getInnerType()));
+		}
+
 		//TODO [VISTALL]
 		if(type instanceof CSharpLambdaTypeRef)
 		{
-			return "Func";
+			return fromText("Func");
 		}
 		else if(type instanceof CSharpPointerTypeRef)
 		{
-			return "Pointer";
+			return fromText("Pointer");
 		}
 		else if(type == DotNetTypeRef.ERROR_TYPE)
 		{
-			return "error";
+			return fromText("error");
 		}
 		String qualifiedText = type.getQualifiedText();
 
 		if(Comparing.equal(qualifiedText, "<error>"))
 		{
-			return "error";
+			return fromText("error");
 		}
 		qualifiedText = normalize(qualifiedText);
 
-		return qualifiedText;
+		return fromText(qualifiedText);
+	}
+
+	private PsiType fromText(String text)
+	{
+		return JavaPsiFacade.getElementFactory(myNavTarget.getProject()).createTypeFromText(text, null);
+	}
+
+	@NotNull
+	public String normalizeTypeText(DotNetTypeRef type)
+	{
+		PsiType psiType = normalizeType(type);
+		return psiType.getCanonicalText();
 	}
 
 	@NotNull

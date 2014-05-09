@@ -20,10 +20,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.mustbe.consulo.dotnet.resolve.DotNetTypeRef;
 import com.intellij.lang.java.JavaLanguage;
-import com.intellij.psi.JavaPsiFacade;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiParameter;
-import com.intellij.psi.PsiType;
 import com.intellij.psi.impl.light.LightParameter;
 
 /**
@@ -43,8 +41,7 @@ public class JavaParameterStubBuilder extends BaseStubBuilder<PsiParameter>
 	@Override
 	public PsiParameter buildToPsi(@Nullable PsiElement parent)
 	{
-		PsiType typeFromText = JavaPsiFacade.getElementFactory(myNavTarget.getProject()).createTypeFromText(normalizeType(myType), null);
-		LightParameter parameter = new LightParameter(myName, typeFromText, parent, JavaLanguage.INSTANCE);
+		LightParameter parameter = new LightParameter(myName, normalizeType(myType), parent, JavaLanguage.INSTANCE);
 		parameter.setNavigationElement(myNavTarget);
 		return parameter;
 	}
@@ -56,7 +53,7 @@ public class JavaParameterStubBuilder extends BaseStubBuilder<PsiParameter>
 		{
 			builder.append(modifier).append(" ");
 		}
-		builder.append(normalizeType(myType)).append(" ").append(normalize(myName));
+		builder.append(normalizeTypeText(myType)).append(" ").append(normalize(myName));
 	}
 
 	public JavaParameterStubBuilder withType(@NotNull DotNetTypeRef type)

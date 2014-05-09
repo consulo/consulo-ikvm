@@ -68,7 +68,7 @@ public class JavaMethodStubBuilder extends BaseStubBuilder<PsiMethod>
 		{
 			builder.append(modifier).append(" ");
 		}
-		builder.append(normalizeType(myReturnType)).append(" ").append(normalize(myName)).append("(");
+		builder.append(normalizeTypeText(myReturnType)).append(" ").append(normalize(myName)).append("(");
 		for(int i = 0; i < myParameters.size(); i++)
 		{
 			if(i != 0)

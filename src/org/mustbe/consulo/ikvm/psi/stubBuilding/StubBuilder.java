@@ -127,6 +127,18 @@ public class StubBuilder
 		{
 			baseStubBuilder.addModifier(PsiModifier.PUBLIC);
 		}
+		else if(modifierListOwner.hasModifier(CSharpModifier.PRIVATE))
+		{
+			baseStubBuilder.addModifier(PsiModifier.PRIVATE);
+		}
+		else if(modifierListOwner.hasModifier(CSharpModifier.PROTECTED))
+		{
+			baseStubBuilder.addModifier(PsiModifier.PROTECTED);
+		}
+		else
+		{
+			baseStubBuilder.addModifier(PsiModifier.PACKAGE_LOCAL);
+		}
 
 		if(modifierListOwner.hasModifier(CSharpModifier.ABSTRACT))
 		{

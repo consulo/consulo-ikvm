@@ -55,7 +55,7 @@ public class JavaFieldStubBuilder extends BaseStubBuilder<PsiField>
 		{
 			builder.append(modifier).append(" ");
 		}
-		builder.append(normalizeType(myType)).append(" ").append(normalize(myName)).append(";");
+		builder.append(normalizeTypeText(myType)).append(" ").append(normalize(myName)).append(";");
 	}
 
 	public JavaFieldStubBuilder withType(@NotNull DotNetTypeRef type)
