@@ -24,9 +24,9 @@ import org.mustbe.consulo.dotnet.psi.DotNetFieldDeclaration;
 import org.mustbe.consulo.dotnet.psi.DotNetModifierListOwner;
 import org.mustbe.consulo.dotnet.psi.DotNetNamedElement;
 import org.mustbe.consulo.dotnet.psi.DotNetPropertyDeclaration;
-import org.mustbe.consulo.dotnet.psi.DotNetType;
 import org.mustbe.consulo.dotnet.psi.DotNetTypeDeclaration;
 import org.mustbe.consulo.dotnet.psi.DotNetXXXAccessor;
+import org.mustbe.consulo.dotnet.resolve.DotNetTypeRef;
 import com.intellij.psi.PsiModifier;
 
 /**
@@ -72,14 +72,14 @@ public class StubBuilder
 				// field
 				if(accessors.length == 1 && accessors[0].getAccessorType() == CSharpSoftTokens.GET_KEYWORD)
 				{
-					DotNetType type = ((DotNetPropertyDeclaration) dotNetNamedElement).getType();
-					if(type == null)
+					DotNetTypeRef typeRef = ((DotNetPropertyDeclaration) dotNetNamedElement).toTypeRef(false);
+					if(typeRef == DotNetTypeRef.ERROR_TYPE)
 					{
 						continue;
 					}
 					JavaFieldStubBuilder field = javaClassStubBuilder.field(dotNetNamedElement.getName(), dotNetNamedElement);
 					copyModifiers((DotNetModifierListOwner) dotNetNamedElement, field);
-					field.withType(type.toTypeRef());
+					field.withType(typeRef);
 				}
 				else
 				{
@@ -88,14 +88,14 @@ public class StubBuilder
 			}
 			else if(dotNetNamedElement instanceof DotNetFieldDeclaration)
 			{
-				DotNetType type = ((DotNetFieldDeclaration) dotNetNamedElement).getType();
-				if(type == null)
+				DotNetTypeRef typeRef = ((DotNetFieldDeclaration) dotNetNamedElement).toTypeRef(false);
+				if(typeRef == DotNetTypeRef.ERROR_TYPE)
 				{
 					continue;
 				}
 				JavaFieldStubBuilder field = javaClassStubBuilder.field(dotNetNamedElement.getName(), dotNetNamedElement);
 				copyModifiers((DotNetModifierListOwner) dotNetNamedElement, field);
-				field.withType(type.toTypeRef());
+				field.withType(typeRef);
 			}
 		}
 		return javaClassStubBuilder;
