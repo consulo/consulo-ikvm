@@ -52,6 +52,7 @@ public class JavaMethodStubBuilder extends BaseStubBuilder<PsiMethod>
 		builder.setModifiers(ArrayUtil.toStringArray(myModifiers));
 		builder.setContainingClass((PsiClass) parent);
 		builder.setMethodReturnType(normalizeType(myReturnType));
+		builder.setNavigationElement(myNavTarget);
 		for(JavaParameterStubBuilder parameter : myParameters)
 		{
 			builder.addParameter(parameter.buildToPsi(builder));

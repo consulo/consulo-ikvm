@@ -44,7 +44,9 @@ public class JavaParameterStubBuilder extends BaseStubBuilder<PsiParameter>
 	public PsiParameter buildToPsi(@Nullable PsiElement parent)
 	{
 		PsiType typeFromText = JavaPsiFacade.getElementFactory(myNavTarget.getProject()).createTypeFromText(normalizeType(myType), null);
-		return new LightParameter(myName, typeFromText, parent, JavaLanguage.INSTANCE);
+		LightParameter parameter = new LightParameter(myName, typeFromText, parent, JavaLanguage.INSTANCE);
+		parameter.setNavigationElement(myNavTarget);
+		return parameter;
 	}
 
 	@Override
