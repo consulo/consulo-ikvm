@@ -21,8 +21,10 @@ import org.jetbrains.annotations.Nullable;
 import org.mustbe.consulo.csharp.lang.psi.CSharpModifier;
 import org.mustbe.consulo.csharp.lang.psi.CSharpSoftTokens;
 import org.mustbe.consulo.dotnet.psi.DotNetFieldDeclaration;
+import org.mustbe.consulo.dotnet.psi.DotNetMethodDeclaration;
 import org.mustbe.consulo.dotnet.psi.DotNetModifierListOwner;
 import org.mustbe.consulo.dotnet.psi.DotNetNamedElement;
+import org.mustbe.consulo.dotnet.psi.DotNetParameter;
 import org.mustbe.consulo.dotnet.psi.DotNetPropertyDeclaration;
 import org.mustbe.consulo.dotnet.psi.DotNetTypeDeclaration;
 import org.mustbe.consulo.dotnet.psi.DotNetXXXAccessor;
@@ -97,7 +99,20 @@ public class StubBuilder
 				copyModifiers((DotNetModifierListOwner) dotNetNamedElement, field);
 				field.withType(typeRef);
 			}
+			else if(dotNetNamedElement instanceof DotNetMethodDeclaration)
+			{
+				JavaMethodStubBuilder method = javaClassStubBuilder.method(dotNetNamedElement.getName(), dotNetNamedElement);
+				copyModifiers((DotNetModifierListOwner) dotNetNamedElement, method);
+				method.withReturnType(((DotNetMethodDeclaration) dotNetNamedElement).getReturnTypeRef());
+
+				DotNetParameter[] parameters = ((DotNetMethodDeclaration) dotNetNamedElement).getParameters();
+				for(DotNetParameter parameter : parameters)
+				{
+					method.withParameter(parameter.toTypeRef(false), parameter.getName(), parameter);
+				}
+			}
 		}
+
 		return javaClassStubBuilder;
 	}
 

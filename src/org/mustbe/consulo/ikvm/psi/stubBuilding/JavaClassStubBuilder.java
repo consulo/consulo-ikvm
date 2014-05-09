@@ -26,6 +26,7 @@ import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiField;
+import com.intellij.psi.PsiMethod;
 import com.intellij.util.ArrayUtil;
 
 /**
@@ -51,6 +52,13 @@ public class JavaClassStubBuilder extends BaseStubBuilder<PsiClass>
 		return fieldStubBuilder;
 	}
 
+	public JavaMethodStubBuilder method(@NotNull String name, PsiElement navTarget)
+	{
+		JavaMethodStubBuilder methodStubBuilder = new JavaMethodStubBuilder(navTarget, name);
+		myMembers.add(methodStubBuilder);
+		return methodStubBuilder;
+	}
+
 	@NotNull
 	@Override
 	public PsiClass buildToPsi(@Nullable PsiElement parent)
@@ -62,14 +70,20 @@ public class JavaClassStubBuilder extends BaseStubBuilder<PsiClass>
 		builder.setNavigationElement(myNavTarget);
 
 		List<PsiField> fields = new ArrayList<PsiField>(5);
+		List<PsiMethod> methods = new ArrayList<PsiMethod>(5);
 		for(BaseStubBuilder member : myMembers)
 		{
 			if(member instanceof JavaFieldStubBuilder)
 			{
 				fields.add((PsiField) member.buildToPsi(builder));
 			}
+			else if(member instanceof JavaMethodStubBuilder)
+			{
+				methods.add((PsiMethod) member.buildToPsi(builder));
+			}
 		}
 		builder.withFields(fields);
+		builder.withMethods(methods);
 
 		return builder;
 	}

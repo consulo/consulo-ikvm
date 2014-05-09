@@ -24,6 +24,7 @@ import org.jetbrains.annotations.Nullable;
 import org.mustbe.consulo.csharp.lang.psi.impl.source.resolve.type.CSharpLambdaTypeRef;
 import org.mustbe.consulo.csharp.lang.psi.impl.source.resolve.type.CSharpPointerTypeRef;
 import org.mustbe.consulo.dotnet.resolve.DotNetTypeRef;
+import com.intellij.openapi.util.Comparing;
 import com.intellij.psi.PsiElement;
 
 /**
@@ -73,11 +74,15 @@ public abstract class BaseStubBuilder<T extends PsiElement>
 		{
 			return "error";
 		}
-		String presentableText = type.getPresentableText();
+		String qualifiedText = type.getQualifiedText();
 
-		presentableText = normalize(presentableText);
+		if(Comparing.equal(qualifiedText, "<error>"))
+		{
+			return "error";
+		}
+		qualifiedText = normalize(qualifiedText);
 
-		return presentableText;
+		return qualifiedText;
 	}
 
 	@NotNull

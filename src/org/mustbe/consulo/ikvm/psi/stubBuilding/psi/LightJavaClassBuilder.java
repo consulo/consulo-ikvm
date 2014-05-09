@@ -53,6 +53,7 @@ public class LightJavaClassBuilder extends LightElement implements PsiExtensible
 	private String myPackage;
 
 	private List<PsiField> myFields = Collections.emptyList();
+	private List<PsiMethod> myMethods = Collections.emptyList();
 	private final ClassInnerStuffCache myInnersCache = new ClassInnerStuffCache(this);
 
 	public LightJavaClassBuilder(@NotNull Project project)
@@ -161,14 +162,14 @@ public class LightJavaClassBuilder extends LightElement implements PsiExtensible
 	@Override
 	public PsiMethod[] getMethods()
 	{
-		return new PsiMethod[0];
+		return myInnersCache.getMethods();
 	}
 
 	@NotNull
 	@Override
 	public PsiMethod[] getConstructors()
 	{
-		return new PsiMethod[0];
+		return myInnersCache.getConstructors();
 	}
 
 	@NotNull
@@ -196,7 +197,7 @@ public class LightJavaClassBuilder extends LightElement implements PsiExtensible
 	@Override
 	public PsiMethod[] getAllMethods()
 	{
-		return new PsiMethod[0];
+		return PsiClassImplUtil.getAllMethods(this);
 	}
 
 	@NotNull
@@ -217,21 +218,21 @@ public class LightJavaClassBuilder extends LightElement implements PsiExtensible
 	@Override
 	public PsiMethod findMethodBySignature(PsiMethod method, boolean b)
 	{
-		return null;
+		return PsiClassImplUtil.findMethodBySignature(this, method, b);
 	}
 
 	@NotNull
 	@Override
 	public PsiMethod[] findMethodsBySignature(PsiMethod method, boolean b)
 	{
-		return new PsiMethod[0];
+		return PsiClassImplUtil.findMethodsBySignature(this, method, b);
 	}
 
 	@NotNull
 	@Override
 	public PsiMethod[] findMethodsByName(@NonNls String s, boolean b)
 	{
-		return new PsiMethod[0];
+		return PsiClassImplUtil.findMethodsByName(this, s, b);
 	}
 
 	@Override
@@ -432,6 +433,11 @@ public class LightJavaClassBuilder extends LightElement implements PsiExtensible
 		myFields = fields;
 	}
 
+	public void withMethods(@NotNull List<PsiMethod> methods)
+	{
+		myMethods = methods;
+	}
+
 	@NotNull
 	@Override
 	public List<PsiField> getOwnFields()
@@ -443,7 +449,7 @@ public class LightJavaClassBuilder extends LightElement implements PsiExtensible
 	@Override
 	public List<PsiMethod> getOwnMethods()
 	{
-		return Collections.emptyList();
+		return myMethods;
 	}
 
 	@NotNull
