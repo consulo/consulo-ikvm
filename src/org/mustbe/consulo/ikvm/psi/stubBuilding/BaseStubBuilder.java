@@ -142,7 +142,14 @@ public abstract class BaseStubBuilder<T extends PsiElement>
 
 	private PsiType fromText(String text)
 	{
-		return JavaPsiFacade.getElementFactory(myNavTarget.getProject()).createTypeFromText(text, null);
+		try
+		{
+			return JavaPsiFacade.getElementFactory(myNavTarget.getProject()).createTypeFromText(text, null);
+		}
+		catch(Exception e)
+		{
+			return PsiType.VOID;
+		}
 	}
 
 	@NotNull
