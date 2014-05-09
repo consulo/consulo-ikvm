@@ -153,7 +153,6 @@ public class IkvmCompilerOptionsBuilder implements DotNetCompilerOptionsBuilder
 
 		generalCommandLine.addParameter("@" + tempFile.getAbsolutePath());
 		generalCommandLine.setRedirectErrorStream(true);
-		System.out.println(generalCommandLine.toString());
 		return generalCommandLine;
 	}
 }
