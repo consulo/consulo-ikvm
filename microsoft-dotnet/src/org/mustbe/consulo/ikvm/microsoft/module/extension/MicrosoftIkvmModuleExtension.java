@@ -11,6 +11,7 @@ import org.mustbe.consulo.ikvm.compiler.IkvmCompilerOptionsBuilder;
 import org.mustbe.consulo.ikvm.module.extension.IkvmModuleExtension;
 import com.intellij.compiler.impl.ModuleChunk;
 import com.intellij.ide.highlighter.JavaFileType;
+import com.intellij.openapi.compiler.CompileContext;
 import com.intellij.openapi.fileTypes.LanguageFileType;
 import com.intellij.openapi.projectRoots.JavaSdk;
 import com.intellij.openapi.projectRoots.Sdk;
@@ -65,7 +66,7 @@ public class MicrosoftIkvmModuleExtension extends ModuleExtensionWithSdkImpl<Mic
 
 	@NotNull
 	@Override
-	public String getCompilationClasspath(@NotNull ModuleChunk moduleChunk)
+	public String getCompilationClasspath(@NotNull CompileContext compileContext, @NotNull ModuleChunk moduleChunk)
 	{
 		Sdk sdkForCompilation = getSdkForCompilation();
 		PathsList classpath = new PathsList();
@@ -78,7 +79,7 @@ public class MicrosoftIkvmModuleExtension extends ModuleExtensionWithSdkImpl<Mic
 
 	@NotNull
 	@Override
-	public String getCompilationBootClasspath(@NotNull ModuleChunk moduleChunk)
+	public String getCompilationBootClasspath(@NotNull CompileContext compileContext, @NotNull ModuleChunk moduleChunk)
 	{
 		return "";
 	}
