@@ -18,18 +18,23 @@ package org.mustbe.consulo.ikvm.mono.module.extension;
 
 import javax.swing.JComponent;
 
-import org.consulo.module.extension.MutableModuleExtensionWithSdk;
+import org.consulo.java.platform.module.extension.SpecialDirLocation;
 import org.consulo.module.extension.MutableModuleInheritableNamedPointer;
+import org.consulo.sdk.SdkUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.mustbe.consulo.ikvm.module.extension.IkvmMutableModuleExtension;
+import org.mustbe.consulo.ikvm.module.extension.ui.IkvmModuleExtensionPanel;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.roots.ModifiableRootModel;
+import com.intellij.openapi.util.Comparing;
+import com.intellij.pom.java.LanguageLevel;
 
 /**
  * @author VISTALL
  * @since 05.05.14
  */
-public class MonoIkvmMutableModuleExtension extends MonoIkvmModuleExtension implements MutableModuleExtensionWithSdk<MonoIkvmModuleExtension>
+public class MonoIkvmMutableModuleExtension extends MonoIkvmModuleExtension implements IkvmMutableModuleExtension<MonoIkvmModuleExtension>
 {
 	public MonoIkvmMutableModuleExtension(@NotNull String id, @NotNull ModifiableRootModel rootModel)
 	{
@@ -47,7 +52,7 @@ public class MonoIkvmMutableModuleExtension extends MonoIkvmModuleExtension impl
 	@Override
 	public JComponent createConfigurablePanel(@NotNull Runnable updateOnCheck)
 	{
-		return null;
+		return wrapToNorth(new IkvmModuleExtensionPanel(this, updateOnCheck, false));
 	}
 
 	@Override
@@ -57,8 +62,35 @@ public class MonoIkvmMutableModuleExtension extends MonoIkvmModuleExtension impl
 	}
 
 	@Override
+	public void setSdkForCompilation(@Nullable String sdkForCompilation)
+	{
+		mySdkForCompilationPointer = sdkForCompilation == null ? null : SdkUtil.createPointer(sdkForCompilation);
+	}
+
+	@Override
+	public void setSdkForCompilation(@Nullable Sdk sdkForCompilation)
+	{
+		mySdkForCompilationPointer = sdkForCompilation == null ? null : SdkUtil.createPointer(sdkForCompilation);
+	}
+
+	@Override
 	public boolean isModified(@NotNull MonoIkvmModuleExtension originalExtension)
 	{
-		return isEnabled() != originalExtension.isEnabled();
+		return isEnabled() != originalExtension.isEnabled() ||
+				!Comparing.equal(mySdkForCompilationPointer, originalExtension.mySdkForCompilationPointer) ||
+				!myLanguageLevelPointer.equals(originalExtension.myLanguageLevelPointer);
+	}
+
+	@NotNull
+	@Override
+	public MutableModuleInheritableNamedPointer<LanguageLevel> getInheritableLanguageLevel()
+	{
+		return myLanguageLevelPointer;
+	}
+
+	@Override
+	public void setSpecialDirLocation(@NotNull SpecialDirLocation specialDirLocation)
+	{
+
 	}
 }

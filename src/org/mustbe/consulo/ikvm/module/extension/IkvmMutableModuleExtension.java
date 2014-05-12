@@ -16,16 +16,19 @@
 
 package org.mustbe.consulo.ikvm.module.extension;
 
-import org.consulo.java.module.extension.JavaModuleExtension;
+import org.consulo.java.module.extension.JavaMutableModuleExtension;
+import org.consulo.module.extension.MutableModuleExtensionWithSdk;
 import org.jetbrains.annotations.Nullable;
-import org.mustbe.consulo.dotnet.module.extension.DotNetModuleLangExtension;
+import com.intellij.openapi.projectRoots.Sdk;
 
 /**
  * @author VISTALL
- * @since 05.05.14
+ * @since 12.05.14
  */
-public interface IkvmModuleExtension<T extends IkvmModuleExtension<T>> extends JavaModuleExtension<T>, DotNetModuleLangExtension<T>
+public interface IkvmMutableModuleExtension<T extends IkvmModuleExtension<T>> extends IkvmModuleExtension<T>, MutableModuleExtensionWithSdk<T>,
+		JavaMutableModuleExtension<T>
 {
-	@Nullable
-	String getJavaSdkName();
+	void setSdkForCompilation(@Nullable Sdk sdkForCompilation);
+
+	void setSdkForCompilation(@Nullable String sdkForCompilation);
 }

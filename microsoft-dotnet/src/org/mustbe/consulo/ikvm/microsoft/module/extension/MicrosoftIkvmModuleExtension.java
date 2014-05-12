@@ -1,8 +1,13 @@
 package org.mustbe.consulo.ikvm.microsoft.module.extension;
 
+import org.consulo.java.platform.module.extension.LanguageLevelModuleInheritableNamedPointerImpl;
 import org.consulo.java.platform.module.extension.SpecialDirLocation;
 import org.consulo.module.extension.ModuleExtensionWithSdk;
+import org.consulo.module.extension.ModuleInheritableNamedPointer;
 import org.consulo.module.extension.impl.ModuleExtensionWithSdkImpl;
+import org.consulo.sdk.SdkUtil;
+import org.consulo.util.pointers.NamedPointer;
+import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.mustbe.consulo.dotnet.compiler.DotNetCompilerOptionsBuilder;
@@ -13,9 +18,7 @@ import com.intellij.compiler.impl.ModuleChunk;
 import com.intellij.ide.highlighter.JavaFileType;
 import com.intellij.openapi.compiler.CompileContext;
 import com.intellij.openapi.fileTypes.LanguageFileType;
-import com.intellij.openapi.projectRoots.JavaSdk;
 import com.intellij.openapi.projectRoots.Sdk;
-import com.intellij.openapi.projectRoots.SdkTable;
 import com.intellij.openapi.projectRoots.SdkType;
 import com.intellij.openapi.roots.ModifiableRootModel;
 import com.intellij.openapi.roots.OrderRootType;
@@ -31,9 +34,13 @@ public class MicrosoftIkvmModuleExtension extends ModuleExtensionWithSdkImpl<Mic
 		ModuleExtensionWithSdk<MicrosoftIkvmModuleExtension>, IkvmModuleExtension<MicrosoftIkvmModuleExtension>
 
 {
-	public MicrosoftIkvmModuleExtension(@NotNull String id, @NotNull ModifiableRootModel rootModel)
+	protected NamedPointer<Sdk> mySdkForCompilationPointer;
+	protected final LanguageLevelModuleInheritableNamedPointerImpl myLanguageLevelPointer;
+
+	public MicrosoftIkvmModuleExtension(@NotNull final String id, @NotNull ModifiableRootModel rootModel)
 	{
 		super(id, rootModel);
+		myLanguageLevelPointer = new LanguageLevelModuleInheritableNamedPointerImpl(getProject(), id);
 	}
 
 	@NotNull
@@ -47,7 +54,7 @@ public class MicrosoftIkvmModuleExtension extends ModuleExtensionWithSdkImpl<Mic
 	@Override
 	public LanguageLevel getLanguageLevel()
 	{
-		return LanguageLevel.JDK_1_6;
+		return myLanguageLevelPointer.get();
 	}
 
 	@NotNull
@@ -61,7 +68,28 @@ public class MicrosoftIkvmModuleExtension extends ModuleExtensionWithSdkImpl<Mic
 	@Override
 	public Sdk getSdkForCompilation()
 	{
-		return SdkTable.getInstance().findBundleSdkByType(JavaSdk.class);
+		return mySdkForCompilationPointer == null ? null : mySdkForCompilationPointer.get();
+	}
+
+	@Nullable
+	@Override
+	public String getJavaSdkName()
+	{
+		return mySdkForCompilationPointer == null ? null : mySdkForCompilationPointer.getName();
+	}
+
+	@Override
+	public void commit(@NotNull MicrosoftIkvmModuleExtension mutableModuleExtension)
+	{
+		super.commit(mutableModuleExtension);
+		mySdkForCompilationPointer = mutableModuleExtension.mySdkForCompilationPointer;
+		myLanguageLevelPointer.set(mutableModuleExtension.getInheritableLanguageLevel());
+	}
+
+	@NotNull
+	public ModuleInheritableNamedPointer<LanguageLevel> getInheritableLanguageLevel()
+	{
+		return myLanguageLevelPointer;
 	}
 
 	@NotNull
@@ -69,6 +97,10 @@ public class MicrosoftIkvmModuleExtension extends ModuleExtensionWithSdkImpl<Mic
 	public String getCompilationClasspath(@NotNull CompileContext compileContext, @NotNull ModuleChunk moduleChunk)
 	{
 		Sdk sdkForCompilation = getSdkForCompilation();
+		if(sdkForCompilation == null)
+		{
+			return "";
+		}
 		PathsList classpath = new PathsList();
 
 		classpath.addVirtualFiles(sdkForCompilation.getRootProvider().getFiles(OrderRootType.CLASSES));
@@ -98,5 +130,28 @@ public class MicrosoftIkvmModuleExtension extends ModuleExtensionWithSdkImpl<Mic
 		IkvmCompilerOptionsBuilder builder = new IkvmCompilerOptionsBuilder("bin/ikvmc.exe");
 		builder.addArgument("-nologo");
 		return builder;
+	}
+
+	@Override
+	protected void loadStateImpl(@NotNull Element element)
+	{
+		super.loadStateImpl(element);
+		myLanguageLevelPointer.fromXml(element);
+		String sdkForCompilation = element.getAttributeValue("sdk-for-compilation");
+		if(sdkForCompilation != null)
+		{
+			mySdkForCompilationPointer = SdkUtil.createPointer(sdkForCompilation);
+		}
+	}
+
+	@Override
+	protected void getStateImpl(@NotNull Element element)
+	{
+		super.getStateImpl(element);
+		myLanguageLevelPointer.toXml(element);
+		if(mySdkForCompilationPointer != null)
+		{
+			element.setAttribute("sdk-for-compilation", mySdkForCompilationPointer.getName());
+		}
 	}
 }

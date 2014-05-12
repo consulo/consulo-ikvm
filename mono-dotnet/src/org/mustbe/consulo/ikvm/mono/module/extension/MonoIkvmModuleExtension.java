@@ -16,7 +16,12 @@
 
 package org.mustbe.consulo.ikvm.mono.module.extension;
 
+import org.consulo.java.platform.module.extension.LanguageLevelModuleInheritableNamedPointerImpl;
 import org.consulo.java.platform.module.extension.SpecialDirLocation;
+import org.consulo.module.extension.ModuleInheritableNamedPointer;
+import org.consulo.sdk.SdkUtil;
+import org.consulo.util.pointers.NamedPointer;
+import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.mustbe.consulo.dotnet.compiler.DotNetCompilerOptionsBuilder;
@@ -28,10 +33,8 @@ import com.intellij.compiler.impl.ModuleChunk;
 import com.intellij.ide.highlighter.JavaFileType;
 import com.intellij.openapi.compiler.CompileContext;
 import com.intellij.openapi.fileTypes.LanguageFileType;
-import com.intellij.openapi.projectRoots.JavaSdk;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.projectRoots.SdkModificator;
-import com.intellij.openapi.projectRoots.SdkTable;
 import com.intellij.openapi.projectRoots.SdkType;
 import com.intellij.openapi.projectRoots.impl.SdkImpl;
 import com.intellij.openapi.roots.ModifiableRootModel;
@@ -48,9 +51,13 @@ import com.intellij.util.PathsList;
  */
 public class MonoIkvmModuleExtension extends InnerMonoModuleExtension<MonoIkvmModuleExtension> implements IkvmModuleExtension<MonoIkvmModuleExtension>
 {
+	protected NamedPointer<Sdk> mySdkForCompilationPointer;
+	protected final LanguageLevelModuleInheritableNamedPointerImpl myLanguageLevelPointer;
+
 	public MonoIkvmModuleExtension(@NotNull String id, @NotNull ModifiableRootModel rootModel)
 	{
 		super(id, rootModel);
+		myLanguageLevelPointer = new LanguageLevelModuleInheritableNamedPointerImpl(getProject(), id);
 	}
 
 	@Override
@@ -80,6 +87,14 @@ public class MonoIkvmModuleExtension extends InnerMonoModuleExtension<MonoIkvmMo
 		return sdk;
 	}
 
+	@Override
+	public void commit(@NotNull MonoIkvmModuleExtension mutableModuleExtension)
+	{
+		super.commit(mutableModuleExtension);
+		mySdkForCompilationPointer = mutableModuleExtension.mySdkForCompilationPointer;
+		myLanguageLevelPointer.set(mutableModuleExtension.getInheritableLanguageLevel());
+	}
+
 	@NotNull
 	@Override
 	public Class<? extends SdkType> getSdkTypeClass()
@@ -91,7 +106,7 @@ public class MonoIkvmModuleExtension extends InnerMonoModuleExtension<MonoIkvmMo
 	@Override
 	public LanguageLevel getLanguageLevel()
 	{
-		return LanguageLevel.JDK_1_6;
+		return myLanguageLevelPointer.get();
 	}
 
 	@NotNull
@@ -105,7 +120,20 @@ public class MonoIkvmModuleExtension extends InnerMonoModuleExtension<MonoIkvmMo
 	@Override
 	public Sdk getSdkForCompilation()
 	{
-		return SdkTable.getInstance().findBundleSdkByType(JavaSdk.class);
+		return mySdkForCompilationPointer == null ? null : mySdkForCompilationPointer.get();
+	}
+
+	@Nullable
+	@Override
+	public String getJavaSdkName()
+	{
+		return mySdkForCompilationPointer == null ? null : mySdkForCompilationPointer.getName();
+	}
+
+	@NotNull
+	public ModuleInheritableNamedPointer<LanguageLevel> getInheritableLanguageLevel()
+	{
+		return myLanguageLevelPointer;
 	}
 
 	@NotNull
@@ -142,5 +170,28 @@ public class MonoIkvmModuleExtension extends InnerMonoModuleExtension<MonoIkvmMo
 		IkvmCompilerOptionsBuilder ikvmCompilerOptionsBuilder = new IkvmCompilerOptionsBuilder("bin/mono");
 		ikvmCompilerOptionsBuilder.addExtraParameter(getSdk().getHomePath() + "/lib/ikvm/ikvmc.exe");
 		return ikvmCompilerOptionsBuilder;
+	}
+
+	@Override
+	protected void loadStateImpl(@NotNull Element element)
+	{
+		super.loadStateImpl(element);
+		myLanguageLevelPointer.fromXml(element);
+		String sdkForCompilation = element.getAttributeValue("sdk-for-compilation");
+		if(sdkForCompilation != null)
+		{
+			mySdkForCompilationPointer = SdkUtil.createPointer(sdkForCompilation);
+		}
+	}
+
+	@Override
+	protected void getStateImpl(@NotNull Element element)
+	{
+		super.getStateImpl(element);
+		myLanguageLevelPointer.toXml(element);
+		if(mySdkForCompilationPointer != null)
+		{
+			element.setAttribute("sdk-for-compilation", mySdkForCompilationPointer.getName());
+		}
 	}
 }

@@ -2,15 +2,16 @@ package org.mustbe.consulo.ikvm.microsoft.module.extension;
 
 import javax.swing.JComponent;
 
-import org.consulo.java.module.extension.JavaMutableModuleExtension;
 import org.consulo.java.platform.module.extension.SpecialDirLocation;
-import org.consulo.module.extension.MutableModuleExtensionWithSdk;
 import org.consulo.module.extension.MutableModuleInheritableNamedPointer;
-import org.consulo.module.extension.ui.ModuleExtensionWithSdkPanel;
+import org.consulo.sdk.SdkUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.mustbe.consulo.ikvm.module.extension.IkvmMutableModuleExtension;
+import org.mustbe.consulo.ikvm.module.extension.ui.IkvmModuleExtensionPanel;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.roots.ModifiableRootModel;
+import com.intellij.openapi.util.Comparing;
 import com.intellij.pom.java.LanguageLevel;
 
 /**
@@ -18,7 +19,7 @@ import com.intellij.pom.java.LanguageLevel;
  * @since 07.05.14
  */
 public class MicrosoftIkvmMutableModuleExtension extends MicrosoftIkvmModuleExtension implements
-		MutableModuleExtensionWithSdk<MicrosoftIkvmModuleExtension>, JavaMutableModuleExtension<MicrosoftIkvmModuleExtension>
+		IkvmMutableModuleExtension<MicrosoftIkvmModuleExtension>
 {
 	public MicrosoftIkvmMutableModuleExtension(@NotNull String id, @NotNull ModifiableRootModel rootModel)
 	{
@@ -36,7 +37,7 @@ public class MicrosoftIkvmMutableModuleExtension extends MicrosoftIkvmModuleExte
 	@Override
 	public JComponent createConfigurablePanel(@NotNull Runnable updateOnCheck)
 	{
-		return wrapToNorth(new ModuleExtensionWithSdkPanel(this, updateOnCheck));
+		return wrapToNorth(new IkvmModuleExtensionPanel(this, updateOnCheck, true));
 	}
 
 	@Override
@@ -48,14 +49,28 @@ public class MicrosoftIkvmMutableModuleExtension extends MicrosoftIkvmModuleExte
 	@Override
 	public boolean isModified(@NotNull MicrosoftIkvmModuleExtension originalExtension)
 	{
-		return isModifiedImpl(originalExtension);
+		return isModifiedImpl(originalExtension) ||
+				!Comparing.equal(mySdkForCompilationPointer, originalExtension.mySdkForCompilationPointer) ||
+				!myLanguageLevelPointer.equals(originalExtension.myLanguageLevelPointer);
+	}
+
+	@Override
+	public void setSdkForCompilation(@Nullable String sdkForCompilation)
+	{
+		mySdkForCompilationPointer = sdkForCompilation == null ? null : SdkUtil.createPointer(sdkForCompilation);
+	}
+
+	@Override
+	public void setSdkForCompilation(@Nullable Sdk sdkForCompilation)
+	{
+		mySdkForCompilationPointer = sdkForCompilation == null ? null : SdkUtil.createPointer(sdkForCompilation);
 	}
 
 	@NotNull
 	@Override
 	public MutableModuleInheritableNamedPointer<LanguageLevel> getInheritableLanguageLevel()
 	{
-		return null;
+		return myLanguageLevelPointer;
 	}
 
 	@Override
