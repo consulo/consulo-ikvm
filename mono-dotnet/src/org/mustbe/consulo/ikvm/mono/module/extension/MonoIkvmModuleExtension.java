@@ -31,6 +31,7 @@ import org.mustbe.consulo.ikvm.module.extension.IkvmModuleExtension;
 import org.mustbe.consulo.mono.csharp.module.extension.InnerMonoModuleExtension;
 import com.intellij.compiler.impl.ModuleChunk;
 import com.intellij.ide.highlighter.JavaFileType;
+import com.intellij.openapi.application.PathManager;
 import com.intellij.openapi.compiler.CompileContext;
 import com.intellij.openapi.fileTypes.LanguageFileType;
 import com.intellij.openapi.projectRoots.Sdk;
@@ -144,7 +145,7 @@ public class MonoIkvmModuleExtension extends InnerMonoModuleExtension<MonoIkvmMo
 		PathsList classpath = new PathsList();
 
 		classpath.addVirtualFiles(sdkForCompilation.getRootProvider().getFiles(OrderRootType.CLASSES));
-
+		classpath.add(PathManager.getSystemPath() + "/ikvm-stubs/" + getModule().getName() + "@" + getModule().getModuleDirUrl().hashCode());
 		classpath.addVirtualFiles(VfsUtil.toVirtualFileArray(moduleChunk.getCompilationClasspathFiles(IkvmBundleType.getInstance())));
 		return classpath.getPathsString();
 	}

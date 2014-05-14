@@ -27,6 +27,7 @@ import org.mustbe.consulo.csharp.lang.psi.impl.source.resolve.type.CSharpNativeT
 import org.mustbe.consulo.csharp.lang.psi.impl.source.resolve.type.CSharpPointerTypeRef;
 import org.mustbe.consulo.dotnet.resolve.DotNetTypeRef;
 import org.mustbe.consulo.java.util.JavaClassNames;
+import org.objectweb.asm.ClassWriter;
 import com.intellij.openapi.util.Comparing;
 import com.intellij.psi.JavaPsiFacade;
 import com.intellij.psi.PsiArrayType;
@@ -163,4 +164,6 @@ public abstract class BaseStubBuilder<T extends PsiElement>
 	public abstract T buildToPsi(@Nullable PsiElement parent);
 
 	public abstract void buildToText(StringBuilder builder);
+
+	public abstract void buildToBytecode(ClassWriter parent);
 }

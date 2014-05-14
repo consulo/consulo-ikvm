@@ -21,13 +21,23 @@ import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.mustbe.consulo.csharp.lang.psi.impl.source.resolve.type.CSharpArrayTypeRef;
+import org.mustbe.consulo.csharp.lang.psi.impl.source.resolve.type.CSharpGenericWrapperTypeRef;
+import org.mustbe.consulo.csharp.lang.psi.impl.source.resolve.type.CSharpNativeTypeRef;
+import org.mustbe.consulo.csharp.lang.psi.impl.source.resolve.type.CSharpTypeDefTypeRef;
+import org.mustbe.consulo.dotnet.DotNetTypes;
 import org.mustbe.consulo.dotnet.resolve.DotNetTypeRef;
+import org.mustbe.consulo.java.util.JavaClassNames;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Opcodes;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiManager;
 import com.intellij.psi.PsiMethod;
+import com.intellij.psi.PsiModifier;
 import com.intellij.psi.impl.light.LightMethodBuilder;
 import com.intellij.util.ArrayUtil;
+import com.intellij.util.BitUtil;
 
 /**
  * @author VISTALL
@@ -79,6 +89,84 @@ public class JavaMethodStubBuilder extends BaseStubBuilder<PsiMethod>
 			javaParameterStubBuilder.buildToText(builder);
 		}
 		builder.append(") {}");
+	}
+
+	@Override
+	public void buildToBytecode(ClassWriter parent)
+	{
+		int access = 0;
+		access = BitUtil.set(access, Opcodes.ACC_STATIC, myModifiers.contains(PsiModifier.STATIC));
+		access = BitUtil.set(access, Opcodes.ACC_PUBLIC, myModifiers.contains(PsiModifier.PUBLIC));
+
+		StringBuilder descBuilder = new StringBuilder();
+		descBuilder.append("(");
+		for(JavaParameterStubBuilder parameter : myParameters)
+		{
+			appendType(parameter.getType(), descBuilder);
+		}
+		descBuilder.append(")");
+		appendType(myReturnType, descBuilder);
+
+		try
+		{
+			parent.visitMethod(access, myName, descBuilder.toString(), null, null).visitEnd();
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	private static void appendType(DotNetTypeRef typeRef, StringBuilder builder)
+	{
+		if(typeRef == CSharpNativeTypeRef.VOID)
+		{
+			builder.append("V");
+		}
+		else if(typeRef == CSharpNativeTypeRef.INT)
+		{
+			builder.append("I");
+		}
+		else if(typeRef == CSharpNativeTypeRef.STRING)
+		{
+			appendType(new CSharpTypeDefTypeRef(JavaClassNames.JAVA_LANG_STRING, 0), builder);
+		}
+		else if(typeRef instanceof CSharpGenericWrapperTypeRef)
+		{
+			appendType(((CSharpGenericWrapperTypeRef) typeRef).getInner(), builder);
+		}
+		else if(typeRef instanceof CSharpArrayTypeRef)
+		{
+			builder.append("[");
+			appendType(((CSharpArrayTypeRef) typeRef).getInnerType(), builder);
+		}
+		else
+		{
+			String qualifiedText = typeRef.getQualifiedText();
+			if(qualifiedText.contains("<"))
+			{
+				//TODO
+				appendType(new CSharpTypeDefTypeRef(JavaClassNames.JAVA_LANG_OBJECT, 0), builder);
+			}
+			else
+			{
+				if(qualifiedText.equals(DotNetTypes.System_Object))
+				{
+					appendType(new CSharpTypeDefTypeRef(JavaClassNames.JAVA_LANG_OBJECT, 0), builder);
+					return;
+				}
+				else if(qualifiedText.equals(DotNetTypes.System_String))
+				{
+					appendType(new CSharpTypeDefTypeRef(JavaClassNames.JAVA_LANG_STRING, 0), builder);
+					return;
+				}
+				if(!qualifiedText.startsWith("java"))
+				{
+					qualifiedText = "cli." + qualifiedText;
+				}
+				builder.append("L").append(qualifiedText.replace(".", "/")).append(";");
+			}
+		}
 	}
 
 	@NotNull

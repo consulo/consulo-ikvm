@@ -25,16 +25,20 @@ import java.util.List;
 import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.mustbe.consulo.csharp.lang.psi.CSharpModifier;
 import org.mustbe.consulo.csharp.lang.psi.impl.source.CSharpFileImpl;
 import org.mustbe.consulo.dotnet.compiler.DotNetCompilerUtil;
-import org.mustbe.consulo.dotnet.psi.DotNetQualifiedElement;
 import org.mustbe.consulo.dotnet.psi.DotNetTypeDeclaration;
 import org.mustbe.consulo.ikvm.bundle.IkvmBundleType;
+import org.mustbe.consulo.ikvm.psi.stubBuilding.JavaClassStubBuilder;
+import org.mustbe.consulo.ikvm.psi.stubBuilding.StubBuilder;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.application.PathManager;
 import com.intellij.openapi.compiler.CompileContext;
 import com.intellij.openapi.compiler.CompileScope;
 import com.intellij.openapi.compiler.CompilerManager;
-import com.intellij.openapi.compiler.SourceGeneratingCompiler;
+import com.intellij.openapi.compiler.SourceProcessingCompiler;
 import com.intellij.openapi.compiler.ValidityState;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
@@ -42,6 +46,9 @@ import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.roots.OrderEntry;
 import com.intellij.openapi.roots.ProjectFileIndex;
 import com.intellij.openapi.roots.SdkOrderEntry;
+import com.intellij.openapi.util.Computable;
+import com.intellij.openapi.util.Pair;
+import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -49,49 +56,136 @@ import com.intellij.openapi.vfs.VirtualFileVisitor;
 import com.intellij.openapi.vfs.util.ArchiveVfsUtil;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
+import com.intellij.psi.util.PsiTreeUtil;
 import lombok.val;
 
 /**
  * @author VISTALL
  * @since 09.05.14
  */
-public class IkvmStubGenerationCompiler implements SourceGeneratingCompiler
+public class IkvmStubGenerationCompiler implements SourceProcessingCompiler
 {
-	@Override
-	public VirtualFile getPresentableFile(
-			CompileContext compileContext, Module module, VirtualFile virtualFile, VirtualFile virtualFile2)
+	public static class Item implements ProcessingItem
 	{
-		return null;
+		private final VirtualFile myVirtualFile;
+		private final Module myAffectedModule;
+
+		public Item(VirtualFile virtualFile, Module affectedModule)
+		{
+			myVirtualFile = virtualFile;
+			myAffectedModule = affectedModule;
+		}
+
+		@NotNull
+		@Override
+		public VirtualFile getFile()
+		{
+			return myVirtualFile;
+		}
+
+		@Nullable
+		@Override
+		public ValidityState getValidityState()
+		{
+			return null;
+		}
+
+		public Module getAffectedModule()
+		{
+			return myAffectedModule;
+		}
 	}
 
+	@NotNull
 	@Override
-	public GenerationItem[] getGenerationItems(CompileContext compileContext)
+	public ProcessingItem[] getProcessingItems(CompileContext compileContext)
 	{
 		Module[] affectedModules = compileContext.getCompileScope().getAffectedModules();
+		List<ProcessingItem> items = new ArrayList<ProcessingItem>();
 		for(Module affectedModule : affectedModules)
 		{
 			Set<File> files = DotNetCompilerUtil.collectDependencies(affectedModule, true);
 			for(File file : files)
 			{
-				List<DotNetTypeDeclaration> typeDeclarations = collectTypes(compileContext.getProject(), file);
-				if(typeDeclarations.isEmpty())
+				final VirtualFile fileByIoFile = LocalFileSystem.getInstance().findFileByIoFile(file);
+				if(fileByIoFile != null)
+				{
+					items.add(new Item(fileByIoFile, affectedModule));
+				}
+			}
+		}
+		return items.toArray(new ProcessingItem[items.size()]);
+	}
+
+	@Override
+	public ProcessingItem[] process(CompileContext compileContext, ProcessingItem[] processingItems)
+	{
+		File genDir = new File(PathManager.getSystemPath(), "ikvm-stubs");
+
+		for(ProcessingItem p : processingItems)
+		{
+			Item item = (Item) p;
+
+			List<DotNetTypeDeclaration> typeDeclarations = collectTypes(compileContext.getProject(), item.getFile());
+			for(val typeDeclaration : typeDeclarations)
+			{
+				if(!typeDeclaration.hasModifier(CSharpModifier.PUBLIC))
 				{
 					continue;
 				}
-				System.out.println(typeDeclarations.size());
+				String typeName = ApplicationManager.getApplication().runReadAction(new Computable<String>()
+				{
+					@Override
+					public String compute()
+					{
+						return typeDeclaration.getPresentableQName();
+					}
+				});
+
+				compileContext.getProgressIndicator().setText("Processing: " + typeName);
+
+				Pair<String, byte[]> build = ApplicationManager.getApplication().runReadAction(new Computable<Pair<String, byte[]>>()
+				{
+					@Override
+					public Pair<String, byte[]> compute()
+					{
+						JavaClassStubBuilder classStubBuilder = StubBuilder.build(typeDeclaration, true);
+						if(classStubBuilder == null)
+						{
+							return null;
+						}
+						return Pair.create(classStubBuilder.getQualifiedName(), classStubBuilder.buildToBytecode());
+					}
+				});
+
+				if(build == null)
+				{
+					continue;
+				}
+				String qualifiedName = build.getFirst();
+
+				Module affectedModule = item.getAffectedModule();
+				String dirName = affectedModule.getName() + "@" + affectedModule.getModuleDirUrl().hashCode();
+
+				File file = new File(new File(genDir, dirName), qualifiedName.replace(".", "/") + ".class");
+				file.getParentFile().mkdirs();
+
+				try
+				{
+					FileUtil.writeToFile(file, build.getSecond());
+				}
+				catch(IOException e)
+				{
+					e.printStackTrace();
+				}
+
 			}
 		}
-		return new GenerationItem[0];
+		return processingItems;
 	}
 
-	private List<DotNetTypeDeclaration> collectTypes(Project project, File dllFile)
+	private List<DotNetTypeDeclaration> collectTypes(Project project, VirtualFile fileByIoFile)
 	{
-		VirtualFile fileByIoFile = LocalFileSystem.getInstance().findFileByIoFile(dllFile);
-		if(fileByIoFile == null)
-		{
-			return Collections.emptyList();
-		}
-
 		VirtualFile archiveRootForLocalFile = ArchiveVfsUtil.getArchiveRootForLocalFile(fileByIoFile);
 
 		if(archiveRootForLocalFile == null)
@@ -133,13 +227,8 @@ public class IkvmStubGenerationCompiler implements SourceGeneratingCompiler
 						{
 							return;
 						}
-						for(DotNetQualifiedElement qualifiedElement : ((CSharpFileImpl) psiFile).getMembers())
-						{
-							if(qualifiedElement instanceof DotNetTypeDeclaration)
-							{
-								list.add((DotNetTypeDeclaration) qualifiedElement);
-							}
-						}
+
+						list.addAll(PsiTreeUtil.findChildrenOfType(psiFile, DotNetTypeDeclaration.class));
 					}
 				});
 				return true;
@@ -148,12 +237,6 @@ public class IkvmStubGenerationCompiler implements SourceGeneratingCompiler
 		return list;
 	}
 
-	@Override
-	public GenerationItem[] generate(
-			CompileContext compileContext, GenerationItem[] generationItems, VirtualFile virtualFile)
-	{
-		return new GenerationItem[0];
-	}
 
 	@NotNull
 	@Override

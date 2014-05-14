@@ -19,6 +19,7 @@ package org.mustbe.consulo.ikvm.psi.stubBuilding;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.mustbe.consulo.dotnet.resolve.DotNetTypeRef;
+import org.objectweb.asm.ClassWriter;
 import com.intellij.lang.java.JavaLanguage;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiParameter;
@@ -54,6 +55,17 @@ public class JavaParameterStubBuilder extends BaseStubBuilder<PsiParameter>
 			builder.append(modifier).append(" ");
 		}
 		builder.append(normalizeTypeText(myType)).append(" ").append(normalize(myName));
+	}
+
+	@Override
+	public void buildToBytecode(ClassWriter parent)
+	{
+
+	}
+
+	public DotNetTypeRef getType()
+	{
+		return myType;
 	}
 
 	public JavaParameterStubBuilder withType(@NotNull DotNetTypeRef type)

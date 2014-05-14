@@ -22,6 +22,8 @@ import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.mustbe.consulo.ikvm.psi.stubBuilding.psi.LightJavaClassBuilder;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Opcodes;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
@@ -111,5 +113,47 @@ public class JavaClassStubBuilder extends BaseStubBuilder<PsiClass>
 			builder.append("\n");
 		}
 		builder.append("}");
+	}
+
+	public byte[] buildToBytecode()
+	{
+		ClassWriter classWriter = new ClassWriter(Opcodes.V1_6);
+		buildToBytecode(classWriter);
+		classWriter.visitEnd();
+		return classWriter.toByteArray();
+	}
+
+	@Override
+	public void buildToBytecode(ClassWriter parent)
+	{
+		String name = null;
+		if(StringUtil.isEmpty(myPackage))
+		{
+			name = myName;
+		}
+		else
+		{
+			name = myPackage.replace(".", "/") + "/" + myName;
+		}
+		parent.visit(Opcodes.V1_6, Opcodes.ACC_PUBLIC, name, null, null, null);
+
+		for(BaseStubBuilder member : myMembers)
+		{
+			member.buildToBytecode(parent);
+		}
+	}
+
+	public String getQualifiedName()
+	{
+		String name = null;
+		if(StringUtil.isEmpty(myPackage))
+		{
+			name = myName;
+		}
+		else
+		{
+			name = myPackage + "." + myName;
+		}
+		return name;
 	}
 }

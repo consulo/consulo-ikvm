@@ -29,6 +29,7 @@ import org.mustbe.consulo.dotnet.psi.DotNetPropertyDeclaration;
 import org.mustbe.consulo.dotnet.psi.DotNetTypeDeclaration;
 import org.mustbe.consulo.dotnet.psi.DotNetXXXAccessor;
 import org.mustbe.consulo.dotnet.resolve.DotNetTypeRef;
+import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.PsiModifier;
 
 /**
@@ -38,7 +39,7 @@ import com.intellij.psi.PsiModifier;
 public class StubBuilder
 {
 	@Nullable
-	public static JavaClassStubBuilder build(@NotNull DotNetTypeDeclaration typeDeclaration)
+	public static JavaClassStubBuilder build(@NotNull DotNetTypeDeclaration typeDeclaration, boolean cli)
 	{
 		String name = typeDeclaration.getName();
 		if(name.contains("$"))
@@ -47,6 +48,10 @@ public class StubBuilder
 		}
 
 		String packageName = typeDeclaration.getPresentableParentQName();
+		if(cli)
+		{
+			packageName = StringUtil.isEmpty(packageName) ? "cli" : "cli." + packageName;
+		}
 		/*
 		String fileName = typeDeclaration.getContainingFile().getName();
 		if(!fileName.startsWith("IKVM.OpenJDK."))

@@ -19,6 +19,7 @@ package org.mustbe.consulo.ikvm.psi.stubBuilding;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.mustbe.consulo.dotnet.resolve.DotNetTypeRef;
+import org.objectweb.asm.ClassWriter;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiField;
@@ -56,6 +57,12 @@ public class JavaFieldStubBuilder extends BaseStubBuilder<PsiField>
 			builder.append(modifier).append(" ");
 		}
 		builder.append(normalizeTypeText(myType)).append(" ").append(normalize(myName)).append(";");
+	}
+
+	@Override
+	public void buildToBytecode(ClassWriter parent)
+	{
+
 	}
 
 	public JavaFieldStubBuilder withType(@NotNull DotNetTypeRef type)
