@@ -22,10 +22,10 @@ import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.mustbe.consulo.csharp.lang.psi.impl.source.resolve.type.CSharpArrayTypeRef;
-import org.mustbe.consulo.csharp.lang.psi.impl.source.resolve.type.CSharpGenericWrapperTypeRef;
 import org.mustbe.consulo.csharp.lang.psi.impl.source.resolve.type.CSharpNativeTypeRef;
 import org.mustbe.consulo.csharp.lang.psi.impl.source.resolve.type.CSharpTypeDefTypeRef;
 import org.mustbe.consulo.dotnet.DotNetTypes;
+import org.mustbe.consulo.dotnet.lang.psi.impl.source.resolve.type.DotNetGenericWrapperTypeRef;
 import org.mustbe.consulo.dotnet.resolve.DotNetTypeRef;
 import org.mustbe.consulo.java.util.JavaClassNames;
 import org.objectweb.asm.ClassWriter;
@@ -131,9 +131,9 @@ public class JavaMethodStubBuilder extends BaseStubBuilder<PsiMethod>
 		{
 			appendType(new CSharpTypeDefTypeRef(JavaClassNames.JAVA_LANG_STRING, 0), builder);
 		}
-		else if(typeRef instanceof CSharpGenericWrapperTypeRef)
+		else if(typeRef instanceof DotNetGenericWrapperTypeRef)
 		{
-			appendType(((CSharpGenericWrapperTypeRef) typeRef).getInner(), builder);
+			appendType(((DotNetGenericWrapperTypeRef) typeRef).getInner(), builder);
 		}
 		else if(typeRef instanceof CSharpArrayTypeRef)
 		{

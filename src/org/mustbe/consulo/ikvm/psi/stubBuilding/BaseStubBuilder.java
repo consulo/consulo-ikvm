@@ -24,7 +24,7 @@ import org.jetbrains.annotations.Nullable;
 import org.mustbe.consulo.csharp.lang.psi.impl.source.resolve.type.CSharpArrayTypeRef;
 import org.mustbe.consulo.csharp.lang.psi.impl.source.resolve.type.CSharpLambdaTypeRef;
 import org.mustbe.consulo.csharp.lang.psi.impl.source.resolve.type.CSharpNativeTypeRef;
-import org.mustbe.consulo.csharp.lang.psi.impl.source.resolve.type.CSharpPointerTypeRef;
+import org.mustbe.consulo.dotnet.resolve.DotNetPointerTypeRef;
 import org.mustbe.consulo.dotnet.resolve.DotNetTypeRef;
 import org.mustbe.consulo.java.util.JavaClassNames;
 import org.objectweb.asm.ClassWriter;
@@ -122,7 +122,7 @@ public abstract class BaseStubBuilder<T extends PsiElement>
 		{
 			return fromText("Func");
 		}
-		else if(type instanceof CSharpPointerTypeRef)
+		else if(type instanceof DotNetPointerTypeRef)
 		{
 			return fromText("Pointer");
 		}

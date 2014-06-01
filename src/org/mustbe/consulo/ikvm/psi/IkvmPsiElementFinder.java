@@ -32,7 +32,6 @@ import org.mustbe.consulo.csharp.lang.psi.CSharpModifier;
 import org.mustbe.consulo.csharp.lang.psi.impl.CSharpNamespaceHelper;
 import org.mustbe.consulo.csharp.lang.psi.impl.stub.index.MemberByNamespaceQNameIndex;
 import org.mustbe.consulo.dotnet.module.extension.DotNetModuleExtension;
-import org.mustbe.consulo.dotnet.psi.DotNetNamedElement;
 import org.mustbe.consulo.dotnet.psi.DotNetTypeDeclaration;
 import org.mustbe.consulo.dotnet.resolve.DotNetPsiFacade;
 import org.mustbe.consulo.ikvm.psi.stubBuilding.JavaClassStubBuilder;
@@ -40,6 +39,7 @@ import org.mustbe.consulo.ikvm.psi.stubBuilding.StubBuilder;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.PsiClass;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementFinder;
 import com.intellij.psi.PsiJavaPackage;
 import com.intellij.psi.PsiManager;
@@ -156,7 +156,7 @@ public class IkvmPsiElementFinder extends PsiElementFinder
 			cli = true;
 		}
 
-		Collection<DotNetNamedElement> dotNetNamedElements = MemberByNamespaceQNameIndex.getInstance().get(qualifiedName, myProject,
+		Collection<PsiElement> dotNetNamedElements = MemberByNamespaceQNameIndex.getInstance().get(qualifiedName, myProject,
 				scope);
 
 		if(dotNetNamedElements.isEmpty())
@@ -166,10 +166,10 @@ public class IkvmPsiElementFinder extends PsiElementFinder
 		return toClasses(dotNetNamedElements, cli);
 	}
 
-	private PsiClass[] toClasses(Collection<? extends DotNetNamedElement> elements, boolean cli)
+	private PsiClass[] toClasses(Collection<? extends PsiElement> elements, boolean cli)
 	{
 		List<PsiClass> list = new ArrayList<PsiClass>(elements.size());
-		for(DotNetNamedElement dotNetNamedElement : elements)
+		for(PsiElement dotNetNamedElement : elements)
 		{
 			if(dotNetNamedElement instanceof DotNetTypeDeclaration)
 			{
