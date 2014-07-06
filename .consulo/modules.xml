@@ -51,16 +51,6 @@
             <SOURCES />
           </library>
         </orderEntry>
-        <orderEntry type="module-library">
-          <library name="consulo:C#">
-            <CLASSES>
-              <root url="jar://$MODULE_DIR$/dep/csharp/lib/csharp.jar!/" />
-              <root url="jar://$MODULE_DIR$/dep/csharp/lib/jel.jar!/" />
-            </CLASSES>
-            <DOCUMENTATION />
-            <SOURCES />
-          </library>
-        </orderEntry>
       </module>
       <module name="mono-dotnet" dirurl="file://$PROJECT_DIR$/mono-dotnet">
         <extension id="consulo-plugin" sdk-module-name="" sdk-name="Consulo 1.SNAPSHOT" custom-plugin-dir-url="file://$MODULE_DIR$/../dep" />
