@@ -18,10 +18,9 @@ package org.mustbe.consulo.ikvm.psi.stubBuilding;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.mustbe.consulo.csharp.lang.psi.CSharpModifier;
-import org.mustbe.consulo.csharp.lang.psi.CSharpSoftTokens;
 import org.mustbe.consulo.dotnet.psi.DotNetFieldDeclaration;
 import org.mustbe.consulo.dotnet.psi.DotNetMethodDeclaration;
+import org.mustbe.consulo.dotnet.psi.DotNetModifier;
 import org.mustbe.consulo.dotnet.psi.DotNetModifierListOwner;
 import org.mustbe.consulo.dotnet.psi.DotNetNamedElement;
 import org.mustbe.consulo.dotnet.psi.DotNetParameter;
@@ -77,8 +76,8 @@ public class StubBuilder
 			{
 				DotNetXXXAccessor[] accessors = ((DotNetPropertyDeclaration) dotNetNamedElement).getAccessors();
 				// field
-				if(accessors.length == 1 && accessors[0].getAccessorType() == CSharpSoftTokens.GET_KEYWORD)
-				{
+				/*if(accessors.length == 1 && accessors[0].getAccessorType() == CSharpSoftTokens.GET_KEYWORD)
+				{     */
 					DotNetTypeRef typeRef = ((DotNetPropertyDeclaration) dotNetNamedElement).toTypeRef(false);
 					if(typeRef == DotNetTypeRef.ERROR_TYPE)
 					{
@@ -87,11 +86,11 @@ public class StubBuilder
 					JavaFieldStubBuilder field = javaClassStubBuilder.field(dotNetNamedElement.getName(), dotNetNamedElement);
 					copyModifiers((DotNetModifierListOwner) dotNetNamedElement, field);
 					field.withType(typeRef);
-				}
+				/*}
 				else
 				{
 					//TODO [VISTALL] method
-				}
+				}*/
 			}
 			else if(dotNetNamedElement instanceof DotNetFieldDeclaration)
 			{
@@ -123,20 +122,20 @@ public class StubBuilder
 
 	private static void copyModifiers(DotNetModifierListOwner modifierListOwner, BaseStubBuilder baseStubBuilder)
 	{
-		if(modifierListOwner.hasModifier(CSharpModifier.STATIC))
+		if(modifierListOwner.hasModifier(DotNetModifier.STATIC))
 		{
 			baseStubBuilder.addModifier(PsiModifier.STATIC);
 		}
 
-		if(modifierListOwner.hasModifier(CSharpModifier.PUBLIC))
+		if(modifierListOwner.hasModifier(DotNetModifier.PUBLIC))
 		{
 			baseStubBuilder.addModifier(PsiModifier.PUBLIC);
 		}
-		else if(modifierListOwner.hasModifier(CSharpModifier.PRIVATE))
+		else if(modifierListOwner.hasModifier(DotNetModifier.PRIVATE))
 		{
 			baseStubBuilder.addModifier(PsiModifier.PRIVATE);
 		}
-		else if(modifierListOwner.hasModifier(CSharpModifier.PROTECTED))
+		else if(modifierListOwner.hasModifier(DotNetModifier.PROTECTED))
 		{
 			baseStubBuilder.addModifier(PsiModifier.PROTECTED);
 		}
@@ -145,7 +144,7 @@ public class StubBuilder
 			baseStubBuilder.addModifier(PsiModifier.PACKAGE_LOCAL);
 		}
 
-		if(modifierListOwner.hasModifier(CSharpModifier.ABSTRACT))
+		if(modifierListOwner.hasModifier(DotNetModifier.ABSTRACT))
 		{
 			baseStubBuilder.addModifier(PsiModifier.ABSTRACT);
 		}

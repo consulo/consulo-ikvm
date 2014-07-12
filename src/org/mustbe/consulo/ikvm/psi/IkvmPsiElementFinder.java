@@ -19,6 +19,7 @@ package org.mustbe.consulo.ikvm.psi;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,10 +29,8 @@ import org.consulo.psi.PsiPackage;
 import org.consulo.psi.PsiPackageManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.mustbe.consulo.csharp.lang.psi.CSharpModifier;
-import org.mustbe.consulo.csharp.lang.psi.impl.CSharpNamespaceHelper;
-import org.mustbe.consulo.csharp.lang.psi.impl.stub.index.MemberByNamespaceQNameIndex;
 import org.mustbe.consulo.dotnet.module.extension.DotNetModuleExtension;
+import org.mustbe.consulo.dotnet.psi.DotNetModifier;
 import org.mustbe.consulo.dotnet.psi.DotNetTypeDeclaration;
 import org.mustbe.consulo.dotnet.resolve.DotNetPsiFacade;
 import org.mustbe.consulo.ikvm.psi.stubBuilding.JavaClassStubBuilder;
@@ -152,13 +151,13 @@ public class IkvmPsiElementFinder extends PsiElementFinder
 		String qualifiedName = psiPackage.getQualifiedName();
 		if(StringUtil.startsWith(qualifiedName, "cli."))
 		{
-			qualifiedName = CSharpNamespaceHelper.getNamespaceForIndexing(qualifiedName.substring(4, qualifiedName.length()));
+			qualifiedName = qualifiedName.substring(4, qualifiedName.length());
 			cli = true;
 		}
 
-		Collection<PsiElement> dotNetNamedElements = MemberByNamespaceQNameIndex.getInstance().get(qualifiedName, myProject,
+		Collection<PsiElement> dotNetNamedElements = Collections.emptyList();/* MemberByNamespaceQNameIndex.getInstance().get(qualifiedName, myProject,
 				scope);
-
+                                                 */
 		if(dotNetNamedElements.isEmpty())
 		{
 			return PsiClass.EMPTY_ARRAY;
@@ -174,7 +173,7 @@ public class IkvmPsiElementFinder extends PsiElementFinder
 			if(dotNetNamedElement instanceof DotNetTypeDeclaration)
 			{
 				final DotNetTypeDeclaration type = (DotNetTypeDeclaration) dotNetNamedElement;
-				if(!type.hasModifier(CSharpModifier.PUBLIC))
+				if(!type.hasModifier(DotNetModifier.PUBLIC))
 				{
 					continue;
 				}

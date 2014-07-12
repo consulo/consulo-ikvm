@@ -27,7 +27,7 @@
 	</extensions>
 
 	<extensions defaultExtensionNs="org.mustbe.consulo.dotnet.core">
-		<psi.facade implementation="org.mustbe.consulo.ikvm.psi.IkvmDotNetPsiFacade" />
+
 	</extensions>
 
 	<extensions defaultExtensionNs="com.intellij">

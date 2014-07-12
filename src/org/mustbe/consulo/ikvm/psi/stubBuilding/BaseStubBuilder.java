@@ -21,9 +21,7 @@ import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.mustbe.consulo.csharp.lang.psi.impl.source.resolve.type.CSharpArrayTypeRef;
-import org.mustbe.consulo.csharp.lang.psi.impl.source.resolve.type.CSharpLambdaTypeRef;
-import org.mustbe.consulo.csharp.lang.psi.impl.source.resolve.type.CSharpNativeTypeRef;
+import org.mustbe.consulo.dotnet.resolve.DotNetArrayTypeRef;
 import org.mustbe.consulo.dotnet.resolve.DotNetPointerTypeRef;
 import org.mustbe.consulo.dotnet.resolve.DotNetTypeRef;
 import org.mustbe.consulo.java.util.JavaClassNames;
@@ -68,61 +66,58 @@ public abstract class BaseStubBuilder<T extends PsiElement>
 	@NotNull
 	public PsiType normalizeType(DotNetTypeRef type)
 	{
-		if(type == CSharpNativeTypeRef.VOID)
+		String qName = type.getQualifiedText();
+		if(Comparing.equal(qName, "System.Void"))
 		{
 			return PsiType.VOID;
 		}
-		else if(type == CSharpNativeTypeRef.SBYTE)
+		else if(Comparing.equal(qName, "System.Byte"))
 		{
 			return PsiType.BYTE;
 		}
-		else if(type == CSharpNativeTypeRef.INT)
+		else if(Comparing.equal(qName, "System.Int32"))
 		{
 			return PsiType.INT;
 		}
-		else if(type == CSharpNativeTypeRef.SHORT)
+		else if(Comparing.equal(qName, "System.Int16"))
 		{
 			return PsiType.SHORT;
 		}
-		else if(type == CSharpNativeTypeRef.BOOL)
+		else if(Comparing.equal(qName, "System.Boolean"))
 		{
 			return PsiType.BOOLEAN;
 		}
-		else if(type == CSharpNativeTypeRef.LONG)
+		else if(Comparing.equal(qName, "System.Int64"))
 		{
 			return PsiType.LONG;
 		}
-		else if(type == CSharpNativeTypeRef.FLOAT)
+		else if(Comparing.equal(qName, "System.Single"))
 		{
 			return PsiType.FLOAT;
 		}
-		else if(type == CSharpNativeTypeRef.DOUBLE)
+		else if(Comparing.equal(qName, "System.Double"))
 		{
 			return PsiType.DOUBLE;
 		}
-		else if(type == CSharpNativeTypeRef.CHAR)
+		else if(Comparing.equal(qName, "System.Char"))
 		{
 			return PsiType.CHAR;
 		}
-		else if(type == CSharpNativeTypeRef.STRING)
+		else if(Comparing.equal(qName, "System.String"))
 		{
 			return fromText(JavaClassNames.JAVA_LANG_STRING);
 		}
-		else if(type == CSharpNativeTypeRef.OBJECT)
+		else if(Comparing.equal(qName, "System.Object"))
 		{
 			return fromText(JavaClassNames.JAVA_LANG_OBJECT);
 		}
-		else if(type instanceof CSharpArrayTypeRef)
+		else if(type instanceof DotNetArrayTypeRef)
 		{
-			return new PsiArrayType(normalizeType(((CSharpArrayTypeRef) type).getInnerType()));
+			return new PsiArrayType(normalizeType(((DotNetArrayTypeRef) type).getInnerTypeRef()));
 		}
 
 		//TODO [VISTALL]
-		if(type instanceof CSharpLambdaTypeRef)
-		{
-			return fromText("Func");
-		}
-		else if(type instanceof DotNetPointerTypeRef)
+		if(type instanceof DotNetPointerTypeRef)
 		{
 			return fromText("Pointer");
 		}

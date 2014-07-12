@@ -21,12 +21,11 @@ import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.mustbe.consulo.csharp.lang.psi.impl.source.resolve.type.CSharpArrayTypeRef;
-import org.mustbe.consulo.csharp.lang.psi.impl.source.resolve.type.CSharpNativeTypeRef;
-import org.mustbe.consulo.csharp.lang.psi.impl.source.resolve.type.CSharpTypeDefTypeRef;
 import org.mustbe.consulo.dotnet.DotNetTypes;
 import org.mustbe.consulo.dotnet.lang.psi.impl.source.resolve.type.DotNetGenericWrapperTypeRef;
+import org.mustbe.consulo.dotnet.resolve.DotNetArrayTypeRef;
 import org.mustbe.consulo.dotnet.resolve.DotNetTypeRef;
+import org.mustbe.consulo.ikvm.psi.stubBuilding.psi.IkvmTypeRef;
 import org.mustbe.consulo.java.util.JavaClassNames;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
@@ -119,45 +118,40 @@ public class JavaMethodStubBuilder extends BaseStubBuilder<PsiMethod>
 
 	private static void appendType(DotNetTypeRef typeRef, StringBuilder builder)
 	{
-		if(typeRef == CSharpNativeTypeRef.VOID)
+		String qualifiedText = typeRef.getQualifiedText();
+		if("System.Void".equals(qualifiedText))
 		{
 			builder.append("V");
 		}
-		else if(typeRef == CSharpNativeTypeRef.INT)
+		else if("System.Int32".equals(qualifiedText))
 		{
 			builder.append("I");
 		}
-		else if(typeRef == CSharpNativeTypeRef.STRING)
+		else if("System.String".equals(qualifiedText))
 		{
-			appendType(new CSharpTypeDefTypeRef(JavaClassNames.JAVA_LANG_STRING, 0), builder);
+			appendType(new IkvmTypeRef(JavaClassNames.JAVA_LANG_STRING), builder);
 		}
 		else if(typeRef instanceof DotNetGenericWrapperTypeRef)
 		{
-			appendType(((DotNetGenericWrapperTypeRef) typeRef).getInner(), builder);
+			appendType(((DotNetGenericWrapperTypeRef) typeRef).getInnerTypeRef(), builder);
 		}
-		else if(typeRef instanceof CSharpArrayTypeRef)
+		else if(typeRef instanceof DotNetArrayTypeRef)
 		{
 			builder.append("[");
-			appendType(((CSharpArrayTypeRef) typeRef).getInnerType(), builder);
+			appendType(((DotNetArrayTypeRef) typeRef).getInnerTypeRef(), builder);
 		}
 		else
 		{
-			String qualifiedText = typeRef.getQualifiedText();
 			if(qualifiedText.contains("<"))
 			{
 				//TODO
-				appendType(new CSharpTypeDefTypeRef(JavaClassNames.JAVA_LANG_OBJECT, 0), builder);
+				appendType(new IkvmTypeRef(JavaClassNames.JAVA_LANG_OBJECT), builder);
 			}
 			else
 			{
 				if(qualifiedText.equals(DotNetTypes.System_Object))
 				{
-					appendType(new CSharpTypeDefTypeRef(JavaClassNames.JAVA_LANG_OBJECT, 0), builder);
-					return;
-				}
-				else if(qualifiedText.equals(DotNetTypes.System_String))
-				{
-					appendType(new CSharpTypeDefTypeRef(JavaClassNames.JAVA_LANG_STRING, 0), builder);
+					appendType(new IkvmTypeRef(JavaClassNames.JAVA_LANG_OBJECT), builder);
 					return;
 				}
 				if(!qualifiedText.startsWith("java"))

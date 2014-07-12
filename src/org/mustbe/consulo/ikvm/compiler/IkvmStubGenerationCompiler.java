@@ -26,9 +26,9 @@ import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.mustbe.consulo.csharp.lang.psi.CSharpModifier;
-import org.mustbe.consulo.csharp.lang.psi.impl.source.CSharpFileImpl;
 import org.mustbe.consulo.dotnet.compiler.DotNetCompilerUtil;
+import org.mustbe.consulo.dotnet.psi.DotNetMemberOwner;
+import org.mustbe.consulo.dotnet.psi.DotNetModifier;
 import org.mustbe.consulo.dotnet.psi.DotNetTypeDeclaration;
 import org.mustbe.consulo.ikvm.bundle.IkvmBundleType;
 import org.mustbe.consulo.ikvm.psi.stubBuilding.JavaClassStubBuilder;
@@ -129,7 +129,7 @@ public class IkvmStubGenerationCompiler implements SourceProcessingCompiler
 			List<DotNetTypeDeclaration> typeDeclarations = collectTypes(compileContext.getProject(), item.getFile());
 			for(val typeDeclaration : typeDeclarations)
 			{
-				if(!typeDeclaration.hasModifier(CSharpModifier.PUBLIC))
+				if(!typeDeclaration.hasModifier(DotNetModifier.PUBLIC))
 				{
 					continue;
 				}
@@ -223,7 +223,7 @@ public class IkvmStubGenerationCompiler implements SourceProcessingCompiler
 					public void run()
 					{
 						PsiFile psiFile = psiManager.findFile(file);
-						if(!(psiFile instanceof CSharpFileImpl))
+						if(!(psiFile instanceof DotNetMemberOwner))
 						{
 							return;
 						}
