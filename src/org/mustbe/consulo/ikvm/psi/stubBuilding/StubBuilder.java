@@ -76,8 +76,8 @@ public class StubBuilder
 			{
 				DotNetXXXAccessor[] accessors = ((DotNetPropertyDeclaration) dotNetNamedElement).getAccessors();
 				// field
-				/*if(accessors.length == 1 && accessors[0].getAccessorType() == CSharpSoftTokens.GET_KEYWORD)
-				{     */
+				if(accessors.length == 1 && accessors[0].getAccessorKind() == DotNetXXXAccessor.Kind.GET)
+				{
 					DotNetTypeRef typeRef = ((DotNetPropertyDeclaration) dotNetNamedElement).toTypeRef(false);
 					if(typeRef == DotNetTypeRef.ERROR_TYPE)
 					{
@@ -86,11 +86,11 @@ public class StubBuilder
 					JavaFieldStubBuilder field = javaClassStubBuilder.field(dotNetNamedElement.getName(), dotNetNamedElement);
 					copyModifiers((DotNetModifierListOwner) dotNetNamedElement, field);
 					field.withType(typeRef);
-				/*}
+				}
 				else
 				{
 					//TODO [VISTALL] method
-				}*/
+				}
 			}
 			else if(dotNetNamedElement instanceof DotNetFieldDeclaration)
 			{
