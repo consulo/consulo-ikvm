@@ -26,6 +26,7 @@ import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.mustbe.consulo.dotnet.DotNetTarget;
 import org.mustbe.consulo.dotnet.compiler.DotNetCompilerUtil;
 import org.mustbe.consulo.dotnet.psi.DotNetMemberOwner;
 import org.mustbe.consulo.dotnet.psi.DotNetModifier;
@@ -104,7 +105,7 @@ public class IkvmStubGenerationCompiler implements SourceProcessingCompiler
 		List<ProcessingItem> items = new ArrayList<ProcessingItem>();
 		for(Module affectedModule : affectedModules)
 		{
-			Set<File> files = DotNetCompilerUtil.collectDependencies(affectedModule, true);
+			Set<File> files = DotNetCompilerUtil.collectDependencies(affectedModule, DotNetTarget.LIBRARY, true);
 			for(File file : files)
 			{
 				final VirtualFile fileByIoFile = LocalFileSystem.getInstance().findFileByIoFile(file);

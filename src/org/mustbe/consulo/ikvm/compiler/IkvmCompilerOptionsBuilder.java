@@ -24,11 +24,11 @@ import java.util.List;
 import org.consulo.compiler.ModuleCompilerPathsManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.mustbe.consulo.dotnet.DotNetTarget;
 import org.mustbe.consulo.dotnet.compiler.DotNetCompilerMessage;
 import org.mustbe.consulo.dotnet.compiler.DotNetCompilerOptionsBuilder;
 import org.mustbe.consulo.dotnet.compiler.DotNetCompilerUtil;
 import org.mustbe.consulo.dotnet.compiler.DotNetMacros;
-import org.mustbe.consulo.dotnet.module.MainConfigurationLayer;
 import org.mustbe.consulo.dotnet.module.extension.DotNetModuleExtension;
 import org.mustbe.consulo.ikvm.module.extension.IkvmModuleExtension;
 import org.mustbe.consulo.roots.impl.ProductionContentFolderTypeProvider;
@@ -80,8 +80,7 @@ public class IkvmCompilerOptionsBuilder implements DotNetCompilerOptionsBuilder
 	public GeneralCommandLine createCommandLine(
 			@NotNull Module module,
 			@NotNull VirtualFile[] virtualFiles,
-			@NotNull String layerName,
-			@NotNull MainConfigurationLayer dotNetLayer) throws IOException
+			@NotNull DotNetModuleExtension extension) throws IOException
 	{
 		IkvmModuleExtension ikvmModuleExtension = ModuleUtilCore.getExtension(module, IkvmModuleExtension.class);
 		assert ikvmModuleExtension != null;
@@ -95,12 +94,8 @@ public class IkvmCompilerOptionsBuilder implements DotNetCompilerOptionsBuilder
 			generalCommandLine.addParameter(extraParameter);
 		}
 
-		DotNetModuleExtension<?> extension = ModuleUtilCore.getExtension(module, DotNetModuleExtension.class);
-
-		assert extension != null;
-
 		String target = null;
-		switch(dotNetLayer.getTarget())
+		switch(extension.getTarget())
 		{
 			case EXECUTABLE:
 				target = "exe";
@@ -113,22 +108,22 @@ public class IkvmCompilerOptionsBuilder implements DotNetCompilerOptionsBuilder
 		addArgument("-nostdlib");
 
 		addArgument("-target:" + target);
-		String outputFile = DotNetMacros.extract(module, layerName, dotNetLayer);
+		String outputFile = DotNetMacros.extract(module, extension);
 		addArgument("-out:" + outputFile);
 
-		val dependFiles = DotNetCompilerUtil.collectDependencies(module, true);
+		val dependFiles = DotNetCompilerUtil.collectDependencies(module, DotNetTarget.LIBRARY, true);
 
 		for(File file : dependFiles)
 		{
 			addArgument("-reference:" + file.getAbsolutePath());
 		}
 
-		if(dotNetLayer.isAllowDebugInfo())
+		if(extension.isAllowDebugInfo())
 		{
 			addArgument("-debug");
 		}
 
-		String mainType = dotNetLayer.getMainType();
+		String mainType = extension.getMainType();
 		if(!StringUtil.isEmpty(mainType))
 		{
 			addArgument("-main:" + mainType);
