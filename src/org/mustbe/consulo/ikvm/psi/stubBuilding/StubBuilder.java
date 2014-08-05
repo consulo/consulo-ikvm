@@ -110,9 +110,11 @@ public class StubBuilder
 				method.withReturnType(((DotNetMethodDeclaration) dotNetNamedElement).getReturnTypeRef());
 
 				DotNetParameter[] parameters = ((DotNetMethodDeclaration) dotNetNamedElement).getParameters();
-				for(DotNetParameter parameter : parameters)
+				for(int i = 0; i < parameters.length; i++)
 				{
-					method.withParameter(parameter.toTypeRef(false), parameter.getName(), parameter);
+					DotNetParameter parameter = parameters[i];
+					String paramName = parameter.getName();
+					method.withParameter(parameter.toTypeRef(false), paramName == null ? "p" + i : paramName, parameter);
 				}
 			}
 		}
