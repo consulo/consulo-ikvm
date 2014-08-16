@@ -40,6 +40,7 @@ import com.intellij.psi.impl.source.PsiExtensibleClass;
 import com.intellij.psi.javadoc.PsiDocComment;
 import com.intellij.psi.scope.PsiScopeProcessor;
 import com.intellij.psi.search.SearchScope;
+import com.intellij.psi.util.PsiUtil;
 import com.intellij.util.IncorrectOperationException;
 
 /**
@@ -318,7 +319,7 @@ public class LightJavaClassBuilder extends LightElement implements PsiExtensible
 	public boolean processDeclarations(
 			@NotNull PsiScopeProcessor processor, @NotNull ResolveState state, PsiElement lastParent, @NotNull PsiElement place)
 	{
-		return PsiClassImplUtil.processDeclarationsInClass(this, processor, state, null, lastParent, place, false);
+		return PsiClassImplUtil.processDeclarationsInClass(this, processor, state, null, lastParent, place, PsiUtil.getLanguageLevel(place), false);
 	}
 
 	@Override
