@@ -104,7 +104,7 @@ public class MicrosoftIkvmModuleExtension extends ModuleExtensionWithSdkImpl<Mic
 		}
 		PathsList classpath = new PathsList();
 
-		classpath.addVirtualFiles(sdkForCompilation.getRootProvider().getFiles(OrderRootType.CLASSES));
+		classpath.addVirtualFiles(sdkForCompilation.getRootProvider().getFiles(OrderRootType.BINARIES));
 
 		classpath.addVirtualFiles(VfsUtil.toVirtualFileArray(moduleChunk.getCompilationClasspathFiles(IkvmBundleType.getInstance())));
 

@@ -67,7 +67,7 @@ public class MonoIkvmModuleExtension extends InnerMonoModuleExtension<MonoIkvmMo
 		SdkImpl sdk = new SdkImpl("Mono IKVM.NET", IkvmBundleType.getInstance());
 		VirtualFile mainMonoPath = virtualFile.getParent().getParent().getParent();
 		sdk.setHomePath(mainMonoPath.getPath());
-		sdk.setBundled();
+		sdk.setBundled(true);
 		sdk.setVersionString(IkvmBundleType.getInstance().getVersionString(sdk));
 
 		SdkModificator sdkModificator = sdk.getSdkModificator();
@@ -79,7 +79,7 @@ public class MonoIkvmModuleExtension extends InnerMonoModuleExtension<MonoIkvmMo
 				VirtualFile archiveLibraryFile = ArchiveVfsUtil.getArchiveRootForLocalFile(libraryFile);
 				if(archiveLibraryFile != null)
 				{
-					sdkModificator.addRoot(archiveLibraryFile, OrderRootType.CLASSES);
+					sdkModificator.addRoot(archiveLibraryFile, OrderRootType.BINARIES);
 				}
 			}
 		}
