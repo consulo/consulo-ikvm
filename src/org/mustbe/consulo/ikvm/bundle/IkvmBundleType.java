@@ -35,6 +35,7 @@ import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.projectRoots.SdkModificator;
 import com.intellij.openapi.projectRoots.SdkType;
 import com.intellij.openapi.roots.OrderRootType;
+import com.intellij.openapi.roots.types.BinariesOrderRootType;
 import com.intellij.openapi.util.SystemInfo;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.util.ArchiveVfsUtil;
@@ -104,7 +105,7 @@ public class IkvmBundleType extends SdkType implements JavaSdkType
 	@Override
 	public boolean isRootTypeApplicable(OrderRootType type)
 	{
-		return type == OrderRootType.BINARIES;
+		return type == BinariesOrderRootType.getInstance();
 	}
 
 	@Override
@@ -122,7 +123,7 @@ public class IkvmBundleType extends SdkType implements JavaSdkType
 				VirtualFile ikvmJar = ArchiveVfsUtil.getArchiveRootForLocalFile(ikvmApi);
 				if(ikvmJar != null)
 				{
-					sdkModificator.addRoot(ikvmJar, OrderRootType.BINARIES);
+					sdkModificator.addRoot(ikvmJar, BinariesOrderRootType.getInstance());
 				}
 			}
 		}
