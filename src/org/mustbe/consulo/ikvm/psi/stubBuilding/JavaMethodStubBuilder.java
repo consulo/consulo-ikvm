@@ -149,7 +149,7 @@ public class JavaMethodStubBuilder extends BaseStubBuilder<PsiMethod>
 			}
 			else
 			{
-				if(qualifiedText.equals(DotNetTypes.System_Object))
+				if(qualifiedText.equals(DotNetTypes.System.Object))
 				{
 					appendType(new IkvmTypeRef(JavaClassNames.JAVA_LANG_OBJECT), builder);
 					return;
