@@ -19,7 +19,6 @@ package org.mustbe.consulo.ikvm.mono.module.extension;
 import org.consulo.java.platform.module.extension.LanguageLevelModuleInheritableNamedPointerImpl;
 import org.consulo.java.platform.module.extension.SpecialDirLocation;
 import org.consulo.module.extension.ModuleInheritableNamedPointer;
-import org.consulo.sdk.SdkUtil;
 import org.consulo.util.pointers.NamedPointer;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
@@ -29,6 +28,7 @@ import org.mustbe.consulo.ikvm.bundle.IkvmBundleType;
 import org.mustbe.consulo.ikvm.compiler.IkvmCompilerOptionsBuilder;
 import org.mustbe.consulo.ikvm.module.extension.IkvmModuleExtension;
 import org.mustbe.consulo.mono.csharp.module.extension.InnerMonoModuleExtension;
+import org.mustbe.consulo.sdk.SdkUtil;
 import com.intellij.compiler.impl.ModuleChunk;
 import com.intellij.ide.highlighter.JavaFileType;
 import com.intellij.openapi.application.PathManager;
@@ -38,7 +38,7 @@ import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.projectRoots.SdkModificator;
 import com.intellij.openapi.projectRoots.SdkType;
 import com.intellij.openapi.projectRoots.impl.SdkImpl;
-import com.intellij.openapi.roots.ModifiableRootModel;
+import com.intellij.openapi.roots.ModuleRootLayer;
 import com.intellij.openapi.roots.OrderRootType;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -55,7 +55,7 @@ public class MonoIkvmModuleExtension extends InnerMonoModuleExtension<MonoIkvmMo
 	protected NamedPointer<Sdk> mySdkForCompilationPointer;
 	protected final LanguageLevelModuleInheritableNamedPointerImpl myLanguageLevelPointer;
 
-	public MonoIkvmModuleExtension(@NotNull String id, @NotNull ModifiableRootModel rootModel)
+	public MonoIkvmModuleExtension(@NotNull String id, @NotNull ModuleRootLayer rootModel)
 	{
 		super(id, rootModel);
 		myLanguageLevelPointer = new LanguageLevelModuleInheritableNamedPointerImpl(getProject(), id);

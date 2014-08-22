@@ -10,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
 import org.mustbe.consulo.ikvm.module.extension.IkvmMutableModuleExtension;
 import org.mustbe.consulo.ikvm.module.extension.ui.IkvmModuleExtensionPanel;
 import com.intellij.openapi.projectRoots.Sdk;
-import com.intellij.openapi.roots.ModifiableRootModel;
+import com.intellij.openapi.roots.ModuleRootLayer;
 import com.intellij.openapi.util.Comparing;
 import com.intellij.pom.java.LanguageLevel;
 
@@ -21,7 +21,7 @@ import com.intellij.pom.java.LanguageLevel;
 public class MicrosoftIkvmMutableModuleExtension extends MicrosoftIkvmModuleExtension implements
 		IkvmMutableModuleExtension<MicrosoftIkvmModuleExtension>
 {
-	public MicrosoftIkvmMutableModuleExtension(@NotNull String id, @NotNull ModifiableRootModel rootModel)
+	public MicrosoftIkvmMutableModuleExtension(@NotNull String id, @NotNull ModuleRootLayer rootModel)
 	{
 		super(id, rootModel);
 	}

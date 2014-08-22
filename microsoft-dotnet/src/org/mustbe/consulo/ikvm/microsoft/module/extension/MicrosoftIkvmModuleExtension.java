@@ -21,7 +21,7 @@ import com.intellij.openapi.compiler.CompileContext;
 import com.intellij.openapi.fileTypes.LanguageFileType;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.projectRoots.SdkType;
-import com.intellij.openapi.roots.ModifiableRootModel;
+import com.intellij.openapi.roots.ModuleRootLayer;
 import com.intellij.openapi.roots.OrderRootType;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.pom.java.LanguageLevel;
@@ -38,7 +38,7 @@ public class MicrosoftIkvmModuleExtension extends ModuleExtensionWithSdkImpl<Mic
 	protected NamedPointer<Sdk> mySdkForCompilationPointer;
 	protected final LanguageLevelModuleInheritableNamedPointerImpl myLanguageLevelPointer;
 
-	public MicrosoftIkvmModuleExtension(@NotNull final String id, @NotNull ModifiableRootModel rootModel)
+	public MicrosoftIkvmModuleExtension(@NotNull final String id, @NotNull ModuleRootLayer rootModel)
 	{
 		super(id, rootModel);
 		myLanguageLevelPointer = new LanguageLevelModuleInheritableNamedPointerImpl(getProject(), id);

@@ -20,13 +20,13 @@ import javax.swing.JComponent;
 
 import org.consulo.java.platform.module.extension.SpecialDirLocation;
 import org.consulo.module.extension.MutableModuleInheritableNamedPointer;
-import org.consulo.sdk.SdkUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.mustbe.consulo.ikvm.module.extension.IkvmMutableModuleExtension;
 import org.mustbe.consulo.ikvm.module.extension.ui.IkvmModuleExtensionPanel;
+import org.mustbe.consulo.sdk.SdkUtil;
 import com.intellij.openapi.projectRoots.Sdk;
-import com.intellij.openapi.roots.ModifiableRootModel;
+import com.intellij.openapi.roots.ModuleRootLayer;
 import com.intellij.openapi.util.Comparing;
 import com.intellij.pom.java.LanguageLevel;
 
@@ -36,7 +36,7 @@ import com.intellij.pom.java.LanguageLevel;
  */
 public class MonoIkvmMutableModuleExtension extends MonoIkvmModuleExtension implements IkvmMutableModuleExtension<MonoIkvmModuleExtension>
 {
-	public MonoIkvmMutableModuleExtension(@NotNull String id, @NotNull ModifiableRootModel rootModel)
+	public MonoIkvmMutableModuleExtension(@NotNull String id, @NotNull ModuleRootLayer rootModel)
 	{
 		super(id, rootModel);
 	}
