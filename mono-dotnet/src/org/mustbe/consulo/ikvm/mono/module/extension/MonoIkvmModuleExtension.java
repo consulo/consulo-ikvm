@@ -27,7 +27,7 @@ import org.mustbe.consulo.dotnet.compiler.DotNetCompilerOptionsBuilder;
 import org.mustbe.consulo.ikvm.bundle.IkvmBundleType;
 import org.mustbe.consulo.ikvm.compiler.IkvmCompilerOptionsBuilder;
 import org.mustbe.consulo.ikvm.module.extension.IkvmModuleExtension;
-import org.mustbe.consulo.mono.csharp.module.extension.InnerMonoModuleExtension;
+import org.mustbe.consulo.mono.dotnet.module.extension.InnerMonoModuleExtension;
 import org.mustbe.consulo.sdk.SdkUtil;
 import com.intellij.compiler.impl.ModuleChunk;
 import com.intellij.ide.highlighter.JavaFileType;

@@ -14,7 +14,7 @@
           </content>
           <orderEntry type="module-extension-sdk" extension-id="consulo-plugin" />
           <orderEntry type="module-extension-sdk" extension-id="java" />
-          <orderEntry type="sourceFolder" forTests="false" />
+          <orderEntry type="sourceFolder" />
           <orderEntry type="module-library">
             <library name="consulo:Java">
               <binaries>
@@ -57,7 +57,7 @@
           </content>
           <orderEntry type="module-extension-sdk" extension-id="consulo-plugin" />
           <orderEntry type="module-extension-sdk" extension-id="java" />
-          <orderEntry type="sourceFolder" forTests="false" />
+          <orderEntry type="sourceFolder" />
           <orderEntry type="module-library">
             <library name="consulo:Mono .NET">
               <binaries>
@@ -106,7 +106,7 @@
           </content>
           <orderEntry type="module-extension-sdk" extension-id="consulo-plugin" />
           <orderEntry type="module-extension-sdk" extension-id="java" />
-          <orderEntry type="sourceFolder" forTests="false" />
+          <orderEntry type="sourceFolder" />
           <orderEntry type="module" module-name="consulo-ikvm" />
           <orderEntry type="module-library">
             <library name="consulo:Microsoft .NET">
