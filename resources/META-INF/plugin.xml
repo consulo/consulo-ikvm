@@ -17,6 +17,7 @@
 <idea-plugin>
 	<id>org.mustbe.consulo.ikvm</id>
 	<name>IKVM.NET</name>
+	<version>SNAPSHOT</version>
 	<depends>org.consulo.java</depends>
 	<depends>org.mustbe.consulo.dotnet.core</depends>
 	<depends config-file="mono-dotnet.xml" optional="true">org.mustbe.consulo.dotnet.mono</depends>
