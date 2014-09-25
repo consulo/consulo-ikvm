@@ -19,7 +19,6 @@ package org.mustbe.consulo.ikvm.psi;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,7 +31,8 @@ import org.jetbrains.annotations.Nullable;
 import org.mustbe.consulo.dotnet.module.extension.DotNetModuleExtension;
 import org.mustbe.consulo.dotnet.psi.DotNetModifier;
 import org.mustbe.consulo.dotnet.psi.DotNetTypeDeclaration;
-import org.mustbe.consulo.dotnet.resolve.DotNetPsiFacade;
+import org.mustbe.consulo.dotnet.resolve.DotNetNamespaceAsElement;
+import org.mustbe.consulo.dotnet.resolve.DotNetPsiSearcher;
 import org.mustbe.consulo.ikvm.psi.stubBuilding.JavaClassStubBuilder;
 import org.mustbe.consulo.ikvm.psi.stubBuilding.StubBuilder;
 import com.intellij.openapi.project.Project;
@@ -135,7 +135,7 @@ public class IkvmPsiElementFinder extends PsiElementFinder
 			s = s.substring(4, s.length());
 			cli = true;
 		}
-		DotNetTypeDeclaration[] types = DotNetPsiFacade.getInstance(myProject).findTypes(s, searchScope, -1);
+		DotNetTypeDeclaration[] types = DotNetPsiSearcher.getInstance(myProject).findTypes(s, searchScope);
 		if(types.length == 0)
 		{
 			return PsiClass.EMPTY_ARRAY;
@@ -155,14 +155,19 @@ public class IkvmPsiElementFinder extends PsiElementFinder
 			cli = true;
 		}
 
-		Collection<PsiElement> dotNetNamedElements = Collections.emptyList();/* MemberByNamespaceQNameIndex.getInstance().get(qualifiedName, myProject,
-				scope);
-                                                 */
-		if(dotNetNamedElements.isEmpty())
+		DotNetNamespaceAsElement namespace = DotNetPsiSearcher.getInstance(myProject).findNamespace(qualifiedName, scope);
+		if(namespace == null)
 		{
 			return PsiClass.EMPTY_ARRAY;
 		}
-		return toClasses(dotNetNamedElements, cli);
+
+		Collection<? extends PsiElement> children = namespace.getChildren(scope, false);
+
+		if(children.isEmpty())
+		{
+			return PsiClass.EMPTY_ARRAY;
+		}
+		return toClasses(children, cli);
 	}
 
 	private PsiClass[] toClasses(Collection<? extends PsiElement> elements, boolean cli)

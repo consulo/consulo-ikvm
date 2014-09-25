@@ -2,7 +2,7 @@ package org.mustbe.consulo.ikvm.compiler;
 
 import org.jetbrains.annotations.NotNull;
 import org.mustbe.consulo.dotnet.compiler.DotNetCompiler;
-import org.mustbe.consulo.ikvm.module.extension.IkvmModuleExtension;
+import org.mustbe.consulo.ikvm.IkvmModuleExtension;
 import com.intellij.compiler.impl.javaCompiler.JavaCompiler;
 import com.intellij.openapi.compiler.*;
 import com.intellij.openapi.compiler.Compiler;

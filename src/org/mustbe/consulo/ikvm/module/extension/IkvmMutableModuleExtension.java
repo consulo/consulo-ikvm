@@ -19,6 +19,7 @@ package org.mustbe.consulo.ikvm.module.extension;
 import org.consulo.java.module.extension.JavaMutableModuleExtension;
 import org.consulo.module.extension.MutableModuleExtensionWithSdk;
 import org.jetbrains.annotations.Nullable;
+import org.mustbe.consulo.ikvm.IkvmModuleExtension;
 import com.intellij.openapi.projectRoots.Sdk;
 
 /**

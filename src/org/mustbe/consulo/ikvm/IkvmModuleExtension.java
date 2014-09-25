@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.mustbe.consulo.ikvm.module.extension;
+package org.mustbe.consulo.ikvm;
 
 import org.consulo.java.module.extension.JavaModuleExtension;
 import org.jetbrains.annotations.Nullable;

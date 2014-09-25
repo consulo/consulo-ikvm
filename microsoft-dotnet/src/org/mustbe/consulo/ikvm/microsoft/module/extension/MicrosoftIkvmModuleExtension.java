@@ -5,15 +5,16 @@ import org.consulo.java.platform.module.extension.SpecialDirLocation;
 import org.consulo.module.extension.ModuleExtensionWithSdk;
 import org.consulo.module.extension.ModuleInheritableNamedPointer;
 import org.consulo.module.extension.impl.ModuleExtensionWithSdkImpl;
-import org.consulo.sdk.SdkUtil;
 import org.consulo.util.pointers.NamedPointer;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.mustbe.consulo.dotnet.compiler.DotNetCompilerOptionsBuilder;
+import org.mustbe.consulo.ikvm.IkvmModuleExtension;
 import org.mustbe.consulo.ikvm.bundle.IkvmBundleType;
 import org.mustbe.consulo.ikvm.compiler.IkvmCompilerOptionsBuilder;
-import org.mustbe.consulo.ikvm.module.extension.IkvmModuleExtension;
+import org.mustbe.consulo.ikvm.module.extension.IkvmModuleExtensionUtil;
+import org.mustbe.consulo.sdk.SdkUtil;
 import com.intellij.compiler.impl.ModuleChunk;
 import com.intellij.ide.highlighter.JavaFileType;
 import com.intellij.openapi.application.PathManager;
@@ -25,6 +26,7 @@ import com.intellij.openapi.roots.ModuleRootLayer;
 import com.intellij.openapi.roots.OrderRootType;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.pom.java.LanguageLevel;
+import com.intellij.psi.PsiElement;
 import com.intellij.util.PathsList;
 
 /**
@@ -117,6 +119,13 @@ public class MicrosoftIkvmModuleExtension extends ModuleExtensionWithSdkImpl<Mic
 	public String getCompilationBootClasspath(@NotNull CompileContext compileContext, @NotNull ModuleChunk moduleChunk)
 	{
 		return "";
+	}
+
+	@NotNull
+	@Override
+	public PsiElement[] getEntryPointElements()
+	{
+		return IkvmModuleExtensionUtil.buildEntryPoints(getModule());
 	}
 
 	@NotNull

@@ -24,9 +24,10 @@ import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.mustbe.consulo.dotnet.compiler.DotNetCompilerOptionsBuilder;
+import org.mustbe.consulo.ikvm.IkvmModuleExtension;
 import org.mustbe.consulo.ikvm.bundle.IkvmBundleType;
 import org.mustbe.consulo.ikvm.compiler.IkvmCompilerOptionsBuilder;
-import org.mustbe.consulo.ikvm.module.extension.IkvmModuleExtension;
+import org.mustbe.consulo.ikvm.module.extension.IkvmModuleExtensionUtil;
 import org.mustbe.consulo.mono.dotnet.module.extension.InnerMonoModuleExtension;
 import org.mustbe.consulo.sdk.SdkUtil;
 import com.intellij.compiler.impl.ModuleChunk;
@@ -39,11 +40,12 @@ import com.intellij.openapi.projectRoots.SdkModificator;
 import com.intellij.openapi.projectRoots.SdkType;
 import com.intellij.openapi.projectRoots.impl.SdkImpl;
 import com.intellij.openapi.roots.ModuleRootLayer;
-import com.intellij.openapi.roots.OrderRootType;
+import com.intellij.openapi.roots.types.BinariesOrderRootType;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.util.ArchiveVfsUtil;
 import com.intellij.pom.java.LanguageLevel;
+import com.intellij.psi.PsiElement;
 import com.intellij.util.PathsList;
 
 /**
@@ -79,7 +81,7 @@ public class MonoIkvmModuleExtension extends InnerMonoModuleExtension<MonoIkvmMo
 				VirtualFile archiveLibraryFile = ArchiveVfsUtil.getArchiveRootForLocalFile(libraryFile);
 				if(archiveLibraryFile != null)
 				{
-					sdkModificator.addRoot(archiveLibraryFile, OrderRootType.BINARIES);
+					sdkModificator.addRoot(archiveLibraryFile, BinariesOrderRootType.getInstance());
 				}
 			}
 		}
@@ -144,7 +146,7 @@ public class MonoIkvmModuleExtension extends InnerMonoModuleExtension<MonoIkvmMo
 		Sdk sdkForCompilation = getSdkForCompilation();
 		PathsList classpath = new PathsList();
 
-		classpath.addVirtualFiles(sdkForCompilation.getRootProvider().getFiles(OrderRootType.CLASSES));
+		classpath.addVirtualFiles(sdkForCompilation.getRootProvider().getFiles(BinariesOrderRootType.getInstance()));
 		classpath.add(PathManager.getSystemPath() + "/ikvm-stubs/" + getModule().getName() + "@" + getModule().getModuleDirUrl().hashCode());
 		classpath.addVirtualFiles(VfsUtil.toVirtualFileArray(moduleChunk.getCompilationClasspathFiles(IkvmBundleType.getInstance())));
 		return classpath.getPathsString();
@@ -155,6 +157,13 @@ public class MonoIkvmModuleExtension extends InnerMonoModuleExtension<MonoIkvmMo
 	public String getCompilationBootClasspath(@NotNull CompileContext compileContext, @NotNull ModuleChunk moduleChunk)
 	{
 		return "";
+	}
+
+	@NotNull
+	@Override
+	public PsiElement[] getEntryPointElements()
+	{
+		return IkvmModuleExtensionUtil.buildEntryPoints(getModule());
 	}
 
 	@NotNull

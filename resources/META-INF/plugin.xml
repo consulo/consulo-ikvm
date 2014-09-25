@@ -33,6 +33,7 @@
 
 	<extensions defaultExtensionNs="com.intellij">
 		<sdkType implementation="org.mustbe.consulo.ikvm.bundle.IkvmBundleType"/>
+		<iconDescriptorUpdater implementation="org.mustbe.consulo.ikvm.IkvmIconDescriptorUpdater" />
 		<compiler.sorter implementation="org.mustbe.consulo.ikvm.compiler.IkvmCompilerSorter" />
 		<compiler implementation="org.mustbe.consulo.ikvm.compiler.IkvmStubGenerationCompiler" />
 	</extensions>
