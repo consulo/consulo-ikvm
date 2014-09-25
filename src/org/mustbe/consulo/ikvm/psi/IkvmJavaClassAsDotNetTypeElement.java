@@ -19,13 +19,20 @@ package org.mustbe.consulo.ikvm.psi;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.mustbe.consulo.dotnet.psi.*;
+import org.mustbe.consulo.dotnet.psi.DotNetConstructorDeclaration;
+import org.mustbe.consulo.dotnet.psi.DotNetFieldDeclaration;
+import org.mustbe.consulo.dotnet.psi.DotNetGenericParameter;
+import org.mustbe.consulo.dotnet.psi.DotNetGenericParameterList;
+import org.mustbe.consulo.dotnet.psi.DotNetModifier;
+import org.mustbe.consulo.dotnet.psi.DotNetModifierList;
+import org.mustbe.consulo.dotnet.psi.DotNetNamedElement;
+import org.mustbe.consulo.dotnet.psi.DotNetTypeDeclaration;
+import org.mustbe.consulo.dotnet.psi.DotNetTypeList;
 import org.mustbe.consulo.dotnet.resolve.DotNetTypeRef;
 import com.intellij.lang.java.JavaLanguage;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiModifier;
 import com.intellij.psi.impl.light.LightElement;
 import com.intellij.util.IncorrectOperationException;
 import com.intellij.util.Processor;
@@ -66,7 +73,7 @@ public class IkvmJavaClassAsDotNetTypeElement extends LightElement implements Do
 	@Override
 	public String toString()
 	{
-		return "LightIkvmType: " + getPresentableQName();
+		return "IkvmJavaClassAsDotNetTypeElement: " + getPresentableQName();
 	}
 
 	@Override
@@ -182,18 +189,6 @@ public class IkvmJavaClassAsDotNetTypeElement extends LightElement implements Do
 	@Override
 	public boolean hasModifier(@NotNull DotNetModifier modifier)
 	{
-		if(modifier == DotNetModifier.PUBLIC)
-		{
-			return myPsiClass.hasModifierProperty(PsiModifier.PUBLIC);
-		}
-		else if(modifier == DotNetModifier.PRIVATE)
-		{
-			return myPsiClass.hasModifierProperty(PsiModifier.PRIVATE);
-		}
-		else if(modifier == DotNetModifier.PROTECTED)
-		{
-			return myPsiClass.hasModifierProperty(PsiModifier.PROTECTED);
-		}
 		return false;
 	}
 
