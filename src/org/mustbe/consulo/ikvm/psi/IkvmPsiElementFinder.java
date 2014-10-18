@@ -161,7 +161,7 @@ public class IkvmPsiElementFinder extends PsiElementFinder
 			return PsiClass.EMPTY_ARRAY;
 		}
 
-		Collection<? extends PsiElement> children = namespace.getChildren(scope, false);
+		Collection<? extends PsiElement> children = namespace.getChildren(scope, DotNetNamespaceAsElement.ChildrenFilter.ONLY_ELEMENTS);
 
 		if(children.isEmpty())
 		{

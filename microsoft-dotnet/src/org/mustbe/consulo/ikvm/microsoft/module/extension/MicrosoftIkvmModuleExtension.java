@@ -23,7 +23,7 @@ import com.intellij.openapi.fileTypes.LanguageFileType;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.projectRoots.SdkType;
 import com.intellij.openapi.roots.ModuleRootLayer;
-import com.intellij.openapi.roots.OrderRootType;
+import com.intellij.openapi.roots.types.BinariesOrderRootType;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.pom.java.LanguageLevel;
 import com.intellij.psi.PsiElement;
@@ -106,7 +106,7 @@ public class MicrosoftIkvmModuleExtension extends ModuleExtensionWithSdkImpl<Mic
 		}
 		PathsList classpath = new PathsList();
 
-		classpath.addVirtualFiles(sdkForCompilation.getRootProvider().getFiles(OrderRootType.BINARIES));
+		classpath.addVirtualFiles(sdkForCompilation.getRootProvider().getFiles(BinariesOrderRootType.getInstance()));
 
 		classpath.addVirtualFiles(VfsUtil.toVirtualFileArray(moduleChunk.getCompilationClasspathFiles(IkvmBundleType.getInstance())));
 
