@@ -17,8 +17,6 @@
 package org.mustbe.consulo.ikvm.psi;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -140,7 +138,7 @@ public class IkvmPsiElementFinder extends PsiElementFinder
 		{
 			return PsiClass.EMPTY_ARRAY;
 		}
-		return toClasses(Arrays.asList(types), cli);
+		return toClasses(types, cli);
 	}
 
 	@NotNull
@@ -161,18 +159,18 @@ public class IkvmPsiElementFinder extends PsiElementFinder
 			return PsiClass.EMPTY_ARRAY;
 		}
 
-		Collection<? extends PsiElement> children = namespace.getChildren(scope, DotNetNamespaceAsElement.ChildrenFilter.ONLY_ELEMENTS);
+		PsiElement[] children = namespace.getChildren(scope, DotNetNamespaceAsElement.ChildrenFilter.ONLY_ELEMENTS);
 
-		if(children.isEmpty())
+		if(children.length == 0)
 		{
 			return PsiClass.EMPTY_ARRAY;
 		}
 		return toClasses(children, cli);
 	}
 
-	private PsiClass[] toClasses(Collection<? extends PsiElement> elements, boolean cli)
+	private PsiClass[] toClasses(PsiElement[] elements, boolean cli)
 	{
-		List<PsiClass> list = new ArrayList<PsiClass>(elements.size());
+		List<PsiClass> list = new ArrayList<PsiClass>(elements.length);
 		for(PsiElement dotNetNamedElement : elements)
 		{
 			if(dotNetNamedElement instanceof DotNetTypeDeclaration)

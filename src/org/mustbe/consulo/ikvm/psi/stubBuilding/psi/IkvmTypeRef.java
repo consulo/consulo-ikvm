@@ -1,9 +1,7 @@
 package org.mustbe.consulo.ikvm.psi.stubBuilding.psi;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.mustbe.consulo.dotnet.resolve.DotNetTypeRef;
-import com.intellij.psi.PsiElement;
 
 /**
  * @author VISTALL
@@ -23,12 +21,5 @@ public class IkvmTypeRef extends DotNetTypeRef.Adapter
 	public String getQualifiedText()
 	{
 		return myQualifiedName;
-	}
-
-	@Nullable
-	@Override
-	public PsiElement resolve(@NotNull PsiElement scope)
-	{
-		return super.resolve(scope);
 	}
 }
