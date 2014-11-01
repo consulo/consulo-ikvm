@@ -19,7 +19,6 @@ package org.mustbe.consulo.ikvm.psi;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.mustbe.consulo.dotnet.psi.DotNetConstructorDeclaration;
 import org.mustbe.consulo.dotnet.psi.DotNetFieldDeclaration;
 import org.mustbe.consulo.dotnet.psi.DotNetGenericParameter;
 import org.mustbe.consulo.dotnet.psi.DotNetGenericParameterList;
@@ -35,7 +34,6 @@ import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.impl.light.LightElement;
 import com.intellij.util.IncorrectOperationException;
-import com.intellij.util.Processor;
 
 /**
  * @author VISTALL
@@ -151,12 +149,6 @@ public class IkvmJavaClassAsDotNetTypeElement extends LightElement implements Do
 	public DotNetFieldDeclaration findFieldByName(@NotNull String s, boolean b)
 	{
 		return null;
-	}
-
-	@Override
-	public void processConstructors(@NotNull Processor<DotNetConstructorDeclaration> dotNetConstructorDeclarationProcessor)
-	{
-
 	}
 
 	@Nullable
