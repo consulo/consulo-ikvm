@@ -19,7 +19,6 @@ package org.mustbe.consulo.ikvm.psi;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.mustbe.consulo.dotnet.psi.DotNetFieldDeclaration;
 import org.mustbe.consulo.dotnet.psi.DotNetGenericParameter;
 import org.mustbe.consulo.dotnet.psi.DotNetGenericParameterList;
 import org.mustbe.consulo.dotnet.psi.DotNetModifier;
@@ -140,13 +139,6 @@ public class IkvmJavaClassAsDotNetTypeElement extends LightElement implements Do
 	@Nullable
 	@Override
 	public String getVmName()
-	{
-		return null;
-	}
-
-	@Nullable
-	@Override
-	public DotNetFieldDeclaration findFieldByName(@NotNull String s, boolean b)
 	{
 		return null;
 	}

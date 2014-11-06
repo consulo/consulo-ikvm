@@ -44,9 +44,9 @@ import com.intellij.openapi.compiler.ValidityState;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.Sdk;
+import com.intellij.openapi.roots.ModuleExtensionWithSdkOrderEntry;
 import com.intellij.openapi.roots.OrderEntry;
 import com.intellij.openapi.roots.ProjectFileIndex;
-import com.intellij.openapi.roots.SdkOrderEntry;
 import com.intellij.openapi.util.Computable;
 import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.util.io.FileUtil;
@@ -197,9 +197,9 @@ public class IkvmStubGenerationCompiler implements SourceProcessingCompiler
 		List<OrderEntry> orderEntriesForFile = ProjectFileIndex.SERVICE.getInstance(project).getOrderEntriesForFile(archiveRootForLocalFile);
 		for(OrderEntry orderEntry : orderEntriesForFile)
 		{
-			if(orderEntry instanceof SdkOrderEntry)
+			if(orderEntry instanceof ModuleExtensionWithSdkOrderEntry)
 			{
-				Sdk sdk = ((SdkOrderEntry) orderEntry).getSdk();
+				Sdk sdk = ((ModuleExtensionWithSdkOrderEntry) orderEntry).getSdk();
 				if(sdk == null)
 				{
 					continue;
