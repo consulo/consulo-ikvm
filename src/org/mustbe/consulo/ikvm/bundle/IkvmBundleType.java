@@ -89,13 +89,6 @@ public class IkvmBundleType extends SdkType implements JavaSdkType
 		return JavaIcons.Java;
 	}
 
-	@Nullable
-	@Override
-	public String suggestHomePath()
-	{
-		return null;
-	}
-
 	@Override
 	public boolean isValidSdkHome(String path)
 	{
