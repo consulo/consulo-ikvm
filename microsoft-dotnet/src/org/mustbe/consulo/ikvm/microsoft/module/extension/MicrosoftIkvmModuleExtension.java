@@ -128,6 +128,13 @@ public class MicrosoftIkvmModuleExtension extends ModuleExtensionWithSdkImpl<Mic
 		return IkvmModuleExtensionUtil.buildEntryPoints(getModule());
 	}
 
+	@Nullable
+	@Override
+	public String getAssemblyTitle()
+	{
+		return null;
+	}
+
 	@NotNull
 	@Override
 	public LanguageFileType getFileType()

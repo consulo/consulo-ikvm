@@ -128,6 +128,13 @@ public class MonoIkvmModuleExtension extends InnerMonoModuleExtension<MonoIkvmMo
 
 	@Nullable
 	@Override
+	public String getAssemblyTitle()
+	{
+		return null;
+	}
+
+	@Nullable
+	@Override
 	public String getJavaSdkName()
 	{
 		return mySdkForCompilationPointer == null ? null : mySdkForCompilationPointer.getName();
