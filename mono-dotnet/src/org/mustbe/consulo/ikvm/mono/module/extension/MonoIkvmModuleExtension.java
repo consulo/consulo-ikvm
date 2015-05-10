@@ -16,8 +16,6 @@
 
 package org.mustbe.consulo.ikvm.mono.module.extension;
 
-import org.consulo.java.platform.module.extension.LanguageLevelModuleInheritableNamedPointerImpl;
-import org.consulo.java.platform.module.extension.SpecialDirLocation;
 import org.consulo.module.extension.ModuleInheritableNamedPointer;
 import org.consulo.util.pointers.NamedPointer;
 import org.jdom.Element;
@@ -28,6 +26,8 @@ import org.mustbe.consulo.ikvm.IkvmModuleExtension;
 import org.mustbe.consulo.ikvm.bundle.IkvmBundleType;
 import org.mustbe.consulo.ikvm.compiler.IkvmCompilerOptionsBuilder;
 import org.mustbe.consulo.ikvm.module.extension.IkvmModuleExtensionUtil;
+import org.mustbe.consulo.java.module.extension.LanguageLevelModuleInheritableNamedPointerImpl;
+import org.mustbe.consulo.java.module.extension.SpecialDirLocation;
 import org.mustbe.consulo.mono.dotnet.module.extension.InnerMonoModuleExtension;
 import org.mustbe.consulo.sdk.SdkUtil;
 import com.intellij.compiler.impl.ModuleChunk;

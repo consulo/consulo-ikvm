@@ -2,12 +2,12 @@ package org.mustbe.consulo.ikvm.microsoft.module.extension;
 
 import javax.swing.JComponent;
 
-import org.consulo.java.platform.module.extension.SpecialDirLocation;
 import org.consulo.module.extension.MutableModuleInheritableNamedPointer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.mustbe.consulo.ikvm.module.extension.IkvmMutableModuleExtension;
 import org.mustbe.consulo.ikvm.module.extension.ui.IkvmModuleExtensionPanel;
+import org.mustbe.consulo.java.module.extension.SpecialDirLocation;
 import org.mustbe.consulo.sdk.SdkUtil;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.roots.ModuleRootLayer;
