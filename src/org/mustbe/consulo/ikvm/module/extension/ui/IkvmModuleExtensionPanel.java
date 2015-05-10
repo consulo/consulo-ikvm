@@ -23,7 +23,8 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 
 import org.consulo.module.extension.MutableModuleInheritableNamedPointer;
-import org.consulo.module.extension.ui.ModuleExtensionWithSdkPanel;
+import org.consulo.module.extension.ui.ModuleExtensionSdkBoxBuilder;
+import org.mustbe.consulo.RequiredDispatchThread;
 import org.mustbe.consulo.ikvm.module.extension.IkvmMutableModuleExtension;
 import com.intellij.openapi.projectRoots.JavaSdk;
 import com.intellij.openapi.projectRoots.SdkTypeId;
@@ -31,6 +32,8 @@ import com.intellij.openapi.roots.ui.configuration.ProjectStructureConfigurable;
 import com.intellij.openapi.roots.ui.configuration.SdkComboBox;
 import com.intellij.openapi.roots.ui.configuration.projectRoot.ProjectSdksModel;
 import com.intellij.openapi.ui.ComboBox;
+import com.intellij.openapi.ui.LabeledComponent;
+import com.intellij.openapi.ui.VerticalFlowLayout;
 import com.intellij.openapi.util.Condition;
 import com.intellij.pom.java.LanguageLevel;
 import com.intellij.ui.ColoredListCellRendererWrapper;
@@ -42,27 +45,21 @@ import com.intellij.ui.SimpleTextAttributes;
  */
 public class IkvmModuleExtensionPanel extends JPanel
 {
-	private JPanel myRoot;
-	private JPanel mySdkPanel;
 	private SdkComboBox myJavaSdkComboBox;
 	private ComboBox myLanguageLevelComboBox;
 
 	private IkvmMutableModuleExtension<?> myModuleExtension;
-	private final Runnable myClasspathUpdater;
-	private final boolean mySupportSdkPanel;
 
+	@RequiredDispatchThread
 	public IkvmModuleExtensionPanel(IkvmMutableModuleExtension<?> moduleExtension, Runnable classpathUpdater, boolean supportSdkPanel)
 	{
+		super(new VerticalFlowLayout());
 		myModuleExtension = moduleExtension;
-		myClasspathUpdater = classpathUpdater;
-		mySupportSdkPanel = supportSdkPanel;
-	}
 
-	private void createUIComponents()
-	{
-		myRoot = this;
-		mySdkPanel = mySupportSdkPanel ? new ModuleExtensionWithSdkPanel(myModuleExtension, myClasspathUpdater) : new JPanel();
-		mySdkPanel.setVisible(mySupportSdkPanel);
+		if(supportSdkPanel)
+		{
+			add(ModuleExtensionSdkBoxBuilder.createAndDefine(myModuleExtension, classpathUpdater).build());
+		}
 
 		final ProjectSdksModel projectSdksModel = ProjectStructureConfigurable.getInstance(myModuleExtension.getProject()).getProjectSdksModel();
 
@@ -135,5 +132,8 @@ public class IkvmModuleExtensionPanel extends JPanel
 				}
 			}
 		});
+
+		add(LabeledComponent.left(myJavaSdkComboBox, "Java SDK"));
+		add(LabeledComponent.left(myLanguageLevelComboBox, "Language Level"));
 	}
 }

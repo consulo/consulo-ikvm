@@ -21,6 +21,7 @@ import javax.swing.JComponent;
 import org.consulo.module.extension.MutableModuleInheritableNamedPointer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.mustbe.consulo.RequiredDispatchThread;
 import org.mustbe.consulo.ikvm.module.extension.IkvmMutableModuleExtension;
 import org.mustbe.consulo.ikvm.module.extension.ui.IkvmModuleExtensionPanel;
 import org.mustbe.consulo.java.module.extension.SpecialDirLocation;
@@ -50,9 +51,10 @@ public class MonoIkvmMutableModuleExtension extends MonoIkvmModuleExtension impl
 
 	@Nullable
 	@Override
+	@RequiredDispatchThread
 	public JComponent createConfigurablePanel(@NotNull Runnable updateOnCheck)
 	{
-		return wrapToNorth(new IkvmModuleExtensionPanel(this, updateOnCheck, false));
+		return new IkvmModuleExtensionPanel(this, updateOnCheck, false);
 	}
 
 	@Override
