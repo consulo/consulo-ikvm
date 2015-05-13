@@ -25,6 +25,7 @@
 
 	<extensions defaultExtensionNs="org.consulo.java">
 		<elementFinder implementation="org.mustbe.consulo.ikvm.psi.IkvmPsiElementFinder" />
+		<java.shortNamesCache implementation="org.mustbe.consulo.ikvm.psi.IkvmPsiShortNamesCache" />
 	</extensions>
 
 	<extensions defaultExtensionNs="org.mustbe.consulo.dotnet.core">
