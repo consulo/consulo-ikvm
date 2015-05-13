@@ -105,7 +105,7 @@ public class IkvmStubGenerationCompiler implements SourceProcessingCompiler
 		List<ProcessingItem> items = new ArrayList<ProcessingItem>();
 		for(Module affectedModule : affectedModules)
 		{
-			Set<File> files = DotNetCompilerUtil.collectDependencies(affectedModule, DotNetTarget.LIBRARY, true);
+			Set<File> files = DotNetCompilerUtil.collectDependencies(affectedModule, DotNetTarget.LIBRARY, true, DotNetCompilerUtil.ACCEPT_ALL);
 			for(File file : files)
 			{
 				final VirtualFile fileByIoFile = LocalFileSystem.getInstance().findFileByIoFile(file);

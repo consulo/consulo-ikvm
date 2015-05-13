@@ -37,6 +37,9 @@ import com.intellij.openapi.compiler.CompilerMessageCategory;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.openapi.projectRoots.Sdk;
+import com.intellij.openapi.roots.ModuleExtensionWithSdkOrderEntry;
+import com.intellij.openapi.roots.OrderEntry;
+import com.intellij.openapi.util.Condition;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -48,6 +51,18 @@ import lombok.val;
  */
 public class IkvmCompilerOptionsBuilder implements DotNetCompilerOptionsBuilder
 {
+	private static final class IkvmSdkSkipper implements Condition<OrderEntry>
+	{
+		public static final IkvmSdkSkipper INSTANCE = new IkvmSdkSkipper();
+
+		@Override
+		public boolean value(OrderEntry orderEntry)
+		{
+			return orderEntry instanceof ModuleExtensionWithSdkOrderEntry && ((ModuleExtensionWithSdkOrderEntry) orderEntry).getModuleExtension()
+					instanceof IkvmModuleExtension;
+		}
+	}
+
 	private String myExecutable;
 
 	private List<String> myExtraParameters = new ArrayList<String>();
@@ -77,8 +92,7 @@ public class IkvmCompilerOptionsBuilder implements DotNetCompilerOptionsBuilder
 
 	@NotNull
 	@Override
-	public GeneralCommandLine createCommandLine(
-			@NotNull Module module,
+	public GeneralCommandLine createCommandLine(@NotNull Module module,
 			@NotNull VirtualFile[] virtualFiles,
 			@NotNull DotNetModuleExtension extension) throws IOException
 	{
@@ -111,7 +125,7 @@ public class IkvmCompilerOptionsBuilder implements DotNetCompilerOptionsBuilder
 		String outputFile = DotNetMacroUtil.expandOutputFile(extension);
 		addArgument("-out:" + outputFile);
 
-		val dependFiles = DotNetCompilerUtil.collectDependencies(module, DotNetTarget.LIBRARY, true);
+		val dependFiles = DotNetCompilerUtil.collectDependencies(module, DotNetTarget.LIBRARY, true, IkvmSdkSkipper.INSTANCE);
 
 		for(File file : dependFiles)
 		{
