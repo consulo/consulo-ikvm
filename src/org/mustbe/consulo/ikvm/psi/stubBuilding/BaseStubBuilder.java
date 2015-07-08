@@ -145,7 +145,7 @@ public abstract class BaseStubBuilder<T extends PsiElement>
 		PsiClass aClass = JavaPsiFacade.getInstance(myNavTarget.getProject()).findClass(qName, myNavTarget.getResolveScope());
 		if(aClass == null)
 		{
-			return PsiType.VOID;
+			return fromText(qName);
 		}
 		return new PsiImmediateClassType(aClass, PsiSubstitutor.EMPTY);
 	}
