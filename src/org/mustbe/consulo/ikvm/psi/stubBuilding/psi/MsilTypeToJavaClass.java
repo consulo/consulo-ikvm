@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
@@ -28,6 +29,7 @@ import org.mustbe.consulo.dotnet.psi.DotNetTypeDeclaration;
 import org.mustbe.consulo.ikvm.psi.stubBuilding.BaseStubBuilder;
 import org.mustbe.consulo.ikvm.psi.stubBuilding.JavaFieldStubBuilder;
 import org.mustbe.consulo.ikvm.psi.stubBuilding.JavaMethodStubBuilder;
+import org.mustbe.consulo.ikvm.psi.stubBuilding.StubBuilder;
 import com.intellij.lang.java.JavaLanguage;
 import com.intellij.navigation.ItemPresentation;
 import com.intellij.navigation.ItemPresentationProviders;
@@ -62,6 +64,7 @@ public class MsilTypeToJavaClass extends LightElement implements PsiExtensibleCl
 	private List<PsiMethod> myMethods = new LinkedList<PsiMethod>();
 	private final ClassInnerStuffCache myInnersCache = new ClassInnerStuffCache(this);
 	private DotNetTypeDeclaration myTypeDeclaration;
+	private AtomicBoolean myInitMembers = new AtomicBoolean();
 
 	public MsilTypeToJavaClass(@NotNull DotNetTypeDeclaration typeDeclaration)
 	{
@@ -71,7 +74,12 @@ public class MsilTypeToJavaClass extends LightElement implements PsiExtensibleCl
 
 	private void initMembers()
 	{
-		org.mustbe.consulo.ikvm.psi.stubBuilding.StubBuilder.processMembers(myTypeDeclaration, new Consumer<BaseStubBuilder<?>>()
+		// unsafe, anyway
+		if(myInitMembers.getAndSet(true))
+		{
+			return;
+		}
+		StubBuilder.processMembers(myTypeDeclaration, new Consumer<BaseStubBuilder<?>>()
 		{
 			@Override
 			public void consume(BaseStubBuilder<?> member)
