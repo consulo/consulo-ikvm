@@ -19,7 +19,7 @@ package org.mustbe.consulo.ikvm.psi.stubBuilding;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.mustbe.consulo.dotnet.psi.DotNetTypeDeclaration;
-import org.mustbe.consulo.ikvm.psi.stubBuilding.psi.MsilTypeToJavaClass;
+import org.mustbe.consulo.ikvm.psi.stubBuilding.psi.DotNetTypeToJavaClass;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
 import com.intellij.openapi.util.text.StringUtil;
@@ -46,7 +46,7 @@ public class JavaClassStubBuilder extends BaseStubBuilder<PsiClass>
 	@Override
 	public PsiClass buildToPsi(@Nullable PsiElement parent)
 	{
-		final MsilTypeToJavaClass builder = new MsilTypeToJavaClass((DotNetTypeDeclaration) myNavTarget);
+		final DotNetTypeToJavaClass builder = new DotNetTypeToJavaClass((DotNetTypeDeclaration) myNavTarget);
 		builder.withPackage(normalize(myPackage));
 		builder.withName(normalize(myName));
 		builder.withModifiers(ArrayUtil.toStringArray(myModifiers));

@@ -54,7 +54,7 @@ import com.intellij.util.IncorrectOperationException;
  * @author VISTALL
  * @since 06.05.14
  */
-public class MsilTypeToJavaClass extends LightElement implements PsiExtensibleClass
+public class DotNetTypeToJavaClass extends LightElement implements PsiExtensibleClass
 {
 	private PsiModifierList myModifierList;
 	private String myName;
@@ -66,7 +66,7 @@ public class MsilTypeToJavaClass extends LightElement implements PsiExtensibleCl
 	private DotNetTypeDeclaration myTypeDeclaration;
 	private AtomicBoolean myInitMembers = new AtomicBoolean();
 
-	public MsilTypeToJavaClass(@NotNull DotNetTypeDeclaration typeDeclaration)
+	public DotNetTypeToJavaClass(@NotNull DotNetTypeDeclaration typeDeclaration)
 	{
 		super(typeDeclaration.getManager(), JavaLanguage.INSTANCE);
 		myTypeDeclaration = typeDeclaration;
@@ -79,6 +79,7 @@ public class MsilTypeToJavaClass extends LightElement implements PsiExtensibleCl
 		{
 			return;
 		}
+		System.out.println(getQualifiedName());
 		StubBuilder.processMembers(myTypeDeclaration, new Consumer<BaseStubBuilder<?>>()
 		{
 			@Override
@@ -86,11 +87,11 @@ public class MsilTypeToJavaClass extends LightElement implements PsiExtensibleCl
 			{
 				if(member instanceof JavaFieldStubBuilder)
 				{
-					myFields.add((PsiField) member.buildToPsi(MsilTypeToJavaClass.this));
+					myFields.add((PsiField) member.buildToPsi(DotNetTypeToJavaClass.this));
 				}
 				else if(member instanceof JavaMethodStubBuilder)
 				{
-					myMethods.add((PsiMethod) member.buildToPsi(MsilTypeToJavaClass.this));
+					myMethods.add((PsiMethod) member.buildToPsi(DotNetTypeToJavaClass.this));
 				}
 			}
 		});

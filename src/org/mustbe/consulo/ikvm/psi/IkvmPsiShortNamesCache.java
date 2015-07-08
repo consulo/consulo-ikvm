@@ -16,15 +16,28 @@
 
 package org.mustbe.consulo.ikvm.psi;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.mustbe.consulo.RequiredReadAction;
+import org.mustbe.consulo.dotnet.psi.DotNetTypeDeclaration;
+import org.mustbe.consulo.dotnet.resolve.DotNetShortNameSearcher;
+import org.mustbe.consulo.ikvm.psi.stubBuilding.JavaClassStubBuilder;
+import org.mustbe.consulo.ikvm.psi.stubBuilding.StubBuilder;
+import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiField;
 import com.intellij.psi.PsiMethod;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.search.PsiShortNamesCache;
+import com.intellij.util.ArrayUtil;
+import com.intellij.util.CommonProcessors;
 import com.intellij.util.Processor;
+import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.containers.HashSet;
 import com.intellij.util.indexing.IdFilter;
 
@@ -34,24 +47,49 @@ import com.intellij.util.indexing.IdFilter;
  */
 public class IkvmPsiShortNamesCache extends PsiShortNamesCache
 {
+	private final Project myProject;
+
+	public IkvmPsiShortNamesCache(Project project)
+	{
+		myProject = project;
+	}
+
 	@NotNull
 	@Override
+	@RequiredReadAction
 	public PsiClass[] getClassesByName(@NotNull @NonNls String s, @NotNull GlobalSearchScope globalSearchScope)
 	{
-		return new PsiClass[0];
+		CommonProcessors.CollectProcessor<DotNetTypeDeclaration> collectProcessor = new CommonProcessors.CollectProcessor<DotNetTypeDeclaration>();
+		DotNetShortNameSearcher.getInstance(myProject).collectTypes(s, globalSearchScope, IdFilter.getProjectIdFilter(myProject, false),
+				collectProcessor);
+		Collection<DotNetTypeDeclaration> results = collectProcessor.getResults();
+		List<PsiClass> classes = new ArrayList<PsiClass>(results.size());
+		for(DotNetTypeDeclaration dotNetTypeDeclaration : results)
+		{
+			JavaClassStubBuilder javaClassStubBuilder = StubBuilder.build(dotNetTypeDeclaration, false);
+			if(javaClassStubBuilder == null)
+			{
+				continue;
+			}
+			classes.add(javaClassStubBuilder.buildToPsi(null));
+		}
+		return ContainerUtil.toArray(classes, PsiClass.ARRAY_FACTORY);
 	}
 
 	@NotNull
 	@Override
 	public String[] getAllClassNames()
 	{
-		return new String[0];
+		HashSet<String> set = new HashSet<String>();
+		getAllClassNames(set);
+		return ArrayUtil.toStringArray(set);
 	}
 
 	@Override
 	public void getAllClassNames(@NotNull HashSet<String> strings)
 	{
-
+		DotNetShortNameSearcher.getInstance(myProject).collectTypeNames(new CommonProcessors.CollectProcessor<String>(strings),
+				GlobalSearchScope.allScope(myProject), IdFilter.getProjectIdFilter(myProject, false));
 	}
 
 	@NotNull
