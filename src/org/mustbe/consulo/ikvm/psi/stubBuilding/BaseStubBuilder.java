@@ -29,8 +29,11 @@ import org.objectweb.asm.ClassWriter;
 import com.intellij.openapi.util.Comparing;
 import com.intellij.psi.JavaPsiFacade;
 import com.intellij.psi.PsiArrayType;
+import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiSubstitutor;
 import com.intellij.psi.PsiType;
+import com.intellij.psi.impl.source.PsiImmediateClassType;
 
 /**
  * @author VISTALL
@@ -105,11 +108,11 @@ public abstract class BaseStubBuilder<T extends PsiElement>
 		}
 		else if(Comparing.equal(qName, "System.String"))
 		{
-			return fromText(JavaClassNames.JAVA_LANG_STRING);
+			return fromQName(JavaClassNames.JAVA_LANG_STRING);
 		}
 		else if(Comparing.equal(qName, "System.Object"))
 		{
-			return fromText(JavaClassNames.JAVA_LANG_OBJECT);
+			return fromQName(JavaClassNames.JAVA_LANG_OBJECT);
 		}
 		else if(type instanceof DotNetArrayTypeRef)
 		{
@@ -134,6 +137,17 @@ public abstract class BaseStubBuilder<T extends PsiElement>
 		qualifiedText = normalize(qualifiedText);
 
 		return fromText(qualifiedText);
+	}
+
+	@NotNull
+	private PsiType fromQName(String qName)
+	{
+		PsiClass aClass = JavaPsiFacade.getInstance(myNavTarget.getProject()).findClass(qName, myNavTarget.getResolveScope());
+		if(aClass == null)
+		{
+			return PsiType.VOID;
+		}
+		return new PsiImmediateClassType(aClass, PsiSubstitutor.EMPTY);
 	}
 
 	private PsiType fromText(String text)
