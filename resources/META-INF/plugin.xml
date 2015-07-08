@@ -29,7 +29,7 @@
 	</extensions>
 
 	<extensions defaultExtensionNs="org.mustbe.consulo.dotnet.core">
-
+		<msilFileRepresentation implementation="org.mustbe.consulo.ikvm.representation.JavaRepresentationProvider" />
 	</extensions>
 
 	<extensions defaultExtensionNs="com.intellij">
