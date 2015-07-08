@@ -79,7 +79,6 @@ public class DotNetTypeToJavaClass extends LightElement implements PsiExtensible
 		{
 			return;
 		}
-		System.out.println(getQualifiedName());
 		StubBuilder.processMembers(myTypeDeclaration, new Consumer<BaseStubBuilder<?>>()
 		{
 			@Override
