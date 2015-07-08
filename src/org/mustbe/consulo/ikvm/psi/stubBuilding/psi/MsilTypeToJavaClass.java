@@ -18,15 +18,19 @@ package org.mustbe.consulo.ikvm.psi.stubBuilding.psi;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.mustbe.consulo.dotnet.psi.DotNetTypeDeclaration;
+import org.mustbe.consulo.ikvm.psi.stubBuilding.BaseStubBuilder;
+import org.mustbe.consulo.ikvm.psi.stubBuilding.JavaFieldStubBuilder;
+import org.mustbe.consulo.ikvm.psi.stubBuilding.JavaMethodStubBuilder;
 import com.intellij.lang.java.JavaLanguage;
 import com.intellij.navigation.ItemPresentation;
 import com.intellij.navigation.ItemPresentationProviders;
-import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.*;
@@ -41,25 +45,47 @@ import com.intellij.psi.javadoc.PsiDocComment;
 import com.intellij.psi.scope.PsiScopeProcessor;
 import com.intellij.psi.search.SearchScope;
 import com.intellij.psi.util.PsiUtil;
+import com.intellij.util.Consumer;
 import com.intellij.util.IncorrectOperationException;
 
 /**
  * @author VISTALL
  * @since 06.05.14
  */
-public class LightJavaClassBuilder extends LightElement implements PsiExtensibleClass
+public class MsilTypeToJavaClass extends LightElement implements PsiExtensibleClass
 {
 	private PsiModifierList myModifierList;
 	private String myName;
 	private String myPackage;
 
-	private List<PsiField> myFields = Collections.emptyList();
-	private List<PsiMethod> myMethods = Collections.emptyList();
+	private List<PsiField> myFields = new LinkedList<PsiField>();
+	private List<PsiMethod> myMethods = new LinkedList<PsiMethod>();
 	private final ClassInnerStuffCache myInnersCache = new ClassInnerStuffCache(this);
+	private DotNetTypeDeclaration myTypeDeclaration;
 
-	public LightJavaClassBuilder(@NotNull Project project)
+	public MsilTypeToJavaClass(@NotNull DotNetTypeDeclaration typeDeclaration)
 	{
-		super(PsiManager.getInstance(project), JavaLanguage.INSTANCE);
+		super(typeDeclaration.getManager(), JavaLanguage.INSTANCE);
+		myTypeDeclaration = typeDeclaration;
+	}
+
+	private void initMembers()
+	{
+		org.mustbe.consulo.ikvm.psi.stubBuilding.StubBuilder.processMembers(myTypeDeclaration, new Consumer<BaseStubBuilder<?>>()
+		{
+			@Override
+			public void consume(BaseStubBuilder<?> member)
+			{
+				if(member instanceof JavaFieldStubBuilder)
+				{
+					myFields.add((PsiField) member.buildToPsi(MsilTypeToJavaClass.this));
+				}
+				else if(member instanceof JavaMethodStubBuilder)
+				{
+					myMethods.add((PsiMethod) member.buildToPsi(MsilTypeToJavaClass.this));
+				}
+			}
+		});
 	}
 
 	@Override
@@ -316,8 +342,10 @@ public class LightJavaClassBuilder extends LightElement implements PsiExtensible
 	}
 
 	@Override
-	public boolean processDeclarations(
-			@NotNull PsiScopeProcessor processor, @NotNull ResolveState state, PsiElement lastParent, @NotNull PsiElement place)
+	public boolean processDeclarations(@NotNull PsiScopeProcessor processor,
+			@NotNull ResolveState state,
+			PsiElement lastParent,
+			@NotNull PsiElement place)
 	{
 		return PsiClassImplUtil.processDeclarationsInClass(this, processor, state, null, lastParent, place, PsiUtil.getLanguageLevel(place), false);
 	}
@@ -429,20 +457,11 @@ public class LightJavaClassBuilder extends LightElement implements PsiExtensible
 		myPackage = packageName;
 	}
 
-	public void withFields(@NotNull List<PsiField> fields)
-	{
-		myFields = fields;
-	}
-
-	public void withMethods(@NotNull List<PsiMethod> methods)
-	{
-		myMethods = methods;
-	}
-
 	@NotNull
 	@Override
 	public List<PsiField> getOwnFields()
 	{
+		initMembers();
 		return myFields;
 	}
 
@@ -450,6 +469,7 @@ public class LightJavaClassBuilder extends LightElement implements PsiExtensible
 	@Override
 	public List<PsiMethod> getOwnMethods()
 	{
+		initMembers();
 		return myMethods;
 	}
 

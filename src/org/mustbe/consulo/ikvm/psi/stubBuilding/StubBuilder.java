@@ -30,6 +30,7 @@ import org.mustbe.consulo.dotnet.psi.DotNetXXXAccessor;
 import org.mustbe.consulo.dotnet.resolve.DotNetTypeRef;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.PsiModifier;
+import com.intellij.util.Consumer;
 
 /**
  * @author VISTALL
@@ -70,6 +71,11 @@ public class StubBuilder
 
 		copyModifiers(typeDeclaration, javaClassStubBuilder);
 
+		return javaClassStubBuilder;
+	}
+
+	public static void processMembers(DotNetTypeDeclaration typeDeclaration, Consumer<BaseStubBuilder<?>> consumer)
+	{
 		for(DotNetNamedElement dotNetNamedElement : typeDeclaration.getMembers())
 		{
 			if(dotNetNamedElement instanceof DotNetPropertyDeclaration)
@@ -83,9 +89,11 @@ public class StubBuilder
 					{
 						continue;
 					}
-					JavaFieldStubBuilder field = javaClassStubBuilder.field(dotNetNamedElement.getName(), dotNetNamedElement);
+					JavaFieldStubBuilder field = new JavaFieldStubBuilder(dotNetNamedElement, dotNetNamedElement.getName());
 					copyModifiers((DotNetModifierListOwner) dotNetNamedElement, field);
 					field.withType(typeRef);
+
+					consumer.consume(field);
 				}
 				else
 				{
@@ -99,13 +107,14 @@ public class StubBuilder
 				{
 					continue;
 				}
-				JavaFieldStubBuilder field = javaClassStubBuilder.field(dotNetNamedElement.getName(), dotNetNamedElement);
+				JavaFieldStubBuilder field = new JavaFieldStubBuilder(dotNetNamedElement, dotNetNamedElement.getName());
 				copyModifiers((DotNetModifierListOwner) dotNetNamedElement, field);
 				field.withType(typeRef);
+				consumer.consume(field);
 			}
 			else if(dotNetNamedElement instanceof DotNetMethodDeclaration)
 			{
-				JavaMethodStubBuilder method = javaClassStubBuilder.method(dotNetNamedElement.getName(), dotNetNamedElement);
+				JavaMethodStubBuilder method = new JavaMethodStubBuilder(dotNetNamedElement, dotNetNamedElement.getName());
 				copyModifiers((DotNetModifierListOwner) dotNetNamedElement, method);
 				method.withReturnType(((DotNetMethodDeclaration) dotNetNamedElement).getReturnTypeRef());
 
@@ -114,12 +123,12 @@ public class StubBuilder
 				{
 					DotNetParameter parameter = parameters[i];
 					String paramName = parameter.getName();
-					method.withParameter(parameter.toTypeRef(false), paramName == null ? "p" + i : paramName, parameter);
+					method.withParameter(parameter.toTypeRef(false), StringUtil.isEmpty(paramName) ? "p" + i : paramName, parameter);
 				}
+
+				consumer.consume(method);
 			}
 		}
-
-		return javaClassStubBuilder;
 	}
 
 	private static void copyModifiers(DotNetModifierListOwner modifierListOwner, BaseStubBuilder baseStubBuilder)

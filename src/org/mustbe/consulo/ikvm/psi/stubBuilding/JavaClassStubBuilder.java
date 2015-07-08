@@ -16,20 +16,17 @@
 
 package org.mustbe.consulo.ikvm.psi.stubBuilding;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.mustbe.consulo.ikvm.psi.stubBuilding.psi.LightJavaClassBuilder;
+import org.mustbe.consulo.dotnet.psi.DotNetTypeDeclaration;
+import org.mustbe.consulo.ikvm.psi.stubBuilding.psi.MsilTypeToJavaClass;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiField;
-import com.intellij.psi.PsiMethod;
 import com.intellij.util.ArrayUtil;
+import com.intellij.util.Consumer;
 
 /**
  * @author VISTALL
@@ -37,61 +34,28 @@ import com.intellij.util.ArrayUtil;
  */
 public class JavaClassStubBuilder extends BaseStubBuilder<PsiClass>
 {
-	private final List<BaseStubBuilder> myMembers = new ArrayList<BaseStubBuilder>();
 	private final String myPackage;
 
-	public JavaClassStubBuilder(@Nullable String packageName, @NotNull String name, @NotNull PsiElement navTarget)
+	public JavaClassStubBuilder(@Nullable String packageName, @NotNull String name, @NotNull DotNetTypeDeclaration navTarget)
 	{
 		super(navTarget, name);
 		myPackage = packageName;
 	}
 
 	@NotNull
-	public JavaFieldStubBuilder field(@NotNull String name, PsiElement navTarget)
-	{
-		JavaFieldStubBuilder fieldStubBuilder = new JavaFieldStubBuilder(navTarget, name);
-		myMembers.add(fieldStubBuilder);
-		return fieldStubBuilder;
-	}
-
-	public JavaMethodStubBuilder method(@NotNull String name, PsiElement navTarget)
-	{
-		JavaMethodStubBuilder methodStubBuilder = new JavaMethodStubBuilder(navTarget, name);
-		myMembers.add(methodStubBuilder);
-		return methodStubBuilder;
-	}
-
-	@NotNull
 	@Override
 	public PsiClass buildToPsi(@Nullable PsiElement parent)
 	{
-		LightJavaClassBuilder builder = new LightJavaClassBuilder(myNavTarget.getProject());
+		final MsilTypeToJavaClass builder = new MsilTypeToJavaClass((DotNetTypeDeclaration) myNavTarget);
 		builder.withPackage(normalize(myPackage));
 		builder.withName(normalize(myName));
 		builder.withModifiers(ArrayUtil.toStringArray(myModifiers));
 		builder.setNavigationElement(myNavTarget);
-
-		List<PsiField> fields = new ArrayList<PsiField>(5);
-		List<PsiMethod> methods = new ArrayList<PsiMethod>(5);
-		for(BaseStubBuilder member : myMembers)
-		{
-			if(member instanceof JavaFieldStubBuilder)
-			{
-				fields.add((PsiField) member.buildToPsi(builder));
-			}
-			else if(member instanceof JavaMethodStubBuilder)
-			{
-				methods.add((PsiMethod) member.buildToPsi(builder));
-			}
-		}
-		builder.withFields(fields);
-		builder.withMethods(methods);
-
 		return builder;
 	}
 
 	@Override
-	public void buildToText(StringBuilder builder)
+	public void buildToText(final StringBuilder builder)
 	{
 		if(!StringUtil.isEmpty(myPackage))
 		{
@@ -106,12 +70,16 @@ public class JavaClassStubBuilder extends BaseStubBuilder<PsiClass>
 		builder.append("class ").append(normalize(myName)).append(" ");
 
 		builder.append("{\n");
-		for(BaseStubBuilder member : myMembers)
+		StubBuilder.processMembers((DotNetTypeDeclaration) myNavTarget, new Consumer<BaseStubBuilder<?>>()
 		{
-			builder.append("\t");
-			member.buildToText(builder);
-			builder.append("\n");
-		}
+			@Override
+			public void consume(BaseStubBuilder<?> member)
+			{
+				builder.append("\t");
+				member.buildToText(builder);
+				builder.append("\n");
+			}
+		});
 		builder.append("}");
 	}
 
@@ -124,7 +92,7 @@ public class JavaClassStubBuilder extends BaseStubBuilder<PsiClass>
 	}
 
 	@Override
-	public void buildToBytecode(ClassWriter parent)
+	public void buildToBytecode(final ClassWriter parent)
 	{
 		String name = null;
 		if(StringUtil.isEmpty(myPackage))
@@ -137,10 +105,14 @@ public class JavaClassStubBuilder extends BaseStubBuilder<PsiClass>
 		}
 		parent.visit(Opcodes.V1_6, Opcodes.ACC_PUBLIC, name, null, null, null);
 
-		for(BaseStubBuilder member : myMembers)
+		StubBuilder.processMembers((DotNetTypeDeclaration) myNavTarget, new Consumer<BaseStubBuilder<?>>()
 		{
-			member.buildToBytecode(parent);
-		}
+			@Override
+			public void consume(BaseStubBuilder<?> baseStubBuilder)
+			{
+				baseStubBuilder.buildToBytecode(parent);
+			}
+		});
 	}
 
 	public String getQualifiedName()
