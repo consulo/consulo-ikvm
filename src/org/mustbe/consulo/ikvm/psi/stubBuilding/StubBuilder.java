@@ -143,7 +143,7 @@ public class StubBuilder
 		}
 		else
 		{
-			baseStubBuilder.addModifier(PsiModifier.PACKAGE_LOCAL);
+			//baseStubBuilder.addModifier(PsiModifier.PACKAGE_LOCAL);
 		}
 
 		if(modifierListOwner.hasModifier(DotNetModifier.ABSTRACT))
