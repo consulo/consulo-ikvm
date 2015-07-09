@@ -76,13 +76,22 @@ public class JavaMethodStubBuilder extends BaseStubBuilder<PsiMethod>
 
 	@RequiredReadAction
 	@Override
-	public void buildToText(StringBuilder builder)
+	public void buildToText(@NotNull StringBuilder builder, BaseStubBuilder<?> parent)
 	{
 		for(String modifier : myModifiers)
 		{
 			builder.append(modifier).append(" ");
 		}
-		builder.append(normalizeTypeText(myReturnType)).append(" ").append(normalize(myName)).append("(");
+
+		if(myConstructor)
+		{
+			builder.append(parent.getName());
+		}
+		else
+		{
+			builder.append(normalizeTypeText(myReturnType)).append(" ").append(normalize(myName));
+		}
+		builder.append("(");
 		for(int i = 0; i < myParameters.size(); i++)
 		{
 			if(i != 0)
@@ -90,7 +99,7 @@ public class JavaMethodStubBuilder extends BaseStubBuilder<PsiMethod>
 				builder.append(", ");
 			}
 			JavaParameterStubBuilder javaParameterStubBuilder = myParameters.get(i);
-			javaParameterStubBuilder.buildToText(builder);
+			javaParameterStubBuilder.buildToText(builder, JavaMethodStubBuilder.this);
 		}
 		builder.append(") {}");
 	}

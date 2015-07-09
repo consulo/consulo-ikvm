@@ -52,7 +52,7 @@ public class JavaFieldStubBuilder extends BaseStubBuilder<PsiField>
 
 	@RequiredReadAction
 	@Override
-	public void buildToText(StringBuilder builder)
+	public void buildToText(@NotNull StringBuilder builder, BaseStubBuilder<?> parent)
 	{
 		for(String modifier : myModifiers)
 		{

@@ -18,6 +18,7 @@ package org.mustbe.consulo.ikvm.representation;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.mustbe.consulo.RequiredReadAction;
 import org.mustbe.consulo.dotnet.psi.DotNetNamedElement;
 import org.mustbe.consulo.dotnet.psi.DotNetTypeDeclaration;
 import org.mustbe.consulo.ikvm.psi.stubBuilding.JavaClassStubBuilder;
@@ -44,6 +45,7 @@ public class JavaRepresentationProvider implements MsilFileRepresentationProvide
 {
 	@Nullable
 	@Override
+	@RequiredReadAction
 	public String getRepresentFileName(@NotNull MsilFile msilFile)
 	{
 		return msilFile.getContainingFile().getVirtualFile().getNameWithoutExtension();
@@ -51,6 +53,7 @@ public class JavaRepresentationProvider implements MsilFileRepresentationProvide
 
 	@NotNull
 	@Override
+	@RequiredReadAction
 	public PsiFile transform(String fileName, @NotNull MsilFile msilFile)
 	{
 		DotNetNamedElement[] members = msilFile.getMembers();
@@ -62,7 +65,7 @@ public class JavaRepresentationProvider implements MsilFileRepresentationProvide
 			{
 				continue;
 			}
-			build.buildToText(builder);
+			build.buildToText(builder, null);
 			builder.append("\n");
 		}
 

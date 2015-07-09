@@ -57,7 +57,7 @@ public class JavaClassStubBuilder extends BaseStubBuilder<PsiClass>
 
 	@RequiredReadAction
 	@Override
-	public void buildToText(final StringBuilder builder)
+	public void buildToText(@NotNull final StringBuilder builder, BaseStubBuilder<?> parent)
 	{
 		if(!StringUtil.isEmpty(myPackage))
 		{
@@ -75,16 +75,18 @@ public class JavaClassStubBuilder extends BaseStubBuilder<PsiClass>
 		StubBuilder.processMembers((DotNetTypeDeclaration) myNavTarget, new Consumer<BaseStubBuilder<?>>()
 		{
 			@Override
+			@RequiredReadAction
 			public void consume(BaseStubBuilder<?> member)
 			{
 				builder.append("\t");
-				member.buildToText(builder);
+				member.buildToText(builder, JavaClassStubBuilder.this);
 				builder.append("\n");
 			}
 		});
 		builder.append("}");
 	}
 
+	@RequiredReadAction
 	public byte[] buildToBytecode()
 	{
 		ClassWriter classWriter = new ClassWriter(Opcodes.V1_6);
@@ -94,6 +96,7 @@ public class JavaClassStubBuilder extends BaseStubBuilder<PsiClass>
 	}
 
 	@Override
+	@RequiredReadAction
 	public void buildToBytecode(final ClassWriter parent)
 	{
 		String name = null;

@@ -52,6 +52,11 @@ public abstract class BaseStubBuilder<T extends PsiElement>
 		myName = name;
 	}
 
+	public String getName()
+	{
+		return myName;
+	}
+
 	public void addModifier(String mod)
 	{
 		myModifiers.add(mod);
@@ -174,7 +179,7 @@ public abstract class BaseStubBuilder<T extends PsiElement>
 	public abstract T buildToPsi(@Nullable PsiElement parent);
 
 	@RequiredReadAction
-	public abstract void buildToText(StringBuilder builder);
+	public abstract void buildToText(@NotNull StringBuilder builder, @Nullable BaseStubBuilder<?> parent);
 
 	public abstract void buildToBytecode(ClassWriter parent);
 }
