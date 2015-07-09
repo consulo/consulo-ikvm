@@ -25,6 +25,7 @@ import org.consulo.psi.PsiPackage;
 import org.consulo.psi.PsiPackageManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.mustbe.consulo.RequiredReadAction;
 import org.mustbe.consulo.dotnet.module.extension.DotNetModuleExtension;
 import org.mustbe.consulo.dotnet.psi.DotNetModifier;
 import org.mustbe.consulo.dotnet.psi.DotNetTypeDeclaration;
@@ -64,6 +65,7 @@ public class IkvmPsiElementFinder extends PsiElementFinder
 
 	@Nullable
 	@Override
+	@RequiredReadAction
 	public PsiJavaPackage findPackage(@NotNull String qualifiedName)
 	{
 		if(qualifiedName.equals("cli"))
@@ -85,6 +87,7 @@ public class IkvmPsiElementFinder extends PsiElementFinder
 
 	@NotNull
 	@Override
+	@RequiredReadAction
 	public PsiJavaPackage[] getSubPackages(@NotNull PsiJavaPackage psiPackage, @NotNull GlobalSearchScope scope)
 	{
 		String qualifiedName = psiPackage.getQualifiedName();
@@ -117,6 +120,7 @@ public class IkvmPsiElementFinder extends PsiElementFinder
 
 	@Nullable
 	@Override
+	@RequiredReadAction
 	public PsiClass findClass(@NotNull String s, @NotNull GlobalSearchScope searchScope)
 	{
 		PsiClass[] aClass = findClasses(s, searchScope);
@@ -125,6 +129,7 @@ public class IkvmPsiElementFinder extends PsiElementFinder
 
 	@NotNull
 	@Override
+	@RequiredReadAction
 	public PsiClass[] findClasses(@NotNull String s, @NotNull GlobalSearchScope searchScope)
 	{
 		boolean cli = false;
@@ -143,6 +148,7 @@ public class IkvmPsiElementFinder extends PsiElementFinder
 
 	@NotNull
 	@Override
+	@RequiredReadAction
 	public PsiClass[] getClasses(@NotNull PsiJavaPackage psiPackage, @NotNull GlobalSearchScope scope)
 	{
 		boolean cli = false;
@@ -168,6 +174,7 @@ public class IkvmPsiElementFinder extends PsiElementFinder
 		return toClasses(children, cli);
 	}
 
+	@RequiredReadAction
 	private PsiClass[] toClasses(PsiElement[] elements, boolean cli)
 	{
 		List<PsiClass> list = new ArrayList<PsiClass>(elements.length);
@@ -187,7 +194,7 @@ public class IkvmPsiElementFinder extends PsiElementFinder
 					continue;
 				}
 
-				JavaClassStubBuilder build = StubBuilder.build(type, cli);
+				JavaClassStubBuilder build = StubBuilder.build(type);
 				if(build == null)
 				{
 					continue;

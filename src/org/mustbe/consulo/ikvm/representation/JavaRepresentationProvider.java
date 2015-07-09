@@ -57,7 +57,7 @@ public class JavaRepresentationProvider implements MsilFileRepresentationProvide
 		StringBuilder builder = new StringBuilder();
 		for(DotNetNamedElement member : members)
 		{
-			JavaClassStubBuilder build = StubBuilder.build((DotNetTypeDeclaration) member, false);
+			JavaClassStubBuilder build = StubBuilder.build((DotNetTypeDeclaration) member);
 			if(build == null)
 			{
 				continue;

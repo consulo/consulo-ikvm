@@ -150,7 +150,7 @@ public class IkvmStubGenerationCompiler implements SourceProcessingCompiler
 					@Override
 					public Pair<String, byte[]> compute()
 					{
-						JavaClassStubBuilder classStubBuilder = StubBuilder.build(typeDeclaration, true);
+						JavaClassStubBuilder classStubBuilder = StubBuilder.build(typeDeclaration);
 						if(classStubBuilder == null)
 						{
 							return null;

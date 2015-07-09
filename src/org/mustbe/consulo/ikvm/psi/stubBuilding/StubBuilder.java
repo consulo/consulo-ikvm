@@ -16,8 +16,12 @@
 
 package org.mustbe.consulo.ikvm.psi.stubBuilding;
 
+import java.util.List;
+
+import org.consulo.module.extension.ModuleExtensionWithSdk;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.mustbe.consulo.RequiredReadAction;
 import org.mustbe.consulo.dotnet.psi.DotNetFieldDeclaration;
 import org.mustbe.consulo.dotnet.psi.DotNetMethodDeclaration;
 import org.mustbe.consulo.dotnet.psi.DotNetModifier;
@@ -28,8 +32,16 @@ import org.mustbe.consulo.dotnet.psi.DotNetPropertyDeclaration;
 import org.mustbe.consulo.dotnet.psi.DotNetTypeDeclaration;
 import org.mustbe.consulo.dotnet.psi.DotNetXXXAccessor;
 import org.mustbe.consulo.dotnet.resolve.DotNetTypeRef;
+import org.mustbe.consulo.ikvm.IkvmModuleExtension;
+import org.mustbe.dotnet.msil.decompiler.util.MsilHelper;
+import com.intellij.openapi.roots.ModuleExtensionWithSdkOrderEntry;
+import com.intellij.openapi.roots.OrderEntry;
+import com.intellij.openapi.roots.ProjectFileIndex;
 import com.intellij.openapi.util.text.StringUtil;
+import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.vfs.util.ArchiveVfsUtil;
 import com.intellij.psi.PsiModifier;
+import com.intellij.psi.util.PsiUtilCore;
 import com.intellij.util.Consumer;
 
 /**
@@ -38,34 +50,61 @@ import com.intellij.util.Consumer;
  */
 public class StubBuilder
 {
+	@RequiredReadAction
+	private static boolean isIKVMLibrary(@NotNull DotNetTypeDeclaration typeDeclaration)
+	{
+		VirtualFile virtualFile = PsiUtilCore.getVirtualFile(typeDeclaration);
+		if(virtualFile == null)
+		{
+			return false;
+		}
+		VirtualFile virtualFileForArchive = ArchiveVfsUtil.getVirtualFileForArchive(virtualFile);
+		if(virtualFileForArchive == null)
+		{
+			return false;
+		}
+
+		List<OrderEntry> orderEntriesForFile = ProjectFileIndex.SERVICE.getInstance(typeDeclaration.getProject()).getOrderEntriesForFile
+				(virtualFile);
+		if(orderEntriesForFile.isEmpty())
+		{
+			return false;
+		}
+		for(OrderEntry orderEntry : orderEntriesForFile)
+		{
+			if(orderEntry instanceof ModuleExtensionWithSdkOrderEntry)
+			{
+				ModuleExtensionWithSdk<?> moduleExtension = ((ModuleExtensionWithSdkOrderEntry) orderEntry).getModuleExtension();
+				if(moduleExtension instanceof IkvmModuleExtension)
+				{
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
 	@Nullable
-	public static JavaClassStubBuilder build(@NotNull DotNetTypeDeclaration typeDeclaration, boolean cli)
+	@RequiredReadAction
+	public static JavaClassStubBuilder build(@NotNull DotNetTypeDeclaration typeDeclaration)
 	{
 		String name = typeDeclaration.getName();
-		if(name.contains("$"))
+		if(name == null)
+		{
+			return null;
+		}
+		if(name.contains("$") || typeDeclaration.isNested())
 		{
 			return null;
 		}
 
+		name = MsilHelper.cutGenericMarker(name);
+
 		String packageName = typeDeclaration.getPresentableParentQName();
-		if(cli)
+		if(!isIKVMLibrary(typeDeclaration))
 		{
 			packageName = StringUtil.isEmpty(packageName) ? "cli" : "cli." + packageName;
 		}
-		/*
-		String fileName = typeDeclaration.getContainingFile().getName();
-		if(!fileName.startsWith("IKVM.OpenJDK."))
-		{
-			if(StringUtil.isEmpty(packageName))
-			{
-				packageName = "cli";
-			}
-			else
-			{
-				packageName = "cli." + packageName;
-			}
-		} */
-
 
 		JavaClassStubBuilder javaClassStubBuilder = new JavaClassStubBuilder(packageName, name, typeDeclaration);
 

@@ -66,7 +66,7 @@ public class IkvmPsiShortNamesCache extends PsiShortNamesCache
 		List<PsiClass> classes = new ArrayList<PsiClass>(results.size());
 		for(DotNetTypeDeclaration dotNetTypeDeclaration : results)
 		{
-			JavaClassStubBuilder javaClassStubBuilder = StubBuilder.build(dotNetTypeDeclaration, false);
+			JavaClassStubBuilder javaClassStubBuilder = StubBuilder.build(dotNetTypeDeclaration);
 			if(javaClassStubBuilder == null)
 			{
 				continue;
