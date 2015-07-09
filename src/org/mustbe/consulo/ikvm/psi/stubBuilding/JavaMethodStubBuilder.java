@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.mustbe.consulo.RequiredReadAction;
 import org.mustbe.consulo.dotnet.DotNetTypes;
 import org.mustbe.consulo.dotnet.resolve.DotNetArrayTypeRef;
 import org.mustbe.consulo.dotnet.resolve.DotNetGenericWrapperTypeRef;
@@ -46,10 +47,12 @@ public class JavaMethodStubBuilder extends BaseStubBuilder<PsiMethod>
 {
 	private DotNetTypeRef myReturnType;
 	private List<JavaParameterStubBuilder> myParameters = new ArrayList<JavaParameterStubBuilder>(5);
+	private boolean myConstructor;
 
-	public JavaMethodStubBuilder(PsiElement navTarget, String name)
+	public JavaMethodStubBuilder(PsiElement navTarget, String name, boolean constructor)
 	{
 		super(navTarget, name);
+		myConstructor = constructor;
 	}
 
 	@NotNull
@@ -58,6 +61,7 @@ public class JavaMethodStubBuilder extends BaseStubBuilder<PsiMethod>
 	{
 		PsiManager psiManager = PsiManager.getInstance(myNavTarget.getProject());
 		LightMethodBuilder builder = new LightMethodBuilder(psiManager, myName);
+		builder.setConstructor(myConstructor);
 		builder.setModifiers(ArrayUtil.toStringArray(myModifiers));
 		builder.setContainingClass((PsiClass) parent);
 		builder.setMethodReturnType(normalizeType(myReturnType));
@@ -70,6 +74,7 @@ public class JavaMethodStubBuilder extends BaseStubBuilder<PsiMethod>
 		return builder;
 	}
 
+	@RequiredReadAction
 	@Override
 	public void buildToText(StringBuilder builder)
 	{

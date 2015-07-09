@@ -18,6 +18,7 @@ package org.mustbe.consulo.ikvm.psi.stubBuilding;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.mustbe.consulo.RequiredReadAction;
 import org.mustbe.consulo.dotnet.resolve.DotNetTypeRef;
 import org.objectweb.asm.ClassWriter;
 import com.intellij.psi.PsiClass;
@@ -49,6 +50,7 @@ public class JavaFieldStubBuilder extends BaseStubBuilder<PsiField>
 		return builder;
 	}
 
+	@RequiredReadAction
 	@Override
 	public void buildToText(StringBuilder builder)
 	{

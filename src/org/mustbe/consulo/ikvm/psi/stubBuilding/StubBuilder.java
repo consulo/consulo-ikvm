@@ -34,6 +34,7 @@ import org.mustbe.consulo.dotnet.psi.DotNetXXXAccessor;
 import org.mustbe.consulo.dotnet.resolve.DotNetTypeRef;
 import org.mustbe.consulo.ikvm.IkvmModuleExtension;
 import org.mustbe.dotnet.msil.decompiler.util.MsilHelper;
+import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.roots.ModuleExtensionWithSdkOrderEntry;
 import com.intellij.openapi.roots.OrderEntry;
 import com.intellij.openapi.roots.ProjectFileIndex;
@@ -41,6 +42,7 @@ import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.util.ArchiveVfsUtil;
 import com.intellij.psi.PsiModifier;
+import com.intellij.psi.PsiNamedElement;
 import com.intellij.psi.util.PsiUtilCore;
 import com.intellij.util.Consumer;
 
@@ -113,10 +115,13 @@ public class StubBuilder
 		return javaClassStubBuilder;
 	}
 
+	@RequiredReadAction
 	public static void processMembers(DotNetTypeDeclaration typeDeclaration, Consumer<BaseStubBuilder<?>> consumer)
 	{
 		for(DotNetNamedElement dotNetNamedElement : typeDeclaration.getMembers())
 		{
+			ProgressManager.checkCanceled();
+
 			if(dotNetNamedElement instanceof DotNetPropertyDeclaration)
 			{
 				DotNetXXXAccessor[] accessors = ((DotNetPropertyDeclaration) dotNetNamedElement).getAccessors();
@@ -141,6 +146,11 @@ public class StubBuilder
 			}
 			else if(dotNetNamedElement instanceof DotNetFieldDeclaration)
 			{
+				if(isSkipped(dotNetNamedElement))
+				{
+					continue;
+				}
+
 				DotNetTypeRef typeRef = ((DotNetFieldDeclaration) dotNetNamedElement).toTypeRef(false);
 				if(typeRef == DotNetTypeRef.ERROR_TYPE)
 				{
@@ -153,7 +163,22 @@ public class StubBuilder
 			}
 			else if(dotNetNamedElement instanceof DotNetMethodDeclaration)
 			{
-				JavaMethodStubBuilder method = new JavaMethodStubBuilder(dotNetNamedElement, dotNetNamedElement.getName());
+				if(isSkipped(dotNetNamedElement))
+				{
+					continue;
+				}
+
+				// TODO [VISTALL] intro getVmName() it ill return always '.ctor' for constructors, due in C# it will return class name
+				String name = dotNetNamedElement.getName();
+				// skip static constructors
+				if(MsilHelper.STATIC_CONSTRUCTOR_NAME.equals(name))
+				{
+					continue;
+				}
+
+				boolean constructor = MsilHelper.CONSTRUCTOR_NAME.equals(name);
+
+				JavaMethodStubBuilder method = new JavaMethodStubBuilder(dotNetNamedElement, name, constructor);
 				copyModifiers((DotNetModifierListOwner) dotNetNamedElement, method);
 				method.withReturnType(((DotNetMethodDeclaration) dotNetNamedElement).getReturnTypeRef());
 
@@ -170,6 +195,25 @@ public class StubBuilder
 		}
 	}
 
+	private static boolean isSkipped(PsiNamedElement element)
+	{
+		String name = element.getName();
+		if(name == null)
+		{
+			return true;
+		}
+		for(int i = 0; i < name.length(); i++)
+		{
+			char c = name.charAt(i);
+			if(c == ':' || c == '<')
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	@RequiredReadAction
 	private static void copyModifiers(DotNetModifierListOwner modifierListOwner, BaseStubBuilder baseStubBuilder)
 	{
 		if(modifierListOwner.hasModifier(DotNetModifier.STATIC))

@@ -18,6 +18,7 @@ package org.mustbe.consulo.ikvm.psi.stubBuilding;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.mustbe.consulo.RequiredReadAction;
 import org.mustbe.consulo.dotnet.psi.DotNetTypeDeclaration;
 import org.mustbe.consulo.ikvm.psi.stubBuilding.psi.DotNetTypeToJavaClass;
 import org.objectweb.asm.ClassWriter;
@@ -54,6 +55,7 @@ public class JavaClassStubBuilder extends BaseStubBuilder<PsiClass>
 		return builder;
 	}
 
+	@RequiredReadAction
 	@Override
 	public void buildToText(final StringBuilder builder)
 	{

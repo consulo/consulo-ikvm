@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.mustbe.consulo.RequiredReadAction;
 import org.mustbe.consulo.dotnet.resolve.DotNetArrayTypeRef;
 import org.mustbe.consulo.dotnet.resolve.DotNetPointerTypeRef;
 import org.mustbe.consulo.dotnet.resolve.DotNetTypeRef;
@@ -172,6 +173,7 @@ public abstract class BaseStubBuilder<T extends PsiElement>
 	@NotNull
 	public abstract T buildToPsi(@Nullable PsiElement parent);
 
+	@RequiredReadAction
 	public abstract void buildToText(StringBuilder builder);
 
 	public abstract void buildToBytecode(ClassWriter parent);

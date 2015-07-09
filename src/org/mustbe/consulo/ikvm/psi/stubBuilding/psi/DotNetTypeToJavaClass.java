@@ -21,10 +21,12 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.mustbe.consulo.RequiredReadAction;
 import org.mustbe.consulo.dotnet.psi.DotNetTypeDeclaration;
 import org.mustbe.consulo.ikvm.psi.stubBuilding.BaseStubBuilder;
 import org.mustbe.consulo.ikvm.psi.stubBuilding.JavaFieldStubBuilder;
@@ -60,11 +62,13 @@ public class DotNetTypeToJavaClass extends LightElement implements PsiExtensible
 	private String myName;
 	private String myPackage;
 
-	private List<PsiField> myFields = new LinkedList<PsiField>();
-	private List<PsiMethod> myMethods = new LinkedList<PsiMethod>();
+	private List<PsiField> myFields = Collections.emptyList();
+	private List<PsiMethod> myMethods = Collections.emptyList();
 	private final ClassInnerStuffCache myInnersCache = new ClassInnerStuffCache(this);
 	private DotNetTypeDeclaration myTypeDeclaration;
 	private AtomicBoolean myInitMembers = new AtomicBoolean();
+
+	private ReentrantLock myLock = new ReentrantLock();
 
 	public DotNetTypeToJavaClass(@NotNull DotNetTypeDeclaration typeDeclaration)
 	{
@@ -72,28 +76,43 @@ public class DotNetTypeToJavaClass extends LightElement implements PsiExtensible
 		myTypeDeclaration = typeDeclaration;
 	}
 
+	@RequiredReadAction
 	private void initMembers()
 	{
-		// unsafe, anyway
-		if(myInitMembers.getAndSet(true))
+		if(myInitMembers.get())
 		{
 			return;
 		}
-		StubBuilder.processMembers(myTypeDeclaration, new Consumer<BaseStubBuilder<?>>()
+
+		myLock.lock();
+		try
 		{
-			@Override
-			public void consume(BaseStubBuilder<?> member)
+			final List<PsiField> fields = new LinkedList<PsiField>();
+			final List<PsiMethod> methods = new LinkedList<PsiMethod>();
+			StubBuilder.processMembers(myTypeDeclaration, new Consumer<BaseStubBuilder<?>>()
 			{
-				if(member instanceof JavaFieldStubBuilder)
+				@Override
+				public void consume(BaseStubBuilder<?> member)
 				{
-					myFields.add((PsiField) member.buildToPsi(DotNetTypeToJavaClass.this));
+					if(member instanceof JavaFieldStubBuilder)
+					{
+						fields.add((PsiField) member.buildToPsi(DotNetTypeToJavaClass.this));
+					}
+					else if(member instanceof JavaMethodStubBuilder)
+					{
+						methods.add((PsiMethod) member.buildToPsi(DotNetTypeToJavaClass.this));
+					}
 				}
-				else if(member instanceof JavaMethodStubBuilder)
-				{
-					myMethods.add((PsiMethod) member.buildToPsi(DotNetTypeToJavaClass.this));
-				}
-			}
-		});
+			});
+			myFields = fields;
+			myMethods = methods;
+			myInitMembers.set(true);
+
+		}
+		finally
+		{
+			myLock.unlock();
+		}
 	}
 
 	@Override
@@ -467,6 +486,7 @@ public class DotNetTypeToJavaClass extends LightElement implements PsiExtensible
 
 	@NotNull
 	@Override
+	@RequiredReadAction
 	public List<PsiField> getOwnFields()
 	{
 		initMembers();
@@ -475,6 +495,7 @@ public class DotNetTypeToJavaClass extends LightElement implements PsiExtensible
 
 	@NotNull
 	@Override
+	@RequiredReadAction
 	public List<PsiMethod> getOwnMethods()
 	{
 		initMembers();
