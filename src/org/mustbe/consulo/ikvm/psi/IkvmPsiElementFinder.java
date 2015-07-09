@@ -52,8 +52,6 @@ public class IkvmPsiElementFinder extends PsiElementFinder
 	private final PsiManager myPsiManager;
 	private final PsiPackageManager myPsiPackageManager;
 
-	//private Map<DotNetTypeDeclaration, PsiClass> myCache = new HashMap<DotNetTypeDeclaration, PsiClass>();
-
 	public IkvmPsiElementFinder(Project project, PsiManager psiManager, PsiPackageManager psiPackageManager)
 	{
 		myProject = project;
@@ -185,12 +183,6 @@ public class IkvmPsiElementFinder extends PsiElementFinder
 				{
 					continue;
 				}
-				/*PsiClass psiClass = myCache.get(type);
-				if(psiClass != null)
-				{
-					list.add(psiClass);
-					continue;
-				}    */
 
 				JavaClassStubBuilder build = StubBuilder.build(type);
 				if(build == null)
@@ -199,7 +191,6 @@ public class IkvmPsiElementFinder extends PsiElementFinder
 				}
 
 				PsiClass value = build.buildToPsi(null);
-				//myCache.put(type, value);
 				list.add(value);
 			}
 		}
