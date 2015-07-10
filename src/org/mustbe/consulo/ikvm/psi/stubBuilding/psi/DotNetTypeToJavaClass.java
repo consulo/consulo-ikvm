@@ -148,7 +148,7 @@ public class DotNetTypeToJavaClass extends LightElement implements PsiExtensible
 	@Override
 	public boolean isInterface()
 	{
-		return false;
+		return myTypeDeclaration.isInterface();
 	}
 
 	@Override
@@ -160,7 +160,7 @@ public class DotNetTypeToJavaClass extends LightElement implements PsiExtensible
 	@Override
 	public boolean isEnum()
 	{
-		return false;
+		return myTypeDeclaration.isEnum();
 	}
 
 	@Nullable
