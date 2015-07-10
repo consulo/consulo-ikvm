@@ -23,15 +23,25 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.consulo.lombok.annotations.LazyInstance;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.mustbe.consulo.RequiredReadAction;
+import org.mustbe.consulo.dotnet.psi.DotNetAttribute;
+import org.mustbe.consulo.dotnet.psi.DotNetAttributeUtil;
+import org.mustbe.consulo.dotnet.psi.DotNetGenericParameter;
 import org.mustbe.consulo.dotnet.psi.DotNetTypeDeclaration;
+import org.mustbe.consulo.ikvm.IKvmAttributes;
 import org.mustbe.consulo.ikvm.psi.stubBuilding.BaseStubBuilder;
 import org.mustbe.consulo.ikvm.psi.stubBuilding.JavaFieldStubBuilder;
 import org.mustbe.consulo.ikvm.psi.stubBuilding.JavaMethodStubBuilder;
 import org.mustbe.consulo.ikvm.psi.stubBuilding.StubBuilder;
+import org.mustbe.consulo.msil.lang.psi.MsilClassEntry;
+import org.mustbe.consulo.msil.lang.psi.MsilCustomAttribute;
+import org.mustbe.consulo.msil.lang.stubbing.MsilCustomAttributeArgumentList;
+import org.mustbe.consulo.msil.lang.stubbing.MsilCustomAttributeStubber;
+import org.mustbe.consulo.msil.lang.stubbing.values.MsiCustomAttributeValue;
 import com.intellij.lang.java.JavaLanguage;
 import com.intellij.navigation.ItemPresentation;
 import com.intellij.navigation.ItemPresentationProviders;
@@ -51,6 +61,9 @@ import com.intellij.psi.search.SearchScope;
 import com.intellij.psi.util.PsiUtil;
 import com.intellij.util.Consumer;
 import com.intellij.util.IncorrectOperationException;
+import sun.reflect.generics.parser.SignatureParser;
+import sun.reflect.generics.tree.ClassSignature;
+import sun.reflect.generics.tree.FormalTypeParameter;
 
 /**
  * @author VISTALL
@@ -436,9 +449,10 @@ public class DotNetTypeToJavaClass extends LightElement implements PsiExtensible
 	}
 
 	@Override
+	@RequiredReadAction
 	public boolean hasTypeParameters()
 	{
-		return false;
+		return getTypeParameters().length > 0;
 	}
 
 	@Nullable
@@ -450,9 +464,56 @@ public class DotNetTypeToJavaClass extends LightElement implements PsiExtensible
 
 	@NotNull
 	@Override
+	@RequiredReadAction
+	@LazyInstance
 	public PsiTypeParameter[] getTypeParameters()
 	{
-		return new PsiTypeParameter[0];
+		DotNetGenericParameter[] genericParameters = myTypeDeclaration.getGenericParameters();
+		if(genericParameters.length > 0)
+		{
+			PsiTypeParameter[] typeParameters = new PsiTypeParameter[genericParameters.length];
+			for(int i = 0; i < genericParameters.length; i++)
+			{
+				DotNetGenericParameter genericParameter = genericParameters[i];
+				typeParameters[i] = new DotNetGenericParameterBuilder(DotNetTypeToJavaClass.this, genericParameter.getName(), i);
+			}
+			return typeParameters;
+		}
+		else if(myTypeDeclaration instanceof MsilClassEntry)
+		{
+			DotNetAttribute attribute = DotNetAttributeUtil.findAttribute(myTypeDeclaration, IKvmAttributes.SignatureAttribute);
+			if(attribute instanceof MsilCustomAttribute)
+			{
+				MsilCustomAttributeArgumentList customAttributeArgumentList = MsilCustomAttributeStubber.build((MsilCustomAttribute) attribute);
+				List<MsiCustomAttributeValue> constructorArguments = customAttributeArgumentList.getConstructorArguments();
+				if(constructorArguments.size() != 1)
+				{
+					return PsiTypeParameter.EMPTY_ARRAY;
+				}
+				Object value = constructorArguments.get(0).getValue();
+				if(!(value instanceof String))
+				{
+					return PsiTypeParameter.EMPTY_ARRAY;
+				}
+				SignatureParser make = SignatureParser.make();
+
+				ClassSignature classSignature = make.parseClassSig((String) value);
+				FormalTypeParameter[] formalTypeParameters = classSignature.getFormalTypeParameters();
+				if(formalTypeParameters.length == 0)
+				{
+					return PsiTypeParameter.EMPTY_ARRAY;
+				}
+
+				PsiTypeParameter[] typeParameters = new PsiTypeParameter[formalTypeParameters.length];
+				for(int i = 0; i < formalTypeParameters.length; i++)
+				{
+					FormalTypeParameter formalTypeParameter = formalTypeParameters[i];
+					typeParameters[i] = new DotNetGenericParameterBuilder(DotNetTypeToJavaClass.this, formalTypeParameter.getName(), i);
+				}
+				return typeParameters;
+			}
+		}
+		return PsiTypeParameter.EMPTY_ARRAY;
 	}
 
 	@Nullable
