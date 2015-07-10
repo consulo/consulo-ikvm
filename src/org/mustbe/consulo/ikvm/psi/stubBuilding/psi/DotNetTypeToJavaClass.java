@@ -45,6 +45,7 @@ import org.mustbe.consulo.msil.lang.stubbing.values.MsiCustomAttributeValue;
 import com.intellij.lang.java.JavaLanguage;
 import com.intellij.navigation.ItemPresentation;
 import com.intellij.navigation.ItemPresentationProviders;
+import com.intellij.openapi.util.AtomicNullableLazyValue;
 import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.*;
@@ -80,6 +81,34 @@ public class DotNetTypeToJavaClass extends LightElement implements PsiExtensible
 	private final ClassInnerStuffCache myInnersCache = new ClassInnerStuffCache(this);
 	private DotNetTypeDeclaration myTypeDeclaration;
 	private AtomicBoolean myInitMembers = new AtomicBoolean();
+
+	private AtomicNullableLazyValue<ClassSignature> mySignatureValue = new AtomicNullableLazyValue<ClassSignature>()
+	{
+		@Nullable
+		@Override
+		@RequiredReadAction
+		protected ClassSignature compute()
+		{
+			DotNetAttribute attribute = DotNetAttributeUtil.findAttribute(myTypeDeclaration, IKvmAttributes.SignatureAttribute);
+			if(attribute instanceof MsilCustomAttribute)
+			{
+				MsilCustomAttributeArgumentList customAttributeArgumentList = MsilCustomAttributeStubber.build((MsilCustomAttribute) attribute);
+				List<MsiCustomAttributeValue> constructorArguments = customAttributeArgumentList.getConstructorArguments();
+				if(constructorArguments.size() != 1)
+				{
+					return null;
+				}
+				Object value = constructorArguments.get(0).getValue();
+				if(!(value instanceof String))
+				{
+					return null;
+				}
+				SignatureParser make = SignatureParser.make();
+				return make.parseClassSig((String) value);
+			}
+			return null;
+		}
+	};
 
 	private ReentrantLock myLock = new ReentrantLock();
 
@@ -481,37 +510,24 @@ public class DotNetTypeToJavaClass extends LightElement implements PsiExtensible
 		}
 		else if(myTypeDeclaration instanceof MsilClassEntry)
 		{
-			DotNetAttribute attribute = DotNetAttributeUtil.findAttribute(myTypeDeclaration, IKvmAttributes.SignatureAttribute);
-			if(attribute instanceof MsilCustomAttribute)
+			ClassSignature classSignature = mySignatureValue.getValue();
+			if(classSignature == null)
 			{
-				MsilCustomAttributeArgumentList customAttributeArgumentList = MsilCustomAttributeStubber.build((MsilCustomAttribute) attribute);
-				List<MsiCustomAttributeValue> constructorArguments = customAttributeArgumentList.getConstructorArguments();
-				if(constructorArguments.size() != 1)
-				{
-					return PsiTypeParameter.EMPTY_ARRAY;
-				}
-				Object value = constructorArguments.get(0).getValue();
-				if(!(value instanceof String))
-				{
-					return PsiTypeParameter.EMPTY_ARRAY;
-				}
-				SignatureParser make = SignatureParser.make();
-
-				ClassSignature classSignature = make.parseClassSig((String) value);
-				FormalTypeParameter[] formalTypeParameters = classSignature.getFormalTypeParameters();
-				if(formalTypeParameters.length == 0)
-				{
-					return PsiTypeParameter.EMPTY_ARRAY;
-				}
-
-				PsiTypeParameter[] typeParameters = new PsiTypeParameter[formalTypeParameters.length];
-				for(int i = 0; i < formalTypeParameters.length; i++)
-				{
-					FormalTypeParameter formalTypeParameter = formalTypeParameters[i];
-					typeParameters[i] = new DotNetGenericParameterBuilder(DotNetTypeToJavaClass.this, formalTypeParameter.getName(), i);
-				}
-				return typeParameters;
+				return PsiTypeParameter.EMPTY_ARRAY;
 			}
+			FormalTypeParameter[] formalTypeParameters = classSignature.getFormalTypeParameters();
+			if(formalTypeParameters.length == 0)
+			{
+				return PsiTypeParameter.EMPTY_ARRAY;
+			}
+
+			PsiTypeParameter[] typeParameters = new PsiTypeParameter[formalTypeParameters.length];
+			for(int i = 0; i < formalTypeParameters.length; i++)
+			{
+				FormalTypeParameter formalTypeParameter = formalTypeParameters[i];
+				typeParameters[i] = new DotNetGenericParameterBuilder(DotNetTypeToJavaClass.this, formalTypeParameter.getName(), i);
+			}
+			return typeParameters;
 		}
 		return PsiTypeParameter.EMPTY_ARRAY;
 	}
