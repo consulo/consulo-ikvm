@@ -152,7 +152,7 @@ public class IkvmBundleType extends SdkType implements JavaSdkType
 	@Override
 	public String suggestSdkName(String currentSdkName, String sdkHome)
 	{
-		return "ikvm";
+		return getPresentableName() + " " + getVersionString(sdkHome);
 	}
 
 	@NotNull
