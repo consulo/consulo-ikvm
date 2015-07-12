@@ -1,10 +1,13 @@
 package ru.andrew.jclazz.core.signature;
 
+import org.consulo.lombok.annotations.ArrayFactoryFields;
+
 /*
 TypeArgument:
    [+-]opt FieldTypeSignature
    *
  */
+@ArrayFactoryFields
 public class TypeArgument
 {
 	private char modifier;
@@ -48,6 +51,4 @@ public class TypeArgument
 	{
 		return fieldType;
 	}
-
-
 }

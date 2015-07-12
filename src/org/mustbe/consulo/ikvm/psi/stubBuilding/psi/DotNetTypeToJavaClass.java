@@ -16,10 +16,13 @@
 
 package org.mustbe.consulo.ikvm.psi.stubBuilding.psi;
 
+import gnu.trove.THashMap;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -56,6 +59,7 @@ import com.intellij.psi.impl.light.LightElement;
 import com.intellij.psi.impl.light.LightModifierList;
 import com.intellij.psi.impl.source.ClassInnerStuffCache;
 import com.intellij.psi.impl.source.PsiExtensibleClass;
+import com.intellij.psi.impl.source.PsiImmediateClassType;
 import com.intellij.psi.javadoc.PsiDocComment;
 import com.intellij.psi.scope.PsiScopeProcessor;
 import com.intellij.psi.search.SearchScope;
@@ -65,6 +69,8 @@ import com.intellij.util.IncorrectOperationException;
 import ru.andrew.jclazz.core.signature.ClassSignature;
 import ru.andrew.jclazz.core.signature.ClassTypeSignature;
 import ru.andrew.jclazz.core.signature.FormalTypeParameter;
+import ru.andrew.jclazz.core.signature.SimpleClassTypeSignature;
+import ru.andrew.jclazz.core.signature.TypeArgument;
 
 /**
  * @author VISTALL
@@ -207,6 +213,7 @@ public class DotNetTypeToJavaClass extends LightElement implements PsiExtensible
 
 	@NotNull
 	@Override
+	@RequiredReadAction
 	//@LazyInstance
 	public PsiClassType[] getExtendsListTypes()
 	{
@@ -216,8 +223,7 @@ public class DotNetTypeToJavaClass extends LightElement implements PsiExtensible
 			ClassTypeSignature superclass = value.getSuperClass();
 			if(superclass != null)
 			{
-				String className = superclass.getClassName();
-				return new PsiClassType[]{(PsiClassType) JavaPsiFacade.getInstance(getProject()).getParserFacade().createTypeFromText(className, null)};
+				return new PsiClassType[]{(PsiClassType) convert(superclass)};
 			}
 		}
 		return PsiClassType.EMPTY_ARRAY;
@@ -225,6 +231,7 @@ public class DotNetTypeToJavaClass extends LightElement implements PsiExtensible
 
 	@NotNull
 	@Override
+	@RequiredReadAction
 	//@LazyInstance
 	public PsiClassType[] getImplementsListTypes()
 	{
@@ -241,13 +248,78 @@ public class DotNetTypeToJavaClass extends LightElement implements PsiExtensible
 			for(int i = 0; i < superInterfaces.length; i++)
 			{
 				ClassTypeSignature superInterface = superInterfaces[i];
-				String className = superInterface.getClassName();
-				types[i] = (PsiClassType) JavaPsiFacade.getInstance(getProject()).getParserFacade().createTypeFromText(className, null);
+				types[i] = (PsiClassType) convert(superInterface);
 			}
 			return types;
 		}
 
 		return PsiClassType.EMPTY_ARRAY;
+	}
+
+	@NotNull
+	@RequiredReadAction
+	private PsiType convert(@NotNull ClassTypeSignature typeSignature)
+	{
+		String className = typeSignature.getClassName();
+		SimpleClassTypeSignature classType = typeSignature.getClassType();
+		TypeArgument[] typeArguments = classType.getTypeArguments();
+
+		PsiType typeFromText = JavaPsiFacade.getInstance(getProject()).getParserFacade().createTypeFromText(className, myTypeDeclaration);
+		if(typeFromText instanceof PsiClassType)
+		{
+			if(typeArguments.length > 0)
+			{
+				PsiClass resolved = ((PsiClassType) typeFromText).resolve();
+				if(resolved == null)
+				{
+					return typeFromText;
+				}
+
+				PsiTypeParameter[] typeParameters = resolved.getTypeParameters();
+				if(typeParameters.length != typeArguments.length)
+				{
+					return typeFromText;
+				}
+
+				PsiTypeParameter[] thisTypeParameters = getTypeParameters();
+				Map<String, PsiTypeParameter> params = new THashMap<String, PsiTypeParameter>(thisTypeParameters.length);
+				for(PsiTypeParameter psiTypeParameter : thisTypeParameters)
+				{
+					params.put(psiTypeParameter.getName(), psiTypeParameter);
+				}
+
+				PsiSubstitutor substitutor = PsiSubstitutor.EMPTY;
+
+				for(int i = 0; i < typeParameters.length; i++)
+				{
+					PsiTypeParameter typeParameter = typeParameters[i];
+					TypeArgument typeArgument = typeArguments[i];
+
+					String typeArgumentVariableValue = typeArgument.getFieldType().getVariable();
+					if(typeArgumentVariableValue != null)
+					{
+						PsiTypeParameter psiTypeParameter = params.get(typeArgumentVariableValue);
+						assert psiTypeParameter != null;
+
+						substitutor = substitutor.put(typeParameter, new PsiImmediateClassType(psiTypeParameter, PsiSubstitutor.EMPTY));
+					}
+					else
+					{
+						ClassTypeSignature typeArgumentClassType = typeArgument.getFieldType().getClassType();
+						if(typeArgumentClassType != null)
+						{
+							substitutor = substitutor.put(typeParameter, convert(typeArgumentClassType));
+						}
+						else
+						{
+							throw new UnsupportedOperationException("Array");
+						}
+					}
+				}
+				return new PsiImmediateClassType(resolved, substitutor);
+			}
+		}
+		return typeFromText;
 	}
 
 	@Nullable

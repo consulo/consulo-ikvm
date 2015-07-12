@@ -1,7 +1,8 @@
 package ru.andrew.jclazz.core.signature;
 
-import java.util.ArrayList;
 import java.util.List;
+
+import com.intellij.util.SmartList;
 
 /*
 SimpleClassTypeSignature:
@@ -13,9 +14,9 @@ Used by: ClassTypeSignature
 public class SimpleClassTypeSignature
 {
 	private String identifier;
-	private TypeArgument[] typeArguments;
+	private TypeArgument[] typeArguments = TypeArgument.EMPTY_ARRAY;
 
-	private SimpleClassTypeSignature(String identifier, List typeArguments)
+	private SimpleClassTypeSignature(String identifier, List<TypeArgument> typeArguments)
 	{
 		this.identifier = identifier;
 		this.typeArguments = new TypeArgument[typeArguments.size()];
@@ -31,7 +32,7 @@ public class SimpleClassTypeSignature
 		int g_ind = sign.indexOf("<");
 		g_ind = g_ind != -1 ? g_ind : Integer.MAX_VALUE;
 
-		List tArgs = new ArrayList();
+		List<TypeArgument> tArgs = new SmartList<TypeArgument>();
 		String id;
 		if(g_ind < d_ind && g_ind < sc_ind)
 		{
