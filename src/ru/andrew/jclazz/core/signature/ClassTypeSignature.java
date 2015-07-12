@@ -3,11 +3,16 @@ package ru.andrew.jclazz.core.signature;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.consulo.lombok.annotations.ArrayFactoryFields;
+import org.jetbrains.annotations.NotNull;
+import com.intellij.openapi.util.text.StringUtil;
+
 /*
 ClassTypeSignature:
    L Package/Package.../ SimpleClassTypeSignature (.SimpleClassTypeSignature)*;
                                                   suffix
  */
+@ArrayFactoryFields
 public class ClassTypeSignature
 {
 	private String pack;
@@ -29,7 +34,7 @@ public class ClassTypeSignature
 		sign.deleteCharAt(0);
 
 		// Loading package
-		StringBuffer packs = new StringBuffer();
+		StringBuilder packs = new StringBuilder();
 		int ind;
 		while((ind = sign.indexOf("/")) != -1)
 		{
@@ -48,7 +53,7 @@ public class ClassTypeSignature
 		SimpleClassTypeSignature cl = SimpleClassTypeSignature.parse(sign);
 
 		// Loading suffix
-		List suf = new ArrayList();
+		List<SimpleClassTypeSignature> suf = new ArrayList<SimpleClassTypeSignature>();
 		while(sign.charAt(0) != ';')
 		{
 			sign.deleteCharAt(0);
@@ -62,6 +67,16 @@ public class ClassTypeSignature
 	public String getPackage()
 	{
 		return pack;
+	}
+
+	@NotNull
+	public String getClassName()
+	{
+		if(StringUtil.isEmpty(pack))
+		{
+			return cl.getName();
+		}
+		return pack + "." + cl.getName();
 	}
 
 	public SimpleClassTypeSignature getClassType()

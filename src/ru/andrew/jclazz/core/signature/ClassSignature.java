@@ -1,7 +1,10 @@
 package ru.andrew.jclazz.core.signature;
 
-import java.util.ArrayList;
 import java.util.List;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import com.intellij.util.SmartList;
 
 /*
 ClassSignature:
@@ -11,8 +14,8 @@ ClassSignature:
 public class ClassSignature
 {
 	private ClassTypeSignature superClass;
-	private ClassTypeSignature[] interfaces;
-	private FormalTypeParameter[] typeParameters;
+	private ClassTypeSignature[] interfaces = ClassTypeSignature.EMPTY_ARRAY;
+	private FormalTypeParameter[] typeParameters = FormalTypeParameter.EMPTY_ARRAY;
 
 	public ClassSignature(String signature)
 	{
@@ -20,7 +23,7 @@ public class ClassSignature
 		if(signature.charAt(0) == '<')
 		{
 			sb.deleteCharAt(0);
-			List ftps = new ArrayList();
+			List<FormalTypeParameter> ftps = new SmartList<FormalTypeParameter>();
 			while(sb.charAt(0) != '>')
 			{
 				ftps.add(FormalTypeParameter.parse(sb));
@@ -35,7 +38,7 @@ public class ClassSignature
 		{
 			superClass = ClassTypeSignature.parse(sb);
 		}
-		List intfs = new ArrayList();
+		List<ClassTypeSignature> intfs = new SmartList<ClassTypeSignature>();
 		while(sb.length() > 0)
 		{
 			intfs.add(ClassTypeSignature.parse(sb));
@@ -44,16 +47,19 @@ public class ClassSignature
 		intfs.toArray(interfaces);
 	}
 
+	@Nullable
 	public ClassTypeSignature getSuperClass()
 	{
 		return superClass;
 	}
 
+	@NotNull
 	public ClassTypeSignature[] getInterfaces()
 	{
 		return interfaces;
 	}
 
+	@NotNull
 	public FormalTypeParameter[] getTypeParameters()
 	{
 		return typeParameters;

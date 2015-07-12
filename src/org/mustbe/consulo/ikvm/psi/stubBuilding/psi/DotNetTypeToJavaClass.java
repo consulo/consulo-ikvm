@@ -61,13 +61,10 @@ import com.intellij.psi.scope.PsiScopeProcessor;
 import com.intellij.psi.search.SearchScope;
 import com.intellij.psi.util.PsiUtil;
 import com.intellij.util.Consumer;
-import com.intellij.util.Function;
 import com.intellij.util.IncorrectOperationException;
-import sun.reflect.generics.parser.SignatureParser;
-import sun.reflect.generics.tree.ClassSignature;
-import sun.reflect.generics.tree.ClassTypeSignature;
-import sun.reflect.generics.tree.FormalTypeParameter;
-import sun.reflect.generics.tree.SimpleClassTypeSignature;
+import ru.andrew.jclazz.core.signature.ClassSignature;
+import ru.andrew.jclazz.core.signature.ClassTypeSignature;
+import ru.andrew.jclazz.core.signature.FormalTypeParameter;
 
 /**
  * @author VISTALL
@@ -106,8 +103,7 @@ public class DotNetTypeToJavaClass extends LightElement implements PsiExtensible
 				{
 					return null;
 				}
-				SignatureParser make = SignatureParser.make();
-				return make.parseClassSig((String) value);
+				return new ClassSignature((String) value);
 			}
 			return null;
 		}
@@ -217,18 +213,11 @@ public class DotNetTypeToJavaClass extends LightElement implements PsiExtensible
 		ClassSignature value = mySignatureValue.getValue();
 		if(value != null)
 		{
-			ClassTypeSignature superclass = value.getSuperclass();
+			ClassTypeSignature superclass = value.getSuperClass();
 			if(superclass != null)
 			{
-				String join = StringUtil.join(superclass.getPath(), new Function<SimpleClassTypeSignature, String>()
-				{
-					@Override
-					public String fun(SimpleClassTypeSignature simpleClassTypeSignature)
-					{
-						return simpleClassTypeSignature.getName();
-					}
-				}, ".");
-				return new PsiClassType[]{(PsiClassType) JavaPsiFacade.getInstance(getProject()).getParserFacade().createTypeFromText(join, null)};
+				String className = superclass.getClassName();
+				return new PsiClassType[]{(PsiClassType) JavaPsiFacade.getInstance(getProject()).getParserFacade().createTypeFromText(className, null)};
 			}
 		}
 		return PsiClassType.EMPTY_ARRAY;
@@ -242,7 +231,7 @@ public class DotNetTypeToJavaClass extends LightElement implements PsiExtensible
 		ClassSignature value = mySignatureValue.getValue();
 		if(value != null)
 		{
-			ClassTypeSignature[] superInterfaces = value.getSuperInterfaces();
+			ClassTypeSignature[] superInterfaces = value.getInterfaces();
 			if(superInterfaces.length == 0)
 			{
 				return PsiClassType.EMPTY_ARRAY;
@@ -252,15 +241,8 @@ public class DotNetTypeToJavaClass extends LightElement implements PsiExtensible
 			for(int i = 0; i < superInterfaces.length; i++)
 			{
 				ClassTypeSignature superInterface = superInterfaces[i];
-				String join = StringUtil.join(superInterface.getPath(), new Function<SimpleClassTypeSignature, String>()
-				{
-					@Override
-					public String fun(SimpleClassTypeSignature simpleClassTypeSignature)
-					{
-						return simpleClassTypeSignature.getName();
-					}
-				}, ".");
-				types[i] = (PsiClassType) JavaPsiFacade.getInstance(getProject()).getParserFacade().createTypeFromText(join, null);
+				String className = superInterface.getClassName();
+				types[i] = (PsiClassType) JavaPsiFacade.getInstance(getProject()).getParserFacade().createTypeFromText(className, null);
 			}
 			return types;
 		}
@@ -563,7 +545,7 @@ public class DotNetTypeToJavaClass extends LightElement implements PsiExtensible
 			{
 				return PsiTypeParameter.EMPTY_ARRAY;
 			}
-			FormalTypeParameter[] formalTypeParameters = classSignature.getFormalTypeParameters();
+			FormalTypeParameter[] formalTypeParameters = classSignature.getTypeParameters();
 			if(formalTypeParameters.length == 0)
 			{
 				return PsiTypeParameter.EMPTY_ARRAY;

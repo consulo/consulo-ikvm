@@ -3,11 +3,14 @@ package ru.andrew.jclazz.core.signature;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.consulo.lombok.annotations.ArrayFactoryFields;
+
 /*
 FormalTypeParameter:
    Identifier : FieldTypeSignature   (:FieldTypeSignature)*
                 classbound, optional interfacebounds
  */
+@ArrayFactoryFields
 public class FormalTypeParameter
 {
 	private String identifier;
