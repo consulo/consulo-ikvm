@@ -374,14 +374,14 @@ public class DotNetTypeToJavaClass extends LightElement implements PsiExtensible
 	@Override
 	public PsiClass[] getInnerClasses()
 	{
-		return new PsiClass[0];
+		return PsiClass.EMPTY_ARRAY;
 	}
 
 	@NotNull
 	@Override
 	public PsiClassInitializer[] getInitializers()
 	{
-		return new PsiClassInitializer[0];
+		return PsiClassInitializer.EMPTY_ARRAY;
 	}
 
 	@NotNull
@@ -402,7 +402,7 @@ public class DotNetTypeToJavaClass extends LightElement implements PsiExtensible
 	@Override
 	public PsiClass[] getAllInnerClasses()
 	{
-		return new PsiClass[0];
+		return PsiClass.EMPTY_ARRAY;
 	}
 
 	@Nullable
