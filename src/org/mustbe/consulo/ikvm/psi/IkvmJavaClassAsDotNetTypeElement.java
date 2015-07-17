@@ -19,6 +19,7 @@ package org.mustbe.consulo.ikvm.psi;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.mustbe.consulo.RequiredReadAction;
 import org.mustbe.consulo.dotnet.psi.DotNetGenericParameter;
 import org.mustbe.consulo.dotnet.psi.DotNetGenericParameterList;
 import org.mustbe.consulo.dotnet.psi.DotNetModifier;
@@ -53,6 +54,7 @@ public class IkvmJavaClassAsDotNetTypeElement extends LightElement implements Do
 		return myPsiClass;
 	}
 
+	@RequiredReadAction
 	@Nullable
 	@Override
 	public String getPresentableParentQName()
@@ -60,6 +62,7 @@ public class IkvmJavaClassAsDotNetTypeElement extends LightElement implements Do
 		return StringUtil.getPackageName(getPresentableQName());
 	}
 
+	@RequiredReadAction
 	@Nullable
 	@Override
 	public String getPresentableQName()
@@ -117,8 +120,9 @@ public class IkvmJavaClassAsDotNetTypeElement extends LightElement implements Do
 		return new DotNetTypeRef[0];
 	}
 
+	@RequiredReadAction
 	@Override
-	public boolean isInheritor(@NotNull DotNetTypeDeclaration typeDeclaration, boolean b)
+	public boolean isInheritor(@NotNull String otherVmQName, boolean b)
 	{
 		return false;
 	}
@@ -129,6 +133,7 @@ public class IkvmJavaClassAsDotNetTypeElement extends LightElement implements Do
 		return null;
 	}
 
+	@RequiredReadAction
 	@Nullable
 	@Override
 	public String getVmQName()
@@ -136,6 +141,7 @@ public class IkvmJavaClassAsDotNetTypeElement extends LightElement implements Do
 		return null;
 	}
 
+	@RequiredReadAction
 	@Nullable
 	@Override
 	public String getVmName()
@@ -170,12 +176,14 @@ public class IkvmJavaClassAsDotNetTypeElement extends LightElement implements Do
 		return new DotNetNamedElement[0];
 	}
 
+	@RequiredReadAction
 	@Override
 	public boolean hasModifier(@NotNull DotNetModifier modifier)
 	{
 		return false;
 	}
 
+	@RequiredReadAction
 	@Nullable
 	@Override
 	public DotNetModifierList getModifierList()
