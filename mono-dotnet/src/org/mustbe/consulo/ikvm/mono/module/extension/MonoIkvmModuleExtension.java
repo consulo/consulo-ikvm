@@ -21,6 +21,7 @@ import org.consulo.util.pointers.NamedPointer;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.mustbe.consulo.RequiredReadAction;
 import org.mustbe.consulo.dotnet.compiler.DotNetCompilerOptionsBuilder;
 import org.mustbe.consulo.ikvm.IkvmModuleExtension;
 import org.mustbe.consulo.ikvm.bundle.IkvmBundleType;
@@ -126,6 +127,7 @@ public class MonoIkvmModuleExtension extends InnerMonoModuleExtension<MonoIkvmMo
 		return mySdkForCompilationPointer == null ? null : mySdkForCompilationPointer.get();
 	}
 
+	@RequiredReadAction
 	@Nullable
 	@Override
 	public String getAssemblyTitle()
@@ -166,6 +168,7 @@ public class MonoIkvmModuleExtension extends InnerMonoModuleExtension<MonoIkvmMo
 		return "";
 	}
 
+	@RequiredReadAction
 	@NotNull
 	@Override
 	public PsiElement[] getEntryPointElements()
@@ -189,6 +192,7 @@ public class MonoIkvmModuleExtension extends InnerMonoModuleExtension<MonoIkvmMo
 		return ikvmCompilerOptionsBuilder;
 	}
 
+	@RequiredReadAction
 	@Override
 	protected void loadStateImpl(@NotNull Element element)
 	{
