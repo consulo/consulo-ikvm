@@ -19,7 +19,9 @@ package consulo.ikvm.debugger.breakpoint;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.mustbe.consulo.RequiredReadAction;
+import org.mustbe.consulo.ikvm.IkvmModuleExtension;
 import com.intellij.debugger.ui.breakpoints.JavaLineBreakpointType;
+import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.xdebugger.breakpoints.XLineBreakpointType;
@@ -43,6 +45,11 @@ public class IkvmLineBreakpointTypeResolver implements XLineBreakpointTypeResolv
 		XLineBreakpointType<?> breakpointType = ourJavaResolver.resolveBreakpointType(project, virtualFile, line);
 		if(breakpointType == JavaLineBreakpointType.getInstance())
 		{
+			IkvmModuleExtension extension = ModuleUtilCore.getExtension(project, virtualFile, IkvmModuleExtension.class);
+			if(extension == null)
+			{
+				return null;
+			}
 			return DotNetLineBreakpointType.getInstance();
 		}
 		return null;
