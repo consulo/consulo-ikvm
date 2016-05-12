@@ -23,6 +23,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.mustbe.consulo.RequiredReadAction;
 import org.mustbe.consulo.dotnet.DotNetTypes;
+import org.mustbe.consulo.dotnet.psi.DotNetTypeDeclaration;
 import org.mustbe.consulo.dotnet.resolve.DotNetArrayTypeRef;
 import org.mustbe.consulo.dotnet.resolve.DotNetGenericWrapperTypeRef;
 import org.mustbe.consulo.dotnet.resolve.DotNetTypeRef;
@@ -130,20 +131,28 @@ public class JavaMethodStubBuilder extends BaseStubBuilder<PsiMethod>
 		}
 	}
 
-	private static void appendType(DotNetTypeRef typeRef, StringBuilder builder)
+	@RequiredReadAction
+	private void appendType(DotNetTypeRef typeRef, StringBuilder builder)
 	{
-		String qualifiedText = typeRef.getQualifiedText();
-		if("System.Void".equals(qualifiedText))
+		PsiElement element = typeRef.resolve().getElement();
+		String vmQName = element instanceof DotNetTypeDeclaration ? ((DotNetTypeDeclaration) element).getVmQName() : null;
+		if(vmQName == null)
+		{
+			builder.append("Ljava/lang/Object;");
+			return;
+		}
+
+		if(DotNetTypes.System.Void.equals(vmQName))
 		{
 			builder.append("V");
 		}
-		else if("System.Int32".equals(qualifiedText))
+		else if(DotNetTypes.System.Int32.equals(vmQName))
 		{
 			builder.append("I");
 		}
-		else if("System.String".equals(qualifiedText))
+		else if(DotNetTypes.System.String.equals(vmQName))
 		{
-			appendType(new IkvmTypeRef(JavaClassNames.JAVA_LANG_STRING), builder);
+			appendType(new IkvmTypeRef(myNavTarget, JavaClassNames.JAVA_LANG_STRING), builder);
 		}
 		else if(typeRef instanceof DotNetGenericWrapperTypeRef)
 		{
@@ -156,24 +165,16 @@ public class JavaMethodStubBuilder extends BaseStubBuilder<PsiMethod>
 		}
 		else
 		{
-			if(qualifiedText.contains("<"))
+			if(vmQName.equals(DotNetTypes.System.Object))
 			{
-				//TODO
-				appendType(new IkvmTypeRef(JavaClassNames.JAVA_LANG_OBJECT), builder);
+				appendType(new IkvmTypeRef(myNavTarget, JavaClassNames.JAVA_LANG_OBJECT), builder);
+				return;
 			}
-			else
+			if(!vmQName.startsWith("java"))
 			{
-				if(qualifiedText.equals(DotNetTypes.System.Object))
-				{
-					appendType(new IkvmTypeRef(JavaClassNames.JAVA_LANG_OBJECT), builder);
-					return;
-				}
-				if(!qualifiedText.startsWith("java"))
-				{
-					qualifiedText = "cli." + qualifiedText;
-				}
-				builder.append("L").append(qualifiedText.replace(".", "/")).append(";");
+				vmQName = "cli." + vmQName;
 			}
+			builder.append("L").append(vmQName.replace(".", "/")).append(";");
 		}
 	}
 

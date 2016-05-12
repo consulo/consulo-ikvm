@@ -37,5 +37,7 @@
 		<iconDescriptorUpdater implementation="org.mustbe.consulo.ikvm.IkvmIconDescriptorUpdater" />
 		<compiler.sorter implementation="org.mustbe.consulo.ikvm.compiler.IkvmCompilerSorter" />
 		<compiler implementation="org.mustbe.consulo.ikvm.compiler.IkvmStubGenerationCompiler" />
+
+		<xdebugger.lineBreakpointTypeResolver filetype="JAVA" implementationClass="consulo.ikvm.debugger.breakpoint.IkvmLineBreakpointTypeResolver" order="first"/>
 	</extensions>
 </idea-plugin>
