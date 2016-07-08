@@ -3,9 +3,9 @@ package ru.andrew.jclazz.core.signature;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.consulo.lombok.annotations.ArrayFactoryFields;
 import org.jetbrains.annotations.NotNull;
 import com.intellij.openapi.util.text.StringUtil;
+import consulo.lombok.annotations.ArrayFactoryFields;
 
 /*
 ClassTypeSignature:

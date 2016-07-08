@@ -22,7 +22,6 @@ import java.util.List;
 
 import javax.swing.Icon;
 
-import org.consulo.lombok.annotations.LazyInstance;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.mustbe.consulo.java.JavaIcons;
@@ -39,6 +38,7 @@ import com.intellij.openapi.roots.types.BinariesOrderRootType;
 import com.intellij.openapi.util.SystemInfo;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.util.ArchiveVfsUtil;
+import consulo.lombok.annotations.Lazy;
 
 /**
  * @author VISTALL
@@ -54,7 +54,7 @@ public class IkvmBundleType extends SdkType implements JavaSdkType
 	};
 
 	@NotNull
-	@LazyInstance
+	@Lazy
 	public static IkvmBundleType getInstance()
 	{
 		return EP_NAME.findExtension(IkvmBundleType.class);

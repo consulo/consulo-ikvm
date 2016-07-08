@@ -1,6 +1,6 @@
 package ru.andrew.jclazz.core.signature;
 
-import org.consulo.lombok.annotations.ArrayFactoryFields;
+import consulo.lombok.annotations.ArrayFactoryFields;
 
 /*
 TypeArgument:

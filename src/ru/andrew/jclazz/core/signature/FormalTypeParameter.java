@@ -3,7 +3,7 @@ package ru.andrew.jclazz.core.signature;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.consulo.lombok.annotations.ArrayFactoryFields;
+import consulo.lombok.annotations.ArrayFactoryFields;
 
 /*
 FormalTypeParameter:

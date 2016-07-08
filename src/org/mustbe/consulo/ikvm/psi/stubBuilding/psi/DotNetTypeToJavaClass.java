@@ -26,7 +26,6 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.consulo.lombok.annotations.LazyInstance;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -66,6 +65,7 @@ import com.intellij.psi.search.SearchScope;
 import com.intellij.psi.util.PsiUtil;
 import com.intellij.util.Consumer;
 import com.intellij.util.IncorrectOperationException;
+import consulo.lombok.annotations.Lazy;
 import ru.andrew.jclazz.core.signature.ClassSignature;
 import ru.andrew.jclazz.core.signature.ClassTypeSignature;
 import ru.andrew.jclazz.core.signature.FormalTypeParameter;
@@ -596,7 +596,7 @@ public class DotNetTypeToJavaClass extends LightElement implements PsiExtensible
 	@NotNull
 	@Override
 	@RequiredReadAction
-	@LazyInstance
+	@Lazy
 	public PsiTypeParameter[] getTypeParameters()
 	{
 		DotNetGenericParameter[] genericParameters = myTypeDeclaration.getGenericParameters();
