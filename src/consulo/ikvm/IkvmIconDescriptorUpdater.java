@@ -17,6 +17,7 @@
 package consulo.ikvm;
 
 import org.jetbrains.annotations.NotNull;
+import org.mustbe.consulo.RequiredReadAction;
 import consulo.ikvm.psi.IkvmJavaClassAsDotNetTypeElement;
 import com.intellij.ide.IconDescriptor;
 import com.intellij.ide.IconDescriptorUpdater;
@@ -29,6 +30,7 @@ import com.intellij.psi.PsiElement;
  */
 public class IkvmIconDescriptorUpdater implements IconDescriptorUpdater
 {
+	@RequiredReadAction
 	@Override
 	public void updateIcon(@NotNull IconDescriptor iconDescriptor, @NotNull PsiElement element, int i)
 	{
