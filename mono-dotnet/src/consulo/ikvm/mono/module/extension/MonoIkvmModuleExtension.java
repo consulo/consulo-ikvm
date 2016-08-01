@@ -26,10 +26,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.mustbe.consulo.RequiredReadAction;
 import org.mustbe.consulo.dotnet.compiler.DotNetCompilerOptionsBuilder;
-import org.mustbe.consulo.ikvm.IkvmModuleExtension;
-import org.mustbe.consulo.ikvm.bundle.IkvmBundleType;
-import org.mustbe.consulo.ikvm.compiler.IkvmCompilerOptionsBuilder;
-import org.mustbe.consulo.ikvm.module.extension.IkvmModuleExtensionUtil;
 import org.mustbe.consulo.java.module.extension.LanguageLevelModuleInheritableNamedPointerImpl;
 import org.mustbe.consulo.java.module.extension.SpecialDirLocation;
 import org.mustbe.consulo.mono.dotnet.module.extension.InnerMonoModuleExtension;
@@ -52,6 +48,10 @@ import com.intellij.pom.java.LanguageLevel;
 import com.intellij.psi.PsiElement;
 import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.containers.OrderedSet;
+import consulo.ikvm.IkvmModuleExtension;
+import consulo.ikvm.bundle.IkvmBundleType;
+import consulo.ikvm.compiler.IkvmCompilerOptionsBuilder;
+import consulo.ikvm.module.extension.IkvmModuleExtensionUtil;
 
 /**
  * @author VISTALL

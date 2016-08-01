@@ -19,7 +19,7 @@ package consulo.ikvm.debugger.breakpoint;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.mustbe.consulo.RequiredReadAction;
-import org.mustbe.consulo.ikvm.IkvmModuleExtension;
+import consulo.ikvm.IkvmModuleExtension;
 import com.intellij.debugger.ui.breakpoints.JavaLineBreakpointType;
 import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.openapi.project.Project;

@@ -15,28 +15,29 @@
   -->
 
 <idea-plugin>
-	<id>org.mustbe.consulo.ikvm</id>
+	<id>consulo.ikvm</id>
 	<name>IKVM.NET</name>
 	<version>SNAPSHOT</version>
+	<category>Port Frameworks</category>
 	<depends>org.consulo.java</depends>
 	<depends>org.mustbe.consulo.dotnet.core</depends>
 	<depends config-file="mono-dotnet.xml" optional="true">org.mustbe.consulo.dotnet.mono</depends>
 	<depends config-file="microsoft-dotnet.xml" optional="true">org.mustbe.consulo.dotnet.microsoft</depends>
 
 	<extensions defaultExtensionNs="org.consulo.java">
-		<elementFinder implementation="org.mustbe.consulo.ikvm.psi.IkvmPsiElementFinder" />
-		<java.shortNamesCache implementation="org.mustbe.consulo.ikvm.psi.IkvmPsiShortNamesCache" />
+		<elementFinder implementation="consulo.ikvm.psi.IkvmPsiElementFinder" />
+		<java.shortNamesCache implementation="consulo.ikvm.psi.IkvmPsiShortNamesCache" />
 	</extensions>
 
 	<extensions defaultExtensionNs="org.mustbe.consulo.dotnet.core">
-		<msilFileRepresentation implementation="org.mustbe.consulo.ikvm.representation.JavaRepresentationProvider" />
+		<msilFileRepresentation implementation="consulo.ikvm.representation.JavaRepresentationProvider" />
 	</extensions>
 
 	<extensions defaultExtensionNs="com.intellij">
-		<sdkType implementation="org.mustbe.consulo.ikvm.bundle.IkvmBundleType"/>
-		<iconDescriptorUpdater implementation="org.mustbe.consulo.ikvm.IkvmIconDescriptorUpdater" />
-		<compiler.sorter implementation="org.mustbe.consulo.ikvm.compiler.IkvmCompilerSorter" />
-		<compiler implementation="org.mustbe.consulo.ikvm.compiler.IkvmStubGenerationCompiler" />
+		<sdkType implementation="consulo.ikvm.bundle.IkvmBundleType"/>
+		<iconDescriptorUpdater implementation="consulo.ikvm.IkvmIconDescriptorUpdater" />
+		<compiler.sorter implementation="consulo.ikvm.compiler.IkvmCompilerSorter" />
+		<compiler implementation="consulo.ikvm.compiler.IkvmStubGenerationCompiler" />
 
 		<xdebugger.lineBreakpointTypeResolver filetype="JAVA" implementationClass="consulo.ikvm.debugger.breakpoint.IkvmLineBreakpointTypeResolver" order="first"/>
 	</extensions>
