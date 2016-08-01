@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.mustbe.consulo.ikvm.microsoft.compiler;
+package consulo.ikvm.microsoft.compiler;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -23,7 +23,7 @@ import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
 import org.mustbe.consulo.dotnet.compiler.DotNetDependencyCopierExtension;
-import org.mustbe.consulo.ikvm.microsoft.module.extension.MicrosoftIkvmModuleExtension;
+import consulo.ikvm.microsoft.module.extension.MicrosoftIkvmModuleExtension;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.openapi.projectRoots.Sdk;

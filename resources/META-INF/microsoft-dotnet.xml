@@ -4,11 +4,11 @@
 								 parentKey="microsoft-dotnet"
 								 name="Java (IKVM.NET)"
 								 icon="/icons/java.png"
-								 immutableClass="org.mustbe.consulo.ikvm.microsoft.module.extension.MicrosoftIkvmModuleExtension"
-								 mutableClass="org.mustbe.consulo.ikvm.microsoft.module.extension.MicrosoftIkvmMutableModuleExtension"/>
+								 immutableClass="consulo.ikvm.microsoft.module.extension.MicrosoftIkvmModuleExtension"
+								 mutableClass="consulo.ikvm.microsoft.module.extension.MicrosoftIkvmMutableModuleExtension"/>
 	</extensions>
 
 	<extensions defaultExtensionNs="org.mustbe.consulo.dotnet.core">
-		<dependencyCopierExtension implementation="org.mustbe.consulo.ikvm.microsoft.compiler.IkvmDependencyCopierExtension" />
+		<dependencyCopierExtension implementation="consulo.ikvm.microsoft.compiler.IkvmDependencyCopierExtension" />
 	</extensions>
 </idea-plugin>

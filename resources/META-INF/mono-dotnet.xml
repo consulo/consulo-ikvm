@@ -20,7 +20,7 @@
 								 parentKey="mono-dotnet"
 								 name="Java (IKVM.NET)"
 								 icon="/icons/java.png"
-								 immutableClass="org.mustbe.consulo.ikvm.mono.module.extension.MonoIkvmModuleExtension"
-								 mutableClass="org.mustbe.consulo.ikvm.mono.module.extension.MonoIkvmMutableModuleExtension"/>
+								 immutableClass="consulo.ikvm.mono.module.extension.MonoIkvmModuleExtension"
+								 mutableClass="consulo.ikvm.mono.module.extension.MonoIkvmMutableModuleExtension"/>
 	</extensions>
 </idea-plugin>

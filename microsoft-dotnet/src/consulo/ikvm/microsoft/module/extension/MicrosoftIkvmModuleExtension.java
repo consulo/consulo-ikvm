@@ -1,30 +1,15 @@
-/*
- * Copyright 2013-2014 must-be.org
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-package org.mustbe.consulo.ikvm.mono.module.extension;
+package consulo.ikvm.microsoft.module.extension;
 
 import java.util.Collections;
 import java.util.Set;
 
+import org.consulo.module.extension.ModuleExtensionWithSdk;
 import org.consulo.module.extension.ModuleInheritableNamedPointer;
+import org.consulo.module.extension.impl.ModuleExtensionWithSdkImpl;
 import org.consulo.util.pointers.NamedPointer;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.mustbe.consulo.RequiredReadAction;
 import org.mustbe.consulo.dotnet.compiler.DotNetCompilerOptionsBuilder;
 import org.mustbe.consulo.ikvm.IkvmModuleExtension;
 import org.mustbe.consulo.ikvm.bundle.IkvmBundleType;
@@ -32,7 +17,6 @@ import org.mustbe.consulo.ikvm.compiler.IkvmCompilerOptionsBuilder;
 import org.mustbe.consulo.ikvm.module.extension.IkvmModuleExtensionUtil;
 import org.mustbe.consulo.java.module.extension.LanguageLevelModuleInheritableNamedPointerImpl;
 import org.mustbe.consulo.java.module.extension.SpecialDirLocation;
-import org.mustbe.consulo.mono.dotnet.module.extension.InnerMonoModuleExtension;
 import org.mustbe.consulo.sdk.SdkUtil;
 import com.intellij.compiler.impl.ModuleChunk;
 import com.intellij.ide.highlighter.JavaFileType;
@@ -40,14 +24,11 @@ import com.intellij.openapi.application.PathManager;
 import com.intellij.openapi.compiler.CompileContext;
 import com.intellij.openapi.fileTypes.LanguageFileType;
 import com.intellij.openapi.projectRoots.Sdk;
-import com.intellij.openapi.projectRoots.SdkModificator;
 import com.intellij.openapi.projectRoots.SdkType;
-import com.intellij.openapi.projectRoots.impl.SdkImpl;
 import com.intellij.openapi.roots.ModuleRootLayer;
 import com.intellij.openapi.roots.types.BinariesOrderRootType;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.openapi.vfs.util.ArchiveVfsUtil;
 import com.intellij.pom.java.LanguageLevel;
 import com.intellij.psi.PsiElement;
 import com.intellij.util.containers.ContainerUtil;
@@ -55,52 +36,19 @@ import com.intellij.util.containers.OrderedSet;
 
 /**
  * @author VISTALL
- * @since 05.05.14
+ * @since 07.05.14
  */
-public class MonoIkvmModuleExtension extends InnerMonoModuleExtension<MonoIkvmModuleExtension> implements IkvmModuleExtension<MonoIkvmModuleExtension>
+public class MicrosoftIkvmModuleExtension extends ModuleExtensionWithSdkImpl<MicrosoftIkvmModuleExtension> implements
+		ModuleExtensionWithSdk<MicrosoftIkvmModuleExtension>, IkvmModuleExtension<MicrosoftIkvmModuleExtension>
+
 {
 	protected NamedPointer<Sdk> mySdkForCompilationPointer;
 	protected final LanguageLevelModuleInheritableNamedPointerImpl myLanguageLevelPointer;
 
-	public MonoIkvmModuleExtension(@NotNull String id, @NotNull ModuleRootLayer rootModel)
+	public MicrosoftIkvmModuleExtension(@NotNull final String id, @NotNull ModuleRootLayer rootModel)
 	{
 		super(id, rootModel);
 		myLanguageLevelPointer = new LanguageLevelModuleInheritableNamedPointerImpl(getProject(), id);
-	}
-
-	@Override
-	protected Sdk createSdk(VirtualFile virtualFile)
-	{
-		SdkImpl sdk = new SdkImpl("Mono IKVM.NET", IkvmBundleType.getInstance());
-		VirtualFile mainMonoPath = virtualFile.getParent().getParent().getParent();
-		sdk.setHomePath(mainMonoPath.getPath());
-		sdk.setPredefined(true);
-		sdk.setVersionString(IkvmBundleType.getInstance().getVersionString(sdk));
-
-		SdkModificator sdkModificator = sdk.getSdkModificator();
-		for(String library : IkvmBundleType.ourLibraries)
-		{
-			VirtualFile libraryFile = mainMonoPath.findFileByRelativePath("lib/mono/ikvm/" + library);
-			if(libraryFile != null)
-			{
-				VirtualFile archiveLibraryFile = ArchiveVfsUtil.getArchiveRootForLocalFile(libraryFile);
-				if(archiveLibraryFile != null)
-				{
-					sdkModificator.addRoot(archiveLibraryFile, BinariesOrderRootType.getInstance());
-				}
-			}
-		}
-
-		sdkModificator.commitChanges();
-		return sdk;
-	}
-
-	@Override
-	public void commit(@NotNull MonoIkvmModuleExtension mutableModuleExtension)
-	{
-		super.commit(mutableModuleExtension);
-		mySdkForCompilationPointer = mutableModuleExtension.mySdkForCompilationPointer;
-		myLanguageLevelPointer.set(mutableModuleExtension.getInheritableLanguageLevel());
 	}
 
 	@NotNull
@@ -131,19 +79,19 @@ public class MonoIkvmModuleExtension extends InnerMonoModuleExtension<MonoIkvmMo
 		return mySdkForCompilationPointer == null ? null : mySdkForCompilationPointer.get();
 	}
 
-	@RequiredReadAction
-	@Nullable
-	@Override
-	public String getAssemblyTitle()
-	{
-		return null;
-	}
-
 	@Nullable
 	@Override
 	public String getJavaSdkName()
 	{
 		return mySdkForCompilationPointer == null ? null : mySdkForCompilationPointer.getName();
+	}
+
+	@Override
+	public void commit(@NotNull MicrosoftIkvmModuleExtension mutableModuleExtension)
+	{
+		super.commit(mutableModuleExtension);
+		mySdkForCompilationPointer = mutableModuleExtension.mySdkForCompilationPointer;
+		myLanguageLevelPointer.set(mutableModuleExtension.getInheritableLanguageLevel());
 	}
 
 	@NotNull
@@ -157,17 +105,22 @@ public class MonoIkvmModuleExtension extends InnerMonoModuleExtension<MonoIkvmMo
 	public Set<VirtualFile> getCompilationClasspath(@NotNull CompileContext compileContext, @NotNull ModuleChunk moduleChunk)
 	{
 		Sdk sdkForCompilation = getSdkForCompilation();
+		if(sdkForCompilation == null)
+		{
+			return Collections.emptySet();
+		}
+
 		Set<VirtualFile> files = new OrderedSet<>();
 
 		ContainerUtil.addAll(files, sdkForCompilation.getRootProvider().getFiles(BinariesOrderRootType.getInstance()));
+
+		files.addAll(moduleChunk.getCompilationClasspathFiles(IkvmBundleType.getInstance()));
 
 		VirtualFile fileByPath = LocalFileSystem.getInstance().findFileByPath(PathManager.getSystemPath() + "/ikvm-stubs/" + getModule().getName() + "@" + getModule().getModuleDirUrl().hashCode());
 		if(fileByPath != null)
 		{
 			files.add(fileByPath);
 		}
-
-		files.addAll(moduleChunk.getCompilationClasspathFiles(IkvmBundleType.getInstance()));
 		return files;
 	}
 
@@ -185,12 +138,18 @@ public class MonoIkvmModuleExtension extends InnerMonoModuleExtension<MonoIkvmMo
 		return null;
 	}
 
-	@RequiredReadAction
 	@NotNull
 	@Override
 	public PsiElement[] getEntryPointElements()
 	{
 		return IkvmModuleExtensionUtil.buildEntryPoints(getModule());
+	}
+
+	@Nullable
+	@Override
+	public String getAssemblyTitle()
+	{
+		return null;
 	}
 
 	@NotNull
@@ -204,12 +163,11 @@ public class MonoIkvmModuleExtension extends InnerMonoModuleExtension<MonoIkvmMo
 	@Override
 	public DotNetCompilerOptionsBuilder createCompilerOptionsBuilder()
 	{
-		IkvmCompilerOptionsBuilder ikvmCompilerOptionsBuilder = new IkvmCompilerOptionsBuilder("bin/mono");
-		ikvmCompilerOptionsBuilder.addExtraParameter(getSdk().getHomePath() + "/lib/ikvm/ikvmc.exe");
-		return ikvmCompilerOptionsBuilder;
+		IkvmCompilerOptionsBuilder builder = new IkvmCompilerOptionsBuilder("bin/ikvmc.exe");
+		builder.addArgument("-nologo");
+		return builder;
 	}
 
-	@RequiredReadAction
 	@Override
 	protected void loadStateImpl(@NotNull Element element)
 	{
