@@ -80,4 +80,10 @@ public class MicrosoftIkvmMutableModuleExtension extends MicrosoftIkvmModuleExte
 	{
 
 	}
+
+	@Override
+	public void setBytecodeVersion(@Nullable String s)
+	{
+
+	}
 }

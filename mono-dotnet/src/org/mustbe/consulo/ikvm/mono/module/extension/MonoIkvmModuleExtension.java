@@ -16,6 +16,9 @@
 
 package org.mustbe.consulo.ikvm.mono.module.extension;
 
+import java.util.Collections;
+import java.util.Set;
+
 import org.consulo.module.extension.ModuleInheritableNamedPointer;
 import org.consulo.util.pointers.NamedPointer;
 import org.jdom.Element;
@@ -42,12 +45,13 @@ import com.intellij.openapi.projectRoots.SdkType;
 import com.intellij.openapi.projectRoots.impl.SdkImpl;
 import com.intellij.openapi.roots.ModuleRootLayer;
 import com.intellij.openapi.roots.types.BinariesOrderRootType;
-import com.intellij.openapi.vfs.VfsUtil;
+import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.util.ArchiveVfsUtil;
 import com.intellij.pom.java.LanguageLevel;
 import com.intellij.psi.PsiElement;
-import com.intellij.util.PathsList;
+import com.intellij.util.containers.ContainerUtil;
+import com.intellij.util.containers.OrderedSet;
 
 /**
  * @author VISTALL
@@ -150,22 +154,35 @@ public class MonoIkvmModuleExtension extends InnerMonoModuleExtension<MonoIkvmMo
 
 	@NotNull
 	@Override
-	public String getCompilationClasspath(@NotNull CompileContext compileContext, @NotNull ModuleChunk moduleChunk)
+	public Set<VirtualFile> getCompilationClasspath(@NotNull CompileContext compileContext, @NotNull ModuleChunk moduleChunk)
 	{
 		Sdk sdkForCompilation = getSdkForCompilation();
-		PathsList classpath = new PathsList();
+		Set<VirtualFile> files = new OrderedSet<>();
 
-		classpath.addVirtualFiles(sdkForCompilation.getRootProvider().getFiles(BinariesOrderRootType.getInstance()));
-		classpath.add(PathManager.getSystemPath() + "/ikvm-stubs/" + getModule().getName() + "@" + getModule().getModuleDirUrl().hashCode());
-		classpath.addVirtualFiles(VfsUtil.toVirtualFileArray(moduleChunk.getCompilationClasspathFiles(IkvmBundleType.getInstance())));
-		return classpath.getPathsString();
+		ContainerUtil.addAll(files, sdkForCompilation.getRootProvider().getFiles(BinariesOrderRootType.getInstance()));
+
+		VirtualFile fileByPath = LocalFileSystem.getInstance().findFileByPath(PathManager.getSystemPath() + "/ikvm-stubs/" + getModule().getName() + "@" + getModule().getModuleDirUrl().hashCode());
+		if(fileByPath != null)
+		{
+			files.add(fileByPath);
+		}
+
+		files.addAll(moduleChunk.getCompilationClasspathFiles(IkvmBundleType.getInstance()));
+		return files;
 	}
 
 	@NotNull
 	@Override
-	public String getCompilationBootClasspath(@NotNull CompileContext compileContext, @NotNull ModuleChunk moduleChunk)
+	public Set<VirtualFile> getCompilationBootClasspath(@NotNull CompileContext compileContext, @NotNull ModuleChunk moduleChunk)
 	{
-		return "";
+		return Collections.emptySet();
+	}
+
+	@Nullable
+	@Override
+	public String getBytecodeVersion()
+	{
+		return null;
 	}
 
 	@RequiredReadAction

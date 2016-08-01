@@ -58,6 +58,11 @@ public class MonoIkvmMutableModuleExtension extends MonoIkvmModuleExtension impl
 	}
 
 	@Override
+	public void setBytecodeVersion(@Nullable String s)
+	{
+	}
+
+	@Override
 	public void setEnabled(boolean val)
 	{
 		setEnabledImpl(val);
