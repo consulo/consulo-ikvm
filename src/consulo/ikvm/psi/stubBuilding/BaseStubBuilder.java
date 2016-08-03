@@ -21,12 +21,12 @@ import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.org.objectweb.asm.ClassWriter;
 import org.mustbe.consulo.RequiredReadAction;
 import org.mustbe.consulo.dotnet.resolve.DotNetArrayTypeRef;
 import org.mustbe.consulo.dotnet.resolve.DotNetPointerTypeRef;
 import org.mustbe.consulo.dotnet.resolve.DotNetTypeRef;
 import org.mustbe.consulo.java.util.JavaClassNames;
-import org.objectweb.asm.ClassWriter;
 import com.intellij.openapi.util.Comparing;
 import com.intellij.psi.JavaPsiFacade;
 import com.intellij.psi.PsiArrayType;

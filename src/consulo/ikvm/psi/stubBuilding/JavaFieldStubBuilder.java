@@ -18,9 +18,9 @@ package consulo.ikvm.psi.stubBuilding;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.org.objectweb.asm.ClassWriter;
 import org.mustbe.consulo.RequiredReadAction;
 import org.mustbe.consulo.dotnet.resolve.DotNetTypeRef;
-import org.objectweb.asm.ClassWriter;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiField;
