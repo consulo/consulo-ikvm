@@ -19,19 +19,8 @@ package consulo.ikvm.psi;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.consulo.psi.PsiPackage;
-import org.consulo.psi.PsiPackageManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.mustbe.consulo.RequiredReadAction;
-import org.mustbe.consulo.dotnet.module.extension.DotNetModuleExtension;
-import org.mustbe.consulo.dotnet.psi.DotNetModifier;
-import org.mustbe.consulo.dotnet.psi.DotNetTypeDeclaration;
-import org.mustbe.consulo.dotnet.resolve.DotNetNamespaceAsElement;
-import org.mustbe.consulo.dotnet.resolve.DotNetPsiSearcher;
-import consulo.ikvm.psi.stubBuilding.JavaClassStubBuilder;
-import consulo.ikvm.psi.stubBuilding.StubBuilder;
-import org.mustbe.consulo.java.module.extension.JavaModuleExtension;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.PsiClass;
@@ -41,6 +30,17 @@ import com.intellij.psi.PsiJavaPackage;
 import com.intellij.psi.PsiManager;
 import com.intellij.psi.impl.file.PsiPackageImpl;
 import com.intellij.psi.search.GlobalSearchScope;
+import consulo.annotations.RequiredReadAction;
+import consulo.dotnet.module.extension.DotNetModuleExtension;
+import consulo.dotnet.psi.DotNetModifier;
+import consulo.dotnet.psi.DotNetTypeDeclaration;
+import consulo.dotnet.resolve.DotNetNamespaceAsElement;
+import consulo.dotnet.resolve.DotNetPsiSearcher;
+import consulo.ikvm.psi.stubBuilding.JavaClassStubBuilder;
+import consulo.ikvm.psi.stubBuilding.StubBuilder;
+import consulo.java.module.extension.JavaModuleExtension;
+import consulo.psi.PsiPackage;
+import consulo.psi.PsiPackageManager;
 
 /**
  * @author VISTALL

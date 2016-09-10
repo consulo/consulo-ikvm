@@ -18,14 +18,6 @@ package consulo.ikvm.representation;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.mustbe.consulo.RequiredReadAction;
-import org.mustbe.consulo.dotnet.psi.DotNetNamedElement;
-import org.mustbe.consulo.dotnet.psi.DotNetTypeDeclaration;
-import consulo.ikvm.psi.stubBuilding.JavaClassStubBuilder;
-import consulo.ikvm.psi.stubBuilding.StubBuilder;
-import org.mustbe.consulo.msil.lang.psi.MsilFile;
-import org.mustbe.consulo.msil.representation.MsilFileRepresentationProvider;
-import org.mustbe.consulo.msil.representation.MsilFileRepresentationVirtualFile;
 import com.intellij.ide.highlighter.JavaFileType;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.fileTypes.FileType;
@@ -36,6 +28,14 @@ import com.intellij.psi.SingleRootFileViewProvider;
 import com.intellij.psi.codeStyle.CodeStyleManager;
 import com.intellij.psi.impl.PsiManagerEx;
 import com.intellij.psi.impl.source.PsiJavaFileImpl;
+import consulo.annotations.RequiredReadAction;
+import consulo.dotnet.psi.DotNetNamedElement;
+import consulo.dotnet.psi.DotNetTypeDeclaration;
+import consulo.ikvm.psi.stubBuilding.JavaClassStubBuilder;
+import consulo.ikvm.psi.stubBuilding.StubBuilder;
+import consulo.msil.lang.psi.MsilFile;
+import consulo.msil.representation.MsilFileRepresentationProvider;
+import consulo.msil.representation.MsilFileRepresentationVirtualFile;
 
 /**
  * @author VISTALL

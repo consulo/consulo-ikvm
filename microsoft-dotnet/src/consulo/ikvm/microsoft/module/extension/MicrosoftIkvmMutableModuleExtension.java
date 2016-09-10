@@ -2,18 +2,18 @@ package consulo.ikvm.microsoft.module.extension;
 
 import javax.swing.JComponent;
 
-import org.consulo.module.extension.MutableModuleInheritableNamedPointer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.mustbe.consulo.RequiredDispatchThread;
-import consulo.ikvm.module.extension.IkvmMutableModuleExtension;
-import consulo.ikvm.module.extension.ui.IkvmModuleExtensionPanel;
-import org.mustbe.consulo.java.module.extension.SpecialDirLocation;
-import org.mustbe.consulo.sdk.SdkUtil;
 import com.intellij.openapi.projectRoots.Sdk;
-import com.intellij.openapi.roots.ModuleRootLayer;
 import com.intellij.openapi.util.Comparing;
 import com.intellij.pom.java.LanguageLevel;
+import consulo.annotations.RequiredDispatchThread;
+import consulo.bundle.SdkUtil;
+import consulo.ikvm.module.extension.IkvmMutableModuleExtension;
+import consulo.ikvm.module.extension.ui.IkvmModuleExtensionPanel;
+import consulo.java.module.extension.SpecialDirLocation;
+import consulo.module.extension.MutableModuleInheritableNamedPointer;
+import consulo.roots.ModuleRootLayer;
 
 /**
  * @author VISTALL

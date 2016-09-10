@@ -22,14 +22,14 @@ import java.util.Collections;
 import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
-import org.mustbe.consulo.dotnet.compiler.DotNetDependencyCopierExtension;
-import consulo.ikvm.microsoft.module.extension.MicrosoftIkvmModuleExtension;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.openapi.projectRoots.Sdk;
-import com.intellij.openapi.roots.types.BinariesOrderRootType;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
+import consulo.dotnet.compiler.DotNetDependencyCopierExtension;
+import consulo.ikvm.microsoft.module.extension.MicrosoftIkvmModuleExtension;
+import consulo.roots.types.BinariesOrderRootType;
 
 /**
  * @author VISTALL

@@ -1,0 +1,8 @@
+<component name="libraryTable">
+  <library name="consulo-plugin: consulo.dotnet.microsoft">
+    <binaries>
+      <root url="file://$PROJECT_DIR$/dep/consulo.dotnet.microsoft/lib" />
+    </binaries>
+    <jarDirectory url="file://$PROJECT_DIR$/dep/consulo.dotnet.microsoft/lib" recursive="false" />
+  </library>
+</component>

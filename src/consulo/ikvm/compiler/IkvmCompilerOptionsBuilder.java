@@ -20,18 +20,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
-import org.consulo.compiler.ModuleCompilerPathsManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.mustbe.consulo.dotnet.DotNetTarget;
-import org.mustbe.consulo.dotnet.compiler.DotNetCompilerMessage;
-import org.mustbe.consulo.dotnet.compiler.DotNetCompilerOptionsBuilder;
-import org.mustbe.consulo.dotnet.compiler.DotNetCompilerUtil;
-import org.mustbe.consulo.dotnet.compiler.DotNetMacroUtil;
-import org.mustbe.consulo.dotnet.module.extension.DotNetModuleExtension;
-import consulo.ikvm.IkvmModuleExtension;
-import org.mustbe.consulo.roots.impl.ProductionContentFolderTypeProvider;
 import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.openapi.compiler.CompilerMessageCategory;
 import com.intellij.openapi.module.Module;
@@ -43,7 +35,15 @@ import com.intellij.openapi.util.Condition;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
-import lombok.val;
+import consulo.compiler.ModuleCompilerPathsManager;
+import consulo.dotnet.DotNetTarget;
+import consulo.dotnet.compiler.DotNetCompilerMessage;
+import consulo.dotnet.compiler.DotNetCompilerOptionsBuilder;
+import consulo.dotnet.compiler.DotNetCompilerUtil;
+import consulo.dotnet.compiler.DotNetMacroUtil;
+import consulo.dotnet.module.extension.DotNetModuleExtension;
+import consulo.ikvm.IkvmModuleExtension;
+import consulo.roots.impl.ProductionContentFolderTypeProvider;
 
 /**
  * @author VISTALL
@@ -125,7 +125,7 @@ public class IkvmCompilerOptionsBuilder implements DotNetCompilerOptionsBuilder
 		String outputFile = DotNetMacroUtil.expandOutputFile(extension);
 		addArgument("-out:" + outputFile);
 
-		val dependFiles = DotNetCompilerUtil.collectDependencies(module, DotNetTarget.LIBRARY, true, IkvmSdkSkipper.INSTANCE);
+		Set<File> dependFiles = DotNetCompilerUtil.collectDependencies(module, DotNetTarget.LIBRARY, true, IkvmSdkSkipper.INSTANCE);
 
 		for(File file : dependFiles)
 		{

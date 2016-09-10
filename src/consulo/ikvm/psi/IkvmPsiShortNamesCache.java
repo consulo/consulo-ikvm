@@ -23,11 +23,6 @@ import java.util.List;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.mustbe.consulo.RequiredReadAction;
-import org.mustbe.consulo.dotnet.psi.DotNetTypeDeclaration;
-import org.mustbe.consulo.dotnet.resolve.DotNetShortNameSearcher;
-import consulo.ikvm.psi.stubBuilding.JavaClassStubBuilder;
-import consulo.ikvm.psi.stubBuilding.StubBuilder;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiField;
@@ -40,6 +35,11 @@ import com.intellij.util.Processor;
 import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.containers.HashSet;
 import com.intellij.util.indexing.IdFilter;
+import consulo.annotations.RequiredReadAction;
+import consulo.dotnet.psi.DotNetTypeDeclaration;
+import consulo.dotnet.resolve.DotNetShortNameSearcher;
+import consulo.ikvm.psi.stubBuilding.JavaClassStubBuilder;
+import consulo.ikvm.psi.stubBuilding.StubBuilder;
 
 /**
  * @author VISTALL

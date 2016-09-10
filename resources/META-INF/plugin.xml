@@ -19,17 +19,17 @@
 	<name>IKVM.NET</name>
 	<version>SNAPSHOT</version>
 	<category>Port Frameworks</category>
-	<depends>org.consulo.java</depends>
-	<depends>org.mustbe.consulo.dotnet.core</depends>
-	<depends config-file="mono-dotnet.xml" optional="true">org.mustbe.consulo.dotnet.mono</depends>
-	<depends config-file="microsoft-dotnet.xml" optional="true">org.mustbe.consulo.dotnet.microsoft</depends>
+	<depends>consulo.java</depends>
+	<depends>consulo.dotnet</depends>
+	<depends config-file="consulo.dotnet.mono.xml" optional="true">consulo.dotnet.mono</depends>
+	<depends config-file="consulo.dotnet.microsoft.xml" optional="true">consulo.dotnet.microsoft</depends>
 
-	<extensions defaultExtensionNs="org.consulo.java">
+	<extensions defaultExtensionNs="consulo.java">
 		<elementFinder implementation="consulo.ikvm.psi.IkvmPsiElementFinder" />
 		<java.shortNamesCache implementation="consulo.ikvm.psi.IkvmPsiShortNamesCache" />
 	</extensions>
 
-	<extensions defaultExtensionNs="org.mustbe.consulo.dotnet.core">
+	<extensions defaultExtensionNs="consulo.dotnet">
 		<msilFileRepresentation implementation="consulo.ikvm.representation.JavaRepresentationProvider" />
 	</extensions>
 

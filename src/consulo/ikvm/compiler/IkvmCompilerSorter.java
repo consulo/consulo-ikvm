@@ -1,15 +1,16 @@
 package consulo.ikvm.compiler;
 
 import org.jetbrains.annotations.NotNull;
-import org.mustbe.consulo.dotnet.compiler.DotNetCompiler;
-import consulo.ikvm.IkvmModuleExtension;
 import com.intellij.compiler.impl.javaCompiler.JavaCompiler;
-import com.intellij.openapi.compiler.*;
 import com.intellij.openapi.compiler.Compiler;
+import com.intellij.openapi.compiler.TranslatingCompiler;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.util.ArrayUtil;
 import com.intellij.util.Chunk;
+import consulo.compiler.CompilerSorter;
+import consulo.dotnet.compiler.DotNetCompiler;
+import consulo.ikvm.IkvmModuleExtension;
 
 /**
  * @author VISTALL

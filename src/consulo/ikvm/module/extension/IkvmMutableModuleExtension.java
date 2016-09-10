@@ -16,11 +16,11 @@
 
 package consulo.ikvm.module.extension;
 
-import org.consulo.module.extension.MutableModuleExtensionWithSdk;
 import org.jetbrains.annotations.Nullable;
-import consulo.ikvm.IkvmModuleExtension;
-import org.mustbe.consulo.java.module.extension.JavaMutableModuleExtension;
 import com.intellij.openapi.projectRoots.Sdk;
+import consulo.ikvm.IkvmModuleExtension;
+import consulo.java.module.extension.JavaMutableModuleExtension;
+import consulo.module.extension.MutableModuleExtensionWithSdk;
 
 /**
  * @author VISTALL

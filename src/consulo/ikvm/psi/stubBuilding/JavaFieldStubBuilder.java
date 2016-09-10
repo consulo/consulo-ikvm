@@ -19,13 +19,13 @@ package consulo.ikvm.psi.stubBuilding;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.org.objectweb.asm.ClassWriter;
-import org.mustbe.consulo.RequiredReadAction;
-import org.mustbe.consulo.dotnet.resolve.DotNetTypeRef;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiField;
 import com.intellij.psi.impl.light.LightFieldBuilder;
 import com.intellij.util.ArrayUtil;
+import consulo.annotations.RequiredReadAction;
+import consulo.dotnet.resolve.DotNetTypeRef;
 
 /**
  * @author VISTALL

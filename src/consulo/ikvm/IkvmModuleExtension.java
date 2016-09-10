@@ -17,8 +17,8 @@
 package consulo.ikvm;
 
 import org.jetbrains.annotations.Nullable;
-import org.mustbe.consulo.dotnet.module.extension.DotNetModuleLangExtension;
-import org.mustbe.consulo.java.module.extension.JavaModuleExtension;
+import consulo.dotnet.module.extension.DotNetModuleLangExtension;
+import consulo.java.module.extension.JavaModuleExtension;
 
 /**
  * @author VISTALL

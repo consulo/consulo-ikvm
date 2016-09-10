@@ -22,14 +22,9 @@ import java.awt.event.ItemListener;
 import javax.swing.JList;
 import javax.swing.JPanel;
 
-import org.consulo.module.extension.MutableModuleInheritableNamedPointer;
-import org.consulo.module.extension.ui.ModuleExtensionSdkBoxBuilder;
-import org.mustbe.consulo.RequiredDispatchThread;
-import consulo.ikvm.module.extension.IkvmMutableModuleExtension;
 import com.intellij.openapi.projectRoots.JavaSdk;
 import com.intellij.openapi.projectRoots.SdkTypeId;
 import com.intellij.openapi.roots.ui.configuration.ProjectStructureConfigurable;
-import com.intellij.openapi.roots.ui.configuration.SdkComboBox;
 import com.intellij.openapi.roots.ui.configuration.projectRoot.ProjectSdksModel;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.ui.LabeledComponent;
@@ -38,6 +33,11 @@ import com.intellij.openapi.util.Condition;
 import com.intellij.pom.java.LanguageLevel;
 import com.intellij.ui.ColoredListCellRendererWrapper;
 import com.intellij.ui.SimpleTextAttributes;
+import consulo.annotations.RequiredDispatchThread;
+import consulo.extension.ui.ModuleExtensionSdkBoxBuilder;
+import consulo.ikvm.module.extension.IkvmMutableModuleExtension;
+import consulo.module.extension.MutableModuleInheritableNamedPointer;
+import consulo.roots.ui.configuration.SdkComboBox;
 
 /**
  * @author VISTALL

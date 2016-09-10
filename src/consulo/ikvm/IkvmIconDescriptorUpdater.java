@@ -17,12 +17,12 @@
 package consulo.ikvm;
 
 import org.jetbrains.annotations.NotNull;
-import org.mustbe.consulo.RequiredReadAction;
-import consulo.ikvm.psi.IkvmJavaClassAsDotNetTypeElement;
-import com.intellij.ide.IconDescriptor;
-import com.intellij.ide.IconDescriptorUpdater;
-import com.intellij.ide.IconDescriptorUpdaters;
 import com.intellij.psi.PsiElement;
+import consulo.annotations.RequiredReadAction;
+import consulo.ide.IconDescriptor;
+import consulo.ide.IconDescriptorUpdater;
+import consulo.ide.IconDescriptorUpdaters;
+import consulo.ikvm.psi.IkvmJavaClassAsDotNetTypeElement;
 
 /**
  * @author VISTALL

@@ -26,14 +26,6 @@ import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.mustbe.consulo.dotnet.DotNetTarget;
-import org.mustbe.consulo.dotnet.compiler.DotNetCompilerUtil;
-import org.mustbe.consulo.dotnet.psi.DotNetMemberOwner;
-import org.mustbe.consulo.dotnet.psi.DotNetModifier;
-import org.mustbe.consulo.dotnet.psi.DotNetTypeDeclaration;
-import consulo.ikvm.bundle.IkvmBundleType;
-import consulo.ikvm.psi.stubBuilding.JavaClassStubBuilder;
-import consulo.ikvm.psi.stubBuilding.StubBuilder;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.PathManager;
 import com.intellij.openapi.compiler.CompileContext;
@@ -54,11 +46,18 @@ import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileVisitor;
-import com.intellij.openapi.vfs.util.ArchiveVfsUtil;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.psi.util.PsiTreeUtil;
-import lombok.val;
+import consulo.dotnet.DotNetTarget;
+import consulo.dotnet.compiler.DotNetCompilerUtil;
+import consulo.dotnet.psi.DotNetMemberOwner;
+import consulo.dotnet.psi.DotNetModifier;
+import consulo.dotnet.psi.DotNetTypeDeclaration;
+import consulo.ikvm.bundle.IkvmBundleType;
+import consulo.ikvm.psi.stubBuilding.JavaClassStubBuilder;
+import consulo.ikvm.psi.stubBuilding.StubBuilder;
+import consulo.vfs.util.ArchiveVfsUtil;
 
 /**
  * @author VISTALL
@@ -128,7 +127,7 @@ public class IkvmStubGenerationCompiler implements SourceProcessingCompiler
 			Item item = (Item) p;
 
 			List<DotNetTypeDeclaration> typeDeclarations = collectTypes(compileContext.getProject(), item.getFile());
-			for(val typeDeclaration : typeDeclarations)
+			for(DotNetTypeDeclaration typeDeclaration : typeDeclarations)
 			{
 				if(!typeDeclaration.hasModifier(DotNetModifier.PUBLIC))
 				{
@@ -211,8 +210,8 @@ public class IkvmStubGenerationCompiler implements SourceProcessingCompiler
 			}
 		}
 
-		val psiManager = PsiManager.getInstance(project);
-		val list = new ArrayList<DotNetTypeDeclaration>();
+		PsiManager psiManager = PsiManager.getInstance(project);
+		List<DotNetTypeDeclaration> list = new ArrayList<DotNetTypeDeclaration>();
 		VfsUtil.visitChildrenRecursively(archiveRootForLocalFile, new VirtualFileVisitor()
 		{
 			@Override
