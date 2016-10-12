@@ -67,20 +67,20 @@ public class IkvmStubGenerationCompiler implements SourceProcessingCompiler
 {
 	public static class Item implements ProcessingItem
 	{
-		private final VirtualFile myVirtualFile;
+		private final File myFile;
 		private final Module myAffectedModule;
 
-		public Item(VirtualFile virtualFile, Module affectedModule)
+		public Item(File file, Module affectedModule)
 		{
-			myVirtualFile = virtualFile;
+			myFile = file;
 			myAffectedModule = affectedModule;
 		}
 
 		@NotNull
 		@Override
-		public VirtualFile getFile()
+		public File getFile()
 		{
-			return myVirtualFile;
+			return myFile;
 		}
 
 		@Nullable
@@ -107,11 +107,7 @@ public class IkvmStubGenerationCompiler implements SourceProcessingCompiler
 			Set<File> files = DotNetCompilerUtil.collectDependencies(affectedModule, DotNetTarget.LIBRARY, true, DotNetCompilerUtil.ACCEPT_ALL);
 			for(File file : files)
 			{
-				final VirtualFile fileByIoFile = LocalFileSystem.getInstance().findFileByIoFile(file);
-				if(fileByIoFile != null)
-				{
-					items.add(new Item(fileByIoFile, affectedModule));
-				}
+				items.add(new Item(file, affectedModule));
 			}
 		}
 		return items.toArray(new ProcessingItem[items.size()]);
@@ -184,8 +180,14 @@ public class IkvmStubGenerationCompiler implements SourceProcessingCompiler
 		return processingItems;
 	}
 
-	private List<DotNetTypeDeclaration> collectTypes(Project project, VirtualFile fileByIoFile)
+	private List<DotNetTypeDeclaration> collectTypes(Project project, File file)
 	{
+		VirtualFile fileByIoFile = LocalFileSystem.getInstance().findFileByIoFile(file);
+		if(fileByIoFile == null)
+		{
+			return Collections.emptyList();
+		}
+
 		VirtualFile archiveRootForLocalFile = ArchiveVfsUtil.getArchiveRootForLocalFile(fileByIoFile);
 
 		if(archiveRootForLocalFile == null)
