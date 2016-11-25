@@ -44,10 +44,10 @@ public class MicrosoftIkvmModuleExtension extends ModuleExtensionWithSdkImpl<Mic
 	protected NamedPointer<Sdk> mySdkForCompilationPointer;
 	protected final LanguageLevelModuleInheritableNamedPointerImpl myLanguageLevelPointer;
 
-	public MicrosoftIkvmModuleExtension(@NotNull final String id, @NotNull ModuleRootLayer rootModel)
+	public MicrosoftIkvmModuleExtension(@NotNull final String id, @NotNull ModuleRootLayer layer)
 	{
-		super(id, rootModel);
-		myLanguageLevelPointer = new LanguageLevelModuleInheritableNamedPointerImpl(getProject(), id);
+		super(id, layer);
+		myLanguageLevelPointer = new LanguageLevelModuleInheritableNamedPointerImpl(layer, id);
 	}
 
 	@NotNull
