@@ -62,10 +62,10 @@ public class MonoIkvmModuleExtension extends InnerMonoModuleExtension<MonoIkvmMo
 	protected NamedPointer<Sdk> mySdkForCompilationPointer;
 	protected final LanguageLevelModuleInheritableNamedPointerImpl myLanguageLevelPointer;
 
-	public MonoIkvmModuleExtension(@NotNull String id, @NotNull ModuleRootLayer rootModel)
+	public MonoIkvmModuleExtension(@NotNull String id, @NotNull ModuleRootLayer moduleRootLayer)
 	{
-		super(id, rootModel);
-		myLanguageLevelPointer = new LanguageLevelModuleInheritableNamedPointerImpl(getProject(), id);
+		super(id, moduleRootLayer);
+		myLanguageLevelPointer = new LanguageLevelModuleInheritableNamedPointerImpl(moduleRootLayer, id);
 	}
 
 	@Override
