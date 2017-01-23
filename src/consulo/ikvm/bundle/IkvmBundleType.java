@@ -36,7 +36,6 @@ import com.intellij.openapi.roots.OrderRootType;
 import com.intellij.openapi.util.SystemInfo;
 import com.intellij.openapi.vfs.VirtualFile;
 import consulo.java.JavaIcons;
-import consulo.lombok.annotations.Lazy;
 import consulo.roots.types.BinariesOrderRootType;
 import consulo.vfs.util.ArchiveVfsUtil;
 
@@ -54,7 +53,6 @@ public class IkvmBundleType extends SdkType implements JavaSdkType
 	};
 
 	@NotNull
-	@Lazy
 	public static IkvmBundleType getInstance()
 	{
 		return EP_NAME.findExtension(IkvmBundleType.class);

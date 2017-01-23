@@ -5,16 +5,27 @@ import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
 import com.intellij.openapi.util.text.StringUtil;
-import consulo.lombok.annotations.ArrayFactoryFields;
+import com.intellij.util.ArrayFactory;
 
 /*
 ClassTypeSignature:
    L Package/Package.../ SimpleClassTypeSignature (.SimpleClassTypeSignature)*;
                                                   suffix
  */
-@ArrayFactoryFields
 public class ClassTypeSignature
 {
+	public static final ClassTypeSignature[] EMPTY_ARRAY = new ClassTypeSignature[0];
+
+	public static ArrayFactory<ClassTypeSignature> ARRAY_FACTORY = new ArrayFactory<ClassTypeSignature>()
+	{
+		@NotNull
+		@Override
+		public ClassTypeSignature[] create(int count)
+		{
+			return count == 0 ? EMPTY_ARRAY : new ClassTypeSignature[count];
+		}
+	};
+
 	private String pack;
 	private SimpleClassTypeSignature cl;
 	private SimpleClassTypeSignature[] suffix;

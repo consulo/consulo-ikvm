@@ -3,16 +3,28 @@ package consulo.ikvm.$internal.ru.andrew.jclazz.core.signature;
 import java.util.ArrayList;
 import java.util.List;
 
-import consulo.lombok.annotations.ArrayFactoryFields;
+import org.jetbrains.annotations.NotNull;
+import com.intellij.util.ArrayFactory;
 
 /*
 FormalTypeParameter:
    Identifier : FieldTypeSignature   (:FieldTypeSignature)*
                 classbound, optional interfacebounds
  */
-@ArrayFactoryFields
 public class FormalTypeParameter
 {
+	public static final FormalTypeParameter[] EMPTY_ARRAY = new FormalTypeParameter[0];
+
+	public static ArrayFactory<FormalTypeParameter> ARRAY_FACTORY = new ArrayFactory<FormalTypeParameter>()
+	{
+		@NotNull
+		@Override
+		public FormalTypeParameter[] create(int count)
+		{
+			return count == 0 ? EMPTY_ARRAY : new FormalTypeParameter[count];
+		}
+	};
+
 	private String identifier;
 	private FieldTypeSignature classBound;
 	private FieldTypeSignature[] intfBounds;

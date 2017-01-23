@@ -1,15 +1,27 @@
 package consulo.ikvm.$internal.ru.andrew.jclazz.core.signature;
 
-import consulo.lombok.annotations.ArrayFactoryFields;
+import org.jetbrains.annotations.NotNull;
+import com.intellij.util.ArrayFactory;
 
 /*
 TypeArgument:
    [+-]opt FieldTypeSignature
    *
  */
-@ArrayFactoryFields
 public class TypeArgument
 {
+	public static final TypeArgument[] EMPTY_ARRAY = new TypeArgument[0];
+
+	public static ArrayFactory<TypeArgument> ARRAY_FACTORY = new ArrayFactory<TypeArgument>()
+	{
+		@NotNull
+		@Override
+		public TypeArgument[] create(int count)
+		{
+			return count == 0 ? EMPTY_ARRAY : new TypeArgument[count];
+		}
+	};
+
 	private char modifier;
 	private FieldTypeSignature fieldType;
 
