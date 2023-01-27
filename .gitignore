@@ -1,4 +1,2 @@
-/.consulo/workspace.xml
-/.consulo/sandbox
-/out
-/dep
+
+target/

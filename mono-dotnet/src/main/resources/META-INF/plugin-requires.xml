@@ -1,0 +1,5 @@
+<consulo-plugin-requires>
+	<plugins>
+		<plugin>consulo.dotnet.mono</plugin>
+	</plugins>
+</consulo-plugin-requires>
