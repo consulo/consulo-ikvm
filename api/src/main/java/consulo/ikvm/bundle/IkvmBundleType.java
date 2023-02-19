@@ -27,7 +27,7 @@ import consulo.content.bundle.SdkType;
 import consulo.java.language.impl.JavaIcons;
 import consulo.process.ExecutionException;
 import consulo.process.cmd.GeneralCommandLine;
-import consulo.process.local.CapturingProcessHandler;
+import consulo.process.local.ExecUtil;
 import consulo.process.local.ProcessOutput;
 import consulo.ui.image.Image;
 import consulo.virtualFileSystem.VirtualFile;
@@ -132,7 +132,7 @@ public class IkvmBundleType extends SdkType implements JavaSdkType
 		args.add("-version");
 		try
 		{
-			ProcessOutput processOutput = new CapturingProcessHandler(new GeneralCommandLine(args)).runProcess();
+			ProcessOutput processOutput = ExecUtil.execAndGetOutput(new GeneralCommandLine(args));
 			for(String s : processOutput.getStdoutLines())
 			{
 				if(s.startsWith("ikvm"))
