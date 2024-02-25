@@ -26,7 +26,6 @@ import consulo.module.extension.MutableModuleInheritableNamedPointer;
 import consulo.module.ui.awt.SdkComboBox;
 import consulo.module.ui.extension.ModuleExtensionSdkBoxBuilder;
 import consulo.ui.annotation.RequiredUIAccess;
-import consulo.ui.ex.SimpleTextAttributes;
 import consulo.ui.ex.awt.ColoredListCellRenderer;
 import consulo.ui.ex.awt.ComboBox;
 import consulo.ui.ex.awt.LabeledComponent;
@@ -99,9 +98,7 @@ public class IkvmModuleExtensionPanel extends JPanel
 				if(value instanceof LanguageLevel)
 				{
 					final LanguageLevel languageLevel = (LanguageLevel) value;
-					append(languageLevel.getShortText(), SimpleTextAttributes.REGULAR_ATTRIBUTES);
-					append(" ");
-					append(languageLevel.getDescription(), SimpleTextAttributes.GRAY_ATTRIBUTES);
+					append(languageLevel.getDescription().get());
 				}
 			}
 		});
