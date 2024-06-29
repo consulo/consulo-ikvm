@@ -54,6 +54,7 @@
 						<dependency>consulo.dotnet.microsoft</dependency>
 						<dependency>consulo.dotnet.mono</dependency>
 						<dependency>consulo.dotnet.core</dependency>
+						<dependency>consulo.msbuild</dependency>
 						<dependency>com.intellij.xml</dependency>
 					</dependencies>
 					<packaging>

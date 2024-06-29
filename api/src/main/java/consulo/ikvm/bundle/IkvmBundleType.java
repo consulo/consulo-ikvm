@@ -23,7 +23,6 @@ import consulo.content.OrderRootType;
 import consulo.content.base.BinariesOrderRootType;
 import consulo.content.bundle.Sdk;
 import consulo.content.bundle.SdkModificator;
-import consulo.content.bundle.SdkType;
 import consulo.java.language.impl.JavaIcons;
 import consulo.process.ExecutionException;
 import consulo.process.cmd.GeneralCommandLine;
@@ -36,43 +35,37 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author VISTALL
  * @since 05.05.14
  */
 @ExtensionImpl
-public class IkvmBundleType extends SdkType implements JavaSdkType
+public class IkvmBundleType extends JavaSdkType
 {
 	public static String[] ourLibraries = new String[]{
 			"IKVM.OpenJDK.Core.dll",
 			"IKVM.OpenJDK.Util.dll",
 			"IKVM.OpenJDK.Text.dll",
-			"IKVM.Runtime.dll"
+			"IKVM.Runtime.dll",
+			"IKVM.Java.dll"
 	};
 
 	@NotNull
 	public static IkvmBundleType getInstance()
 	{
-		return EP_NAME.findExtension(IkvmBundleType.class);
+		return EP_NAME.findExtensionOrFail(IkvmBundleType.class);
 	}
 
 	public static String getExecutable(String sdkHome)
 	{
 		if(SystemInfo.isWindows)
 		{
-			File file = new File(sdkHome + "/bin/ikvm.bat");
-			if(file.exists())
-			{
-				return file.getAbsolutePath();
-			}
-			return sdkHome + "/bin/ikvm.exe";
+			return sdkHome + "/bin/java.exe";
 		}
 		else
 		{
-			return sdkHome + "/bin/ikvm";
+			return sdkHome + "/bin/java";
 		}
 	}
 
@@ -127,19 +120,19 @@ public class IkvmBundleType extends SdkType implements JavaSdkType
 	@Override
 	public String getVersionString(String sdkHome)
 	{
-		List<String> args = new ArrayList<String>(2);
-		args.add(getExecutable(sdkHome));
-		args.add("-version");
+		GeneralCommandLine commandLine = new GeneralCommandLine();
+		commandLine.setExePath(getExecutable(sdkHome));
+		commandLine.addParameter("-version");
+
 		try
 		{
-			ProcessOutput processOutput = CapturingProcessUtil.execAndGetOutput(new GeneralCommandLine(args));
-			for(String s : processOutput.getStdoutLines())
+			ProcessOutput output = CapturingProcessUtil.execAndGetOutput(commandLine);
+
+			for(String line : output.getStdoutLines())
 			{
-				if(s.startsWith("ikvm"))
-				{
-					return s.substring(5, s.length()).trim();
-				}
+				System.out.println(line);
 			}
+			System.out.println();
 		}
 		catch(ExecutionException e)
 		{
@@ -176,14 +169,9 @@ public class IkvmBundleType extends SdkType implements JavaSdkType
 	@Override
 	public void setupCommandLine(@NotNull GeneralCommandLine commandLine, @NotNull Sdk sdk)
 	{
-		if(new File(sdk.getHomePath(), "bin/IKVM.OpenJDK.Core.dll").exists())   // microsoft .net
+		if(new File(sdk.getHomePath(), "bin/java.exe").exists())
 		{
 			commandLine.setExePath(sdk.getHomePath() + "/bin/ikvm.exe");
-		}
-		else  // mono .net
-		{
-			commandLine.setExePath(sdk.getHomePath() + "/bin/mono");
-			commandLine.addParameter(sdk.getHomePath() + "/lib/ikvm/ikvm.exe");
 		}
 	}
 }

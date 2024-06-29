@@ -17,9 +17,8 @@
 package consulo.ikvm.module.extension.ui;
 
 import com.intellij.java.language.LanguageLevel;
-import com.intellij.java.language.projectRoots.JavaSdk;
+import com.intellij.java.language.projectRoots.JavaSdkType;
 import consulo.content.bundle.SdkModel;
-import consulo.content.bundle.SdkTypeId;
 import consulo.ide.setting.ShowSettingsUtil;
 import consulo.ikvm.module.extension.IkvmMutableModuleExtension;
 import consulo.module.extension.MutableModuleInheritableNamedPointer;
@@ -30,7 +29,6 @@ import consulo.ui.ex.awt.ColoredListCellRenderer;
 import consulo.ui.ex.awt.ComboBox;
 import consulo.ui.ex.awt.LabeledComponent;
 import consulo.ui.ex.awt.VerticalFlowLayout;
-import consulo.util.lang.function.Condition;
 
 import javax.annotation.Nonnull;
 import javax.swing.*;
@@ -61,14 +59,7 @@ public class IkvmModuleExtensionPanel extends JPanel
 
 		final SdkModel projectSdksModel = ShowSettingsUtil.getInstance().getSdksModel();
 
-		myJavaSdkComboBox = new SdkComboBox(projectSdksModel, new Condition<SdkTypeId>()
-		{
-			@Override
-			public boolean value(SdkTypeId sdkTypeId)
-			{
-				return sdkTypeId == JavaSdk.getInstance();
-			}
-		}, true);
+		myJavaSdkComboBox = new SdkComboBox(projectSdksModel, sdkTypeId -> sdkTypeId == JavaSdkType.getDefaultJavaSdkType(), true);
 
 		final String javaCompilerSdkName = myModuleExtension.getJavaSdkName();
 		if(javaCompilerSdkName == null)
