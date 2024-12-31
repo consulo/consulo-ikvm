@@ -16,7 +16,7 @@ import consulo.util.lang.Comparing;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import javax.swing.*;
 import java.util.List;
 
@@ -47,7 +47,7 @@ public class MicrosoftIkvmMutableModuleExtension extends MicrosoftIkvmModuleExte
 	}
 
 	@RequiredUIAccess
-	@javax.annotation.Nullable
+	@Nullable
 	@Override
 	public Component createConfigurationComponent(@Nonnull Disposable disposable, @Nonnull Runnable runnable)
 	{
