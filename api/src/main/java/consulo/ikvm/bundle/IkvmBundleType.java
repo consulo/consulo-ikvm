@@ -130,9 +130,17 @@ public class IkvmBundleType extends JavaSdkType
 
 			for(String line : output.getStdoutLines())
 			{
-				System.out.println(line);
+				String prefix = "OpenJDK version: ";
+				if(line.startsWith(prefix))
+				{
+					String verWithJdk = line.substring(prefix.length()).trim();
+					String nextPrefix = "OpenJDK";
+					if(verWithJdk.startsWith(nextPrefix))
+					{
+						return verWithJdk.substring(nextPrefix.length()).trim();
+					}
+				}
 			}
-			System.out.println();
 		}
 		catch(ExecutionException e)
 		{
