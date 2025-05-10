@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package consulo.ikvm.impl.psi.stubBuilding;
 
 import com.intellij.java.language.impl.psi.impl.source.PsiImmediateClassType;
@@ -23,7 +22,6 @@ import consulo.dotnet.psi.resolve.DotNetArrayTypeRef;
 import consulo.dotnet.psi.resolve.DotNetPointerTypeRef;
 import consulo.dotnet.psi.resolve.DotNetTypeRef;
 import consulo.internal.org.objectweb.asm.ClassWriter;
-import consulo.java.language.module.util.JavaClassNames;
 import consulo.language.psi.PsiElement;
 import consulo.util.lang.Comparing;
 import org.jetbrains.annotations.NotNull;
@@ -34,7 +32,7 @@ import java.util.List;
 
 /**
  * @author VISTALL
- * @since 06.05.14
+ * @since 2014-05-06
  */
 public abstract class BaseStubBuilder<T extends PsiElement>
 {
@@ -110,11 +108,11 @@ public abstract class BaseStubBuilder<T extends PsiElement>
 		}
 		else if(Comparing.equal(qName, "System.String"))
 		{
-			return fromQName(JavaClassNames.JAVA_LANG_STRING);
+			return fromQName(CommonClassNames.JAVA_LANG_STRING);
 		}
 		else if(Comparing.equal(qName, "System.Object"))
 		{
-			return fromQName(JavaClassNames.JAVA_LANG_OBJECT);
+			return fromQName(CommonClassNames.JAVA_LANG_OBJECT);
 		}
 		else if(type instanceof DotNetArrayTypeRef)
 		{

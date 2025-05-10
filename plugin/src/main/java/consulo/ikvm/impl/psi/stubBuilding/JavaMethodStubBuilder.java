@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package consulo.ikvm.impl.psi.stubBuilding;
 
 import com.intellij.java.language.impl.psi.impl.light.LightMethodBuilder;
+import com.intellij.java.language.psi.CommonClassNames;
 import com.intellij.java.language.psi.PsiClass;
 import com.intellij.java.language.psi.PsiMethod;
 import com.intellij.java.language.psi.PsiModifier;
@@ -29,7 +29,6 @@ import consulo.dotnet.psi.resolve.DotNetTypeRef;
 import consulo.ikvm.impl.psi.stubBuilding.psi.IkvmTypeRef;
 import consulo.internal.org.objectweb.asm.ClassWriter;
 import consulo.internal.org.objectweb.asm.Opcodes;
-import consulo.java.language.module.util.JavaClassNames;
 import consulo.language.psi.PsiElement;
 import consulo.language.psi.PsiManager;
 import consulo.util.collection.ArrayUtil;
@@ -42,7 +41,7 @@ import java.util.List;
 
 /**
  * @author VISTALL
- * @since 09.05.14
+ * @since 2014-05-09
  */
 public class JavaMethodStubBuilder extends BaseStubBuilder<PsiMethod>
 {
@@ -152,7 +151,7 @@ public class JavaMethodStubBuilder extends BaseStubBuilder<PsiMethod>
 		}
 		else if(DotNetTypes.System.String.equals(vmQName))
 		{
-			appendType(new IkvmTypeRef(myNavTarget, JavaClassNames.JAVA_LANG_STRING), builder);
+			appendType(new IkvmTypeRef(myNavTarget, CommonClassNames.JAVA_LANG_STRING), builder);
 		}
 		else if(typeRef instanceof DotNetGenericWrapperTypeRef)
 		{
@@ -167,7 +166,7 @@ public class JavaMethodStubBuilder extends BaseStubBuilder<PsiMethod>
 		{
 			if(vmQName.equals(DotNetTypes.System.Object))
 			{
-				appendType(new IkvmTypeRef(myNavTarget, JavaClassNames.JAVA_LANG_OBJECT), builder);
+				appendType(new IkvmTypeRef(myNavTarget, CommonClassNames.JAVA_LANG_OBJECT), builder);
 				return;
 			}
 			if(!vmQName.startsWith("java"))
