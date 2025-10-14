@@ -17,6 +17,7 @@
 package consulo.ikvm.impl.psi;
 
 import com.intellij.java.language.impl.psi.impl.file.PsiPackageImpl;
+import com.intellij.java.language.psi.JavaPsiFacade;
 import com.intellij.java.language.psi.PsiClass;
 import com.intellij.java.language.psi.PsiElementFinder;
 import com.intellij.java.language.psi.PsiJavaPackage;
@@ -37,6 +38,7 @@ import consulo.language.psi.PsiPackageManager;
 import consulo.language.psi.scope.GlobalSearchScope;
 import consulo.project.Project;
 import consulo.util.lang.StringUtil;
+import jakarta.annotation.Nonnull;
 import jakarta.inject.Inject;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -50,155 +52,135 @@ import java.util.List;
  * @since 06.05.14
  */
 @ExtensionImpl
-public class IkvmPsiElementFinder extends PsiElementFinder
-{
-	private final Project myProject;
-	private final PsiManager myPsiManager;
-	private final PsiPackageManager myPsiPackageManager;
+public class IkvmPsiElementFinder extends PsiElementFinder {
+    private final Project myProject;
+    private final PsiManager myPsiManager;
+    private final PsiPackageManager myPsiPackageManager;
+    private final JavaPsiFacade myJavaPsiFacade;
 
-	@Inject
-	public IkvmPsiElementFinder(Project project, PsiManager psiManager, PsiPackageManager psiPackageManager)
-	{
-		myProject = project;
-		myPsiManager = psiManager;
-		myPsiPackageManager = psiPackageManager;
-	}
+    @Inject
+    public IkvmPsiElementFinder(Project project,
+                                PsiManager psiManager,
+                                PsiPackageManager psiPackageManager,
+                                JavaPsiFacade javaPsiFacade) {
+        myProject = project;
+        myPsiManager = psiManager;
+        myPsiPackageManager = psiPackageManager;
+        myJavaPsiFacade = javaPsiFacade;
+    }
 
-	@Nullable
-	@Override
-	@RequiredReadAction
-	public PsiJavaPackage findPackage(@NotNull String qualifiedName)
-	{
-		if(qualifiedName.equals("cli"))
-		{
-			return new PsiPackageImpl(myPsiManager, myPsiPackageManager, JavaModuleExtension.class, qualifiedName);
-		}
-		if(qualifiedName.startsWith("cli."))
-		{
-			PsiPackage aPackage = PsiPackageManager.getInstance(myProject).findPackage(qualifiedName.substring(4, qualifiedName.length()),
-					JavaModuleExtension.class);
-			if(aPackage != null)
-			{
-				return new PsiPackageImpl(myPsiManager, myPsiPackageManager, JavaModuleExtension.class, qualifiedName);
-			}
-		}
+    @Nullable
+    @Override
+    @RequiredReadAction
+    public PsiJavaPackage findPackage(@NotNull String qualifiedName) {
+        if (qualifiedName.equals("cli")) {
+            return new PsiPackageImpl(myPsiManager, myPsiPackageManager, myJavaPsiFacade, JavaModuleExtension.class, qualifiedName);
+        }
+        if (qualifiedName.startsWith("cli.")) {
+            PsiPackage aPackage = PsiPackageManager.getInstance(myProject).findPackage(qualifiedName.substring(4, qualifiedName.length()),
+                JavaModuleExtension.class);
+            if (aPackage != null) {
+                return new PsiPackageImpl(myPsiManager, myPsiPackageManager, myJavaPsiFacade, JavaModuleExtension.class, qualifiedName);
+            }
+        }
 
-		return super.findPackage(qualifiedName);
-	}
+        return super.findPackage(qualifiedName);
+    }
 
-	@NotNull
-	@Override
-	@RequiredReadAction
-	public PsiJavaPackage[] getSubPackages(@NotNull PsiJavaPackage psiPackage, @NotNull GlobalSearchScope scope)
-	{
-		String qualifiedName = psiPackage.getQualifiedName();
-		if(qualifiedName.startsWith("cli"))
-		{
-			String substring = qualifiedName.substring(3, qualifiedName.length());
-			PsiPackage aPackage = PsiPackageManager.getInstance(myProject).findPackage(substring, DotNetModuleExtension.class);
-			if(aPackage == null)
-			{
-				aPackage = PsiPackageManager.getInstance(myProject).findPackage(substring, JavaModuleExtension.class);
-			}
-			if(aPackage != null)
-			{
-				PsiPackage[] subPackages = aPackage.getSubPackages(scope);
-				if(subPackages.length == 0)
-				{
-					return PsiJavaPackage.EMPTY_ARRAY;
-				}
-				PsiJavaPackage[] packages = new PsiJavaPackage[subPackages.length];
-				for(int i = 0; i < subPackages.length; i++)
-				{
-					PsiPackage subPackage = subPackages[i];
-					packages[i] = new PsiPackageImpl(myPsiManager, myPsiPackageManager, JavaModuleExtension.class, subPackage.getQualifiedName());
-				}
-				return packages;
-			}
-		}
-		return super.getSubPackages(psiPackage, scope);
-	}
+    @Nonnull
+    @Override
+    @RequiredReadAction
+    public PsiJavaPackage[] getSubPackages(@NotNull PsiJavaPackage psiPackage, @NotNull GlobalSearchScope scope) {
+        String qualifiedName = psiPackage.getQualifiedName();
+        if (qualifiedName.startsWith("cli")) {
+            String substring = qualifiedName.substring(3, qualifiedName.length());
+            PsiPackage aPackage = PsiPackageManager.getInstance(myProject).findPackage(substring, DotNetModuleExtension.class);
+            if (aPackage == null) {
+                aPackage = PsiPackageManager.getInstance(myProject).findPackage(substring, JavaModuleExtension.class);
+            }
+            if (aPackage != null) {
+                PsiPackage[] subPackages = aPackage.getSubPackages(scope);
+                if (subPackages.length == 0) {
+                    return PsiJavaPackage.EMPTY_ARRAY;
+                }
+                PsiJavaPackage[] packages = new PsiJavaPackage[subPackages.length];
+                for (int i = 0; i < subPackages.length; i++) {
+                    PsiPackage subPackage = subPackages[i];
+                    packages[i] = new PsiPackageImpl(myPsiManager, myPsiPackageManager, myJavaPsiFacade, JavaModuleExtension.class, subPackage.getQualifiedName());
+                }
+                return packages;
+            }
+        }
+        return super.getSubPackages(psiPackage, scope);
+    }
 
-	@Nullable
-	@Override
-	@RequiredReadAction
-	public PsiClass findClass(@NotNull String s, @NotNull GlobalSearchScope searchScope)
-	{
-		PsiClass[] aClass = findClasses(s, searchScope);
-		return aClass.length == 0 ? null : aClass[0];
-	}
+    @Nullable
+    @Override
+    @RequiredReadAction
+    public PsiClass findClass(@NotNull String s, @NotNull GlobalSearchScope searchScope) {
+        PsiClass[] aClass = findClasses(s, searchScope);
+        return aClass.length == 0 ? null : aClass[0];
+    }
 
-	@NotNull
-	@Override
-	@RequiredReadAction
-	public PsiClass[] findClasses(@NotNull String s, @NotNull GlobalSearchScope searchScope)
-	{
-		boolean cli = false;
-		if(s.startsWith("cli."))
-		{
-			s = s.substring(4, s.length());
-			cli = true;
-		}
-		DotNetTypeDeclaration[] types = DotNetPsiSearcher.getInstance(myProject).findTypes(s, searchScope);
-		if(types.length == 0)
-		{
-			return PsiClass.EMPTY_ARRAY;
-		}
-		return toClasses(List.of(types), cli);
-	}
+    @NotNull
+    @Override
+    @RequiredReadAction
+    public PsiClass[] findClasses(@NotNull String s, @NotNull GlobalSearchScope searchScope) {
+        boolean cli = false;
+        if (s.startsWith("cli.")) {
+            s = s.substring(4, s.length());
+            cli = true;
+        }
+        DotNetTypeDeclaration[] types = DotNetPsiSearcher.getInstance(myProject).findTypes(s, searchScope);
+        if (types.length == 0) {
+            return PsiClass.EMPTY_ARRAY;
+        }
+        return toClasses(List.of(types), cli);
+    }
 
-	@NotNull
-	@Override
-	@RequiredReadAction
-	public PsiClass[] getClasses(@NotNull PsiJavaPackage psiPackage, @NotNull GlobalSearchScope scope)
-	{
-		boolean cli = false;
-		String qualifiedName = psiPackage.getQualifiedName();
-		if(StringUtil.startsWith(qualifiedName, "cli."))
-		{
-			qualifiedName = qualifiedName.substring(4, qualifiedName.length());
-			cli = true;
-		}
+    @NotNull
+    @Override
+    @RequiredReadAction
+    public PsiClass[] getClasses(@NotNull PsiJavaPackage psiPackage, @NotNull GlobalSearchScope scope) {
+        boolean cli = false;
+        String qualifiedName = psiPackage.getQualifiedName();
+        if (StringUtil.startsWith(qualifiedName, "cli.")) {
+            qualifiedName = qualifiedName.substring(4, qualifiedName.length());
+            cli = true;
+        }
 
-		DotNetNamespaceAsElement namespace = DotNetPsiSearcher.getInstance(myProject).findNamespace(qualifiedName, scope);
-		if(namespace == null)
-		{
-			return PsiClass.EMPTY_ARRAY;
-		}
+        DotNetNamespaceAsElement namespace = DotNetPsiSearcher.getInstance(myProject).findNamespace(qualifiedName, scope);
+        if (namespace == null) {
+            return PsiClass.EMPTY_ARRAY;
+        }
 
-		Collection<PsiElement> children = namespace.getChildren(scope, DotNetNamespaceAsElement.ChildrenFilter.ONLY_ELEMENTS);
+        Collection<PsiElement> children = namespace.getChildren(scope, DotNetNamespaceAsElement.ChildrenFilter.ONLY_ELEMENTS);
 
-		if(children.isEmpty())
-		{
-			return PsiClass.EMPTY_ARRAY;
-		}
-		return toClasses(children, cli);
-	}
+        if (children.isEmpty()) {
+            return PsiClass.EMPTY_ARRAY;
+        }
+        return toClasses(children, cli);
+    }
 
-	@RequiredReadAction
-	private PsiClass[] toClasses(Collection<PsiElement> elements, boolean cli)
-	{
-		List<PsiClass> list = new ArrayList<>(elements.size());
-		for(PsiElement dotNetNamedElement : elements)
-		{
-			if(dotNetNamedElement instanceof DotNetTypeDeclaration)
-			{
-				final DotNetTypeDeclaration type = (DotNetTypeDeclaration) dotNetNamedElement;
-				if(!type.hasModifier(DotNetModifier.PUBLIC))
-				{
-					continue;
-				}
+    @RequiredReadAction
+    private PsiClass[] toClasses(Collection<PsiElement> elements, boolean cli) {
+        List<PsiClass> list = new ArrayList<>(elements.size());
+        for (PsiElement dotNetNamedElement : elements) {
+            if (dotNetNamedElement instanceof DotNetTypeDeclaration) {
+                final DotNetTypeDeclaration type = (DotNetTypeDeclaration) dotNetNamedElement;
+                if (!type.hasModifier(DotNetModifier.PUBLIC)) {
+                    continue;
+                }
 
-				JavaClassStubBuilder build = StubBuilder.build(type);
-				if(build == null)
-				{
-					continue;
-				}
+                JavaClassStubBuilder build = StubBuilder.build(type);
+                if (build == null) {
+                    continue;
+                }
 
-				PsiClass value = build.buildToPsi(null);
-				list.add(value);
-			}
-		}
-		return list.toArray(new PsiClass[list.size()]);
-	}
+                PsiClass value = build.buildToPsi(null);
+                list.add(value);
+            }
+        }
+        return list.toArray(new PsiClass[list.size()]);
+    }
 }
