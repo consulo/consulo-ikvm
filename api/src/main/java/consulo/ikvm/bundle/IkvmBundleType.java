@@ -26,11 +26,11 @@ import consulo.content.bundle.Sdk;
 import consulo.content.bundle.SdkModificator;
 import consulo.content.bundle.SdkType;
 import consulo.java.language.impl.JavaIcons;
+import consulo.localize.LocalizeValue;
 import consulo.process.ExecutionException;
 import consulo.process.cmd.GeneralCommandLine;
 import consulo.process.util.CapturingProcessUtil;
 import consulo.process.util.ProcessOutput;
-import consulo.ui.image.Image;
 import consulo.virtualFileSystem.VirtualFile;
 import consulo.virtualFileSystem.archive.ArchiveVfsUtil;
 import jakarta.annotation.Nonnull;
@@ -68,13 +68,7 @@ public class IkvmBundleType extends JavaSdkType {
     }
 
     public IkvmBundleType() {
-        super("IKVM");
-    }
-
-    @Nonnull
-    @Override
-    public Image getIcon() {
-        return JavaIcons.Java;
+        super("IKVM", LocalizeValue.localizeTODO("IKVM.NET"), JavaIcons.Java);
     }
 
     @Override
@@ -131,17 +125,6 @@ public class IkvmBundleType extends JavaSdkType {
             return null;
         }
         return null;
-    }
-
-    @Override
-    public String suggestSdkName(String currentSdkName, String sdkHome) {
-        return getPresentableName() + " " + getVersionString(sdkHome);
-    }
-
-    @NotNull
-    @Override
-    public String getPresentableName() {
-        return "IKVM.NET";
     }
 
     @Override
