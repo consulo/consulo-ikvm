@@ -27,7 +27,7 @@ import consulo.compiler.scope.CompileScope;
 import consulo.container.boot.ContainerPathManager;
 import consulo.content.bundle.Sdk;
 import consulo.dotnet.DotNetTarget;
-import consulo.dotnet.impl.compiler.DotNetCompilerUtil;
+import consulo.dotnet.compiler.DotNetCompilerUtil;
 import consulo.dotnet.psi.DotNetMemberOwner;
 import consulo.dotnet.psi.DotNetModifier;
 import consulo.dotnet.psi.DotNetTypeDeclaration;
