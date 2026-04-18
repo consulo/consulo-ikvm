@@ -4,6 +4,12 @@
  */
 module consulo.ikvm.mono.impl
 {
+	// platform (non-transitive from api)
+	requires consulo.component.api;
+	requires consulo.container.api;
+	requires consulo.disposer.api;
+
+	// plugin-level
 	requires consulo.ikvm.api;
 	requires consulo.dotnet.mono;
 	requires com.intellij.xml;

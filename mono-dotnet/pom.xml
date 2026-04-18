@@ -41,13 +41,32 @@
 	</repositories>
 
 	<dependencies>
-		<!-- required transitively by com.intellij.xml -->
+		<!-- platform -->
+		<dependency>
+			<groupId>consulo</groupId>
+			<artifactId>consulo-component-api</artifactId>
+			<version>${project.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>consulo</groupId>
+			<artifactId>consulo-container-api</artifactId>
+			<version>${project.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>consulo</groupId>
+			<artifactId>consulo-disposer-api</artifactId>
+			<version>${project.version}</version>
+			<scope>provided</scope>
+		</dependency>
 		<dependency>
 			<groupId>consulo</groupId>
 			<artifactId>consulo-ide-api</artifactId>
 			<version>${project.version}</version>
 			<scope>provided</scope>
 		</dependency>
+		<!-- plugin-level -->
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>consulo.ikvm.api</artifactId>
