@@ -112,7 +112,7 @@ public class MicrosoftIkvmModuleExtension extends ModuleExtensionWithSdkBase<Mic
 
 		Set<VirtualFile> files = new OrderedSet<>();
 
-		ContainerUtil.addAll(files, sdkForCompilation.getRootProvider().getFiles(BinariesOrderRootType.getInstance()));
+		ContainerUtil.addAll(files, sdkForCompilation.getRootProvider().getFiles(BinariesOrderRootType.ID));
 
 		files.addAll(moduleChunk.getCompilationClasspathFiles(IkvmBundleType.getInstance()));
 

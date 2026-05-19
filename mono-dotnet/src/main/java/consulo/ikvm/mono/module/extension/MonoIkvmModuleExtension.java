@@ -85,7 +85,7 @@ public class MonoIkvmModuleExtension extends InnerMonoModuleExtension<MonoIkvmMo
 				VirtualFile archiveLibraryFile = ArchiveVfsUtil.getArchiveRootForLocalFile(libraryFile);
 				if(archiveLibraryFile != null)
 				{
-					sdkModificator.addRoot(archiveLibraryFile, BinariesOrderRootType.getInstance());
+					sdkModificator.addRoot(archiveLibraryFile, BinariesOrderRootType.ID);
 				}
 			}
 		}
@@ -158,7 +158,7 @@ public class MonoIkvmModuleExtension extends InnerMonoModuleExtension<MonoIkvmMo
 		Sdk sdkForCompilation = getSdkForCompilation();
 		Set<VirtualFile> files = new OrderedSet<>();
 
-		ContainerUtil.addAll(files, sdkForCompilation.getRootProvider().getFiles(BinariesOrderRootType.getInstance()));
+		ContainerUtil.addAll(files, sdkForCompilation.getRootProvider().getFiles(BinariesOrderRootType.ID));
 
 		VirtualFile fileByPath = LocalFileSystem.getInstance().findFileByPath(ContainerPathManager.get().getSystemPath() + "/ikvm-stubs/" + getModule().getName() + "@" + getModule().getModuleDirUrl().hashCode());
 		if(fileByPath != null)

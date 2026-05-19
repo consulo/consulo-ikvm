@@ -46,7 +46,7 @@ public class IkvmDependencyCopierExtension implements DotNetDependencyCopierExte
 		Sdk ikvmSdk = ModuleUtilCore.getSdk(module, MicrosoftIkvmModuleExtension.class);
 		if(ikvmSdk != null)
 		{
-			VirtualFile[] files = ikvmSdk.getRootProvider().getFiles(BinariesOrderRootType.getInstance());
+			VirtualFile[] files = ikvmSdk.getRootProvider().getFiles(BinariesOrderRootType.ID);
 			List<File> fileList = new ArrayList<File>(files.length);
 			for(VirtualFile file : files)
 			{
