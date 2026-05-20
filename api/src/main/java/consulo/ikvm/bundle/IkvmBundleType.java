@@ -77,8 +77,8 @@ public class IkvmBundleType extends JavaSdkType {
     }
 
     @Override
-    public boolean isRootTypeApplicable(OrderRootType type) {
-        return type == BinariesOrderRootType.getInstance();
+    public boolean isRootTypeApplicable(String type) {
+        return BinariesOrderRootType.ID.equals(type);
     }
 
     @Override
@@ -92,7 +92,7 @@ public class IkvmBundleType extends JavaSdkType {
             if (ikvmApi != null) {
                 VirtualFile ikvmJar = ArchiveVfsUtil.getArchiveRootForLocalFile(ikvmApi);
                 if (ikvmJar != null) {
-                    sdkModificator.addRoot(ikvmJar, BinariesOrderRootType.getInstance());
+                    sdkModificator.addRoot(ikvmJar, BinariesOrderRootType.ID);
                 }
             }
         }
