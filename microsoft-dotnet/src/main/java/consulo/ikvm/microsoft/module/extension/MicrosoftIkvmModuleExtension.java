@@ -27,174 +27,158 @@ import consulo.util.collection.ContainerUtil;
 import consulo.util.collection.OrderedSet;
 import consulo.virtualFileSystem.LocalFileSystem;
 import consulo.virtualFileSystem.VirtualFile;
+import jakarta.annotation.Nonnull;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 
-import jakarta.annotation.Nonnull;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
  * @author VISTALL
  * @since 07.05.14
  */
-public class MicrosoftIkvmModuleExtension extends ModuleExtensionWithSdkBase<MicrosoftIkvmModuleExtension> implements ModuleExtensionWithSdk<MicrosoftIkvmModuleExtension>, IkvmModuleExtension<MicrosoftIkvmModuleExtension>
-{
-	protected NamedPointer<Sdk> mySdkForCompilationPointer;
-	protected final LanguageLevelModuleInheritableNamedPointerImpl myLanguageLevelPointer;
+public class MicrosoftIkvmModuleExtension extends ModuleExtensionWithSdkBase<MicrosoftIkvmModuleExtension> implements ModuleExtensionWithSdk<MicrosoftIkvmModuleExtension>, IkvmModuleExtension<MicrosoftIkvmModuleExtension> {
+    protected NamedPointer<Sdk> mySdkForCompilationPointer;
+    protected final LanguageLevelModuleInheritableNamedPointerImpl myLanguageLevelPointer;
 
-	public MicrosoftIkvmModuleExtension(@NotNull final String id, @NotNull ModuleRootLayer layer)
-	{
-		super(id, layer);
-		myLanguageLevelPointer = new LanguageLevelModuleInheritableNamedPointerImpl(layer, id);
-	}
+    public MicrosoftIkvmModuleExtension(@NotNull final String id, @NotNull ModuleRootLayer layer) {
+        super(id, layer);
+        myLanguageLevelPointer = new LanguageLevelModuleInheritableNamedPointerImpl(layer, id);
+    }
 
-	@NotNull
-	@Override
-	public Class<? extends SdkType> getSdkTypeClass()
-	{
-		return IkvmBundleType.class;
-	}
+    @NotNull
+    @Override
+    public Class<? extends SdkType> getSdkTypeClass() {
+        return IkvmBundleType.class;
+    }
 
-	@NotNull
-	@Override
-	public LanguageLevel getLanguageLevel()
-	{
-		return myLanguageLevelPointer.get();
-	}
+    @NotNull
+    @Override
+    public LanguageLevel getLanguageLevel() {
+        return myLanguageLevelPointer.get();
+    }
 
-	@NotNull
-	@Override
-	public SpecialDirLocation getSpecialDirLocation()
-	{
-		return SpecialDirLocation.SOURCE_DIR;
-	}
+    @NotNull
+    @Override
+    public SpecialDirLocation getSpecialDirLocation() {
+        return SpecialDirLocation.SOURCE_DIR;
+    }
 
-	@Nullable
-	@Override
-	public Sdk getSdkForCompilation()
-	{
-		return mySdkForCompilationPointer == null ? null : mySdkForCompilationPointer.get();
-	}
+    @Nullable
+    @Override
+    public Sdk getSdkForCompilation() {
+        return mySdkForCompilationPointer == null ? null : mySdkForCompilationPointer.get();
+    }
 
-	@Nullable
-	@Override
-	public String getJavaSdkName()
-	{
-		return mySdkForCompilationPointer == null ? null : mySdkForCompilationPointer.getName();
-	}
+    @Nullable
+    @Override
+    public String getJavaSdkName() {
+        return mySdkForCompilationPointer == null ? null : mySdkForCompilationPointer.getName();
+    }
 
-	@Override
-	public void commit(@NotNull MicrosoftIkvmModuleExtension mutableModuleExtension)
-	{
-		super.commit(mutableModuleExtension);
-		mySdkForCompilationPointer = mutableModuleExtension.mySdkForCompilationPointer;
-		myLanguageLevelPointer.set(mutableModuleExtension.getInheritableLanguageLevel());
-	}
+    @Override
+    public void commit(@NotNull MicrosoftIkvmModuleExtension mutableModuleExtension) {
+        super.commit(mutableModuleExtension);
+        mySdkForCompilationPointer = mutableModuleExtension.mySdkForCompilationPointer;
+        myLanguageLevelPointer.set(mutableModuleExtension.getInheritableLanguageLevel());
+    }
 
-	@NotNull
-	public ModuleInheritableNamedPointer<LanguageLevel> getInheritableLanguageLevel()
-	{
-		return myLanguageLevelPointer;
-	}
+    @NotNull
+    public ModuleInheritableNamedPointer<LanguageLevel> getInheritableLanguageLevel() {
+        return myLanguageLevelPointer;
+    }
 
-	@NotNull
-	@Override
-	public Set<VirtualFile> getCompilationClasspath(@NotNull CompileContext compileContext, @NotNull ModuleChunk moduleChunk)
-	{
-		Sdk sdkForCompilation = getSdkForCompilation();
-		if(sdkForCompilation == null)
-		{
-			return Collections.emptySet();
-		}
+    @NotNull
+    @Override
+    public Set<VirtualFile> getCompilationClasspath(@NotNull CompileContext compileContext, @NotNull ModuleChunk moduleChunk) {
+        Sdk sdkForCompilation = getSdkForCompilation();
+        if (sdkForCompilation == null) {
+            return Collections.emptySet();
+        }
 
-		Set<VirtualFile> files = new OrderedSet<>();
+        Set<VirtualFile> files = new OrderedSet<>();
 
-		ContainerUtil.addAll(files, sdkForCompilation.getRootProvider().getFiles(BinariesOrderRootType.ID));
+        ContainerUtil.addAll(files, sdkForCompilation.getRootProvider().getFiles(BinariesOrderRootType.ID));
 
-		files.addAll(moduleChunk.getCompilationClasspathFiles(IkvmBundleType.getInstance()));
+        files.addAll(moduleChunk.getCompilationClasspathFiles(IkvmBundleType.getInstance()));
 
-		VirtualFile fileByPath = LocalFileSystem.getInstance().findFileByPath(ContainerPathManager.get().getSystemPath() + "/ikvm-stubs/" + getModule().getName() + "@" + getModule().getModuleDirUrl().hashCode());
-		if(fileByPath != null)
-		{
-			files.add(fileByPath);
-		}
-		return files;
-	}
+        VirtualFile fileByPath = LocalFileSystem.getInstance().findFileByPath(ContainerPathManager.get().getSystemPath() + "/ikvm-stubs/" + getModule().getName() + "@" + getModule().getModuleDirUrl().hashCode());
+        if (fileByPath != null) {
+            files.add(fileByPath);
+        }
+        return files;
+    }
 
-	@NotNull
-	@Override
-	public Set<VirtualFile> getCompilationBootClasspath(@NotNull CompileContext compileContext, @NotNull ModuleChunk moduleChunk)
-	{
-		return Collections.emptySet();
-	}
+    @NotNull
+    @Override
+    public Set<VirtualFile> getCompilationBootClasspath(@NotNull CompileContext compileContext, @NotNull ModuleChunk moduleChunk) {
+        return Collections.emptySet();
+    }
 
-	@Nullable
-	@Override
-	public String getBytecodeVersion()
-	{
-		return null;
-	}
+    @Nullable
+    @Override
+    public String getBytecodeVersion() {
+        return null;
+    }
 
-	@Nonnull
-	@Override
-	public List<String> getCompilerArguments()
-	{
-		return List.of();
-	}
+    @Nonnull
+    @Override
+    public List<String> getCompilerArguments() {
+        return List.of();
+    }
 
-	@NotNull
-	@Override
-	public PsiElement[] getEntryPointElements()
-	{
-		return IkvmModuleExtensionUtil.buildEntryPoints(getModule());
-	}
+    @NotNull
+    @Override
+    public PsiElement[] getEntryPointElements() {
+        return IkvmModuleExtensionUtil.buildEntryPoints(getModule());
+    }
 
-	@Nullable
-	@Override
-	public String getAssemblyTitle()
-	{
-		return null;
-	}
+    @Nullable
+    @Override
+    public String getAssemblyTitle() {
+        return null;
+    }
 
-	@NotNull
-	@Override
-	public LanguageFileType getFileType()
-	{
-		return JavaFileType.INSTANCE;
-	}
+    @Override
+    public @NonNull Map<String, String> getManifestAttributes() {
+        return Map.of();
+    }
 
-	@NotNull
-	@Override
-	public DotNetCompilerOptionsBuilder createCompilerOptionsBuilder()
-	{
-		IkvmCompilerOptionsBuilder builder = new IkvmCompilerOptionsBuilder("bin/ikvmc.exe");
-		builder.addArgument("-nologo");
-		return builder;
-	}
+    @NotNull
+    @Override
+    public LanguageFileType getFileType() {
+        return JavaFileType.INSTANCE;
+    }
 
-	@Override
-	protected void loadStateImpl(@NotNull Element element)
-	{
-		super.loadStateImpl(element);
-		myLanguageLevelPointer.fromXml(element);
-		String sdkForCompilation = element.getAttributeValue("sdk-for-compilation");
-		if(sdkForCompilation != null)
-		{
-			mySdkForCompilationPointer = SdkUtil.createPointer(sdkForCompilation);
-		}
-	}
+    @NotNull
+    @Override
+    public DotNetCompilerOptionsBuilder createCompilerOptionsBuilder() {
+        IkvmCompilerOptionsBuilder builder = new IkvmCompilerOptionsBuilder("bin/ikvmc.exe");
+        builder.addArgument("-nologo");
+        return builder;
+    }
 
-	@Override
-	protected void getStateImpl(@NotNull Element element)
-	{
-		super.getStateImpl(element);
-		myLanguageLevelPointer.toXml(element);
-		if(mySdkForCompilationPointer != null)
-		{
-			element.setAttribute("sdk-for-compilation", mySdkForCompilationPointer.getName());
-		}
-	}
+    @Override
+    protected void loadStateImpl(@NotNull Element element) {
+        super.loadStateImpl(element);
+        myLanguageLevelPointer.fromXml(element);
+        String sdkForCompilation = element.getAttributeValue("sdk-for-compilation");
+        if (sdkForCompilation != null) {
+            mySdkForCompilationPointer = SdkUtil.createPointer(sdkForCompilation);
+        }
+    }
+
+    @Override
+    protected void getStateImpl(@NotNull Element element) {
+        super.getStateImpl(element);
+        myLanguageLevelPointer.toXml(element);
+        if (mySdkForCompilationPointer != null) {
+            element.setAttribute("sdk-for-compilation", mySdkForCompilationPointer.getName());
+        }
+    }
 }
