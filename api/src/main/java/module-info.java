@@ -8,6 +8,7 @@ module consulo.ikvm.api
 	requires transitive consulo.application.api;
 	requires transitive consulo.application.content.api;
 	requires transitive consulo.compiler.api;
+	requires consulo.container.api;
 	requires transitive consulo.ide.api;
 	requires transitive consulo.language.api;
 	requires transitive consulo.language.impl;

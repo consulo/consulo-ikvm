@@ -22,7 +22,6 @@ import consulo.annotation.access.RequiredReadAction;
 import consulo.compiler.CompileContext;
 import consulo.compiler.ModuleChunk;
 import consulo.component.util.pointer.NamedPointer;
-import consulo.container.boot.ContainerPathManager;
 import consulo.content.base.BinariesOrderRootType;
 import consulo.content.bundle.*;
 import consulo.dotnet.compiler.DotNetCompilerOptionsBuilder;
@@ -37,9 +36,6 @@ import consulo.language.psi.PsiElement;
 import consulo.module.content.layer.ModuleRootLayer;
 import consulo.module.extension.ModuleInheritableNamedPointer;
 import consulo.mono.dotnet.module.extension.InnerMonoModuleExtension;
-import consulo.util.collection.ContainerUtil;
-import consulo.util.collection.OrderedSet;
-import consulo.virtualFileSystem.LocalFileSystem;
 import consulo.virtualFileSystem.VirtualFile;
 import consulo.virtualFileSystem.archive.ArchiveVfsUtil;
 import jakarta.annotation.Nonnull;
@@ -48,6 +44,7 @@ import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
 
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -139,26 +136,13 @@ public class MonoIkvmModuleExtension extends InnerMonoModuleExtension<MonoIkvmMo
         return myLanguageLevelPointer;
     }
 
-    @NotNull
     @Override
-    public Set<VirtualFile> getCompilationClasspath(@NotNull CompileContext compileContext, @NotNull ModuleChunk moduleChunk) {
-        Sdk sdkForCompilation = getSdkForCompilation();
-        Set<VirtualFile> files = new OrderedSet<>();
-
-        ContainerUtil.addAll(files, sdkForCompilation.getRootProvider().getFiles(BinariesOrderRootType.ID));
-
-        VirtualFile fileByPath = LocalFileSystem.getInstance().findFileByPath(ContainerPathManager.get().getSystemPath() + "/ikvm-stubs/" + getModule().getName() + "@" + getModule().getModuleDirUrl().hashCode());
-        if (fileByPath != null) {
-            files.add(fileByPath);
-        }
-
-        files.addAll(moduleChunk.getCompilationClasspathFiles(IkvmBundleType.getInstance()));
-        return files;
+    public Set<Path> getCompilationClasspath(CompileContext compileContext, ModuleChunk moduleChunk) {
+        return IkvmModuleExtensionUtil.getCompilationClasspath(this, moduleChunk);
     }
 
-    @NotNull
     @Override
-    public Set<VirtualFile> getCompilationBootClasspath(@NotNull CompileContext compileContext, @NotNull ModuleChunk moduleChunk) {
+    public Set<Path> getCompilationBootClasspath(CompileContext compileContext, ModuleChunk moduleChunk) {
         return Collections.emptySet();
     }
 
