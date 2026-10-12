@@ -14,7 +14,4 @@ module consulo.ikvm.microsoft.impl
 	requires consulo.dotnet.microsoft;
 	requires com.intellij.xml;
 	requires consulo.dotnet.impl;
-
-	// TODO remove
-	requires java.desktop;
 }

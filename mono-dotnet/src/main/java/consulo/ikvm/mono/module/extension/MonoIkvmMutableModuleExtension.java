@@ -25,7 +25,6 @@ import consulo.ikvm.module.extension.ui.IkvmModuleExtensionPanel;
 import consulo.java.language.module.extension.SpecialDirLocation;
 import consulo.module.content.layer.ModuleRootLayer;
 import consulo.module.extension.MutableModuleInheritableNamedPointer;
-import consulo.module.extension.swing.SwingMutableModuleExtension;
 import consulo.ui.Component;
 import consulo.ui.annotation.RequiredUIAccess;
 import consulo.util.lang.Comparing;
@@ -33,7 +32,6 @@ import jakarta.annotation.Nonnull;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import javax.swing.*;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -42,7 +40,7 @@ import java.util.List;
  * @author VISTALL
  * @since 05.05.14
  */
-public class MonoIkvmMutableModuleExtension extends MonoIkvmModuleExtension implements IkvmMutableModuleExtension<MonoIkvmModuleExtension>, SwingMutableModuleExtension {
+public class MonoIkvmMutableModuleExtension extends MonoIkvmModuleExtension implements IkvmMutableModuleExtension<MonoIkvmModuleExtension> {
     public MonoIkvmMutableModuleExtension(@NotNull String id, @NotNull ModuleRootLayer rootModel) {
         super(id, rootModel);
     }
@@ -53,18 +51,11 @@ public class MonoIkvmMutableModuleExtension extends MonoIkvmModuleExtension impl
         return (MutableModuleInheritableNamedPointer<Sdk>) super.getInheritableSdk();
     }
 
-    @Nullable
-    @Override
-    @RequiredUIAccess
-    public JComponent createConfigurablePanel(Disposable disposable, @NotNull Runnable updateOnCheck) {
-        return new IkvmModuleExtensionPanel(this, updateOnCheck, false);
-    }
-
     @RequiredUIAccess
     @Nullable
     @Override
     public Component createConfigurationComponent(@Nonnull Disposable disposable, @Nonnull Runnable runnable) {
-        return null;
+        return IkvmModuleExtensionPanel.create(this, disposable, runnable, false);
     }
 
     @Override

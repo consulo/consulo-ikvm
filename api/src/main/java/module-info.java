@@ -18,7 +18,6 @@ module consulo.ikvm.api
 	requires transitive consulo.module.ui.api;
 	requires transitive consulo.process.api;
 	requires transitive consulo.ui.api;
-	requires transitive consulo.ui.ex.awt.api;
 	requires transitive consulo.util.collection;
 	requires transitive consulo.util.io;
 	requires transitive consulo.util.lang;
@@ -37,7 +36,5 @@ module consulo.ikvm.api
 	exports consulo.ikvm.module.extension.ui;
 	exports consulo.ikvm.psi;
 
-	// TODO remove
-	requires java.desktop;
 	requires consulo.dotnet.impl;
 }

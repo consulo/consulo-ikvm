@@ -18,109 +18,71 @@ package consulo.ikvm.module.extension.ui;
 
 import com.intellij.java.language.LanguageLevel;
 import com.intellij.java.language.projectRoots.JavaSdkType;
-import consulo.content.bundle.SdkModel;
+import consulo.disposer.Disposable;
 import consulo.ide.setting.ShowSettingsUtil;
 import consulo.ikvm.module.extension.IkvmMutableModuleExtension;
+import consulo.localize.LocalizeValue;
 import consulo.module.extension.MutableModuleInheritableNamedPointer;
-import consulo.module.ui.awt.SdkComboBox;
-import consulo.module.ui.extension.ModuleExtensionSdkBoxBuilder;
+import consulo.module.ui.BundleBox;
+import consulo.module.ui.BundleBoxBuilder;
+import consulo.module.ui.extension.ModuleExtensionBundleBoxBuilder;
+import consulo.ui.ComboBox;
+import consulo.ui.Component;
 import consulo.ui.annotation.RequiredUIAccess;
-import consulo.ui.ex.awt.ColoredListCellRenderer;
-import consulo.ui.ex.awt.ComboBox;
-import consulo.ui.ex.awt.LabeledComponent;
-import consulo.ui.ex.awt.VerticalFlowLayout;
-
-import jakarta.annotation.Nonnull;
-import javax.swing.*;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
+import consulo.ui.layout.VerticalLayout;
+import consulo.ui.util.FormBuilder;
 
 /**
  * @author VISTALL
  * @since 12.05.14
  */
-public class IkvmModuleExtensionPanel extends JPanel
-{
-	private SdkComboBox myJavaSdkComboBox;
-	private ComboBox myLanguageLevelComboBox;
+public final class IkvmModuleExtensionPanel {
+    private IkvmModuleExtensionPanel() {
+    }
 
-	private IkvmMutableModuleExtension<?> myModuleExtension;
+    @RequiredUIAccess
+    public static Component create(
+        IkvmMutableModuleExtension<?> moduleExtension,
+        Disposable uiDisposable,
+        Runnable classpathUpdater,
+        boolean supportSdkPanel
+    ) {
+        BundleBox javaSdkBox = BundleBoxBuilder.create(ShowSettingsUtil.getInstance().getSdksModel(), uiDisposable)
+            .withSdkTypeFilter(sdkTypeId -> sdkTypeId == JavaSdkType.getDefaultJavaSdkType())
+            .withNoneItem()
+            .build();
 
-	@RequiredUIAccess
-	public IkvmModuleExtensionPanel(IkvmMutableModuleExtension<?> moduleExtension, Runnable classpathUpdater, boolean supportSdkPanel)
-	{
-		super(new VerticalFlowLayout());
-		myModuleExtension = moduleExtension;
+        String javaCompilerSdkName = moduleExtension.getJavaSdkName();
+        if (javaCompilerSdkName == null) {
+            javaSdkBox.setSelectedNoneBundle();
+        }
+        else {
+            javaSdkBox.setSelectedBundle(javaCompilerSdkName);
+        }
 
-		if(supportSdkPanel)
-		{
-			add(ModuleExtensionSdkBoxBuilder.createAndDefine(myModuleExtension, classpathUpdater).build());
-		}
+        javaSdkBox.getComponent().addValueListener(event -> moduleExtension.setSdkForCompilation(javaSdkBox.getSelectedBundleName()));
 
-		final SdkModel projectSdksModel = ShowSettingsUtil.getInstance().getSdksModel();
+        MutableModuleInheritableNamedPointer<LanguageLevel> inheritableLanguageLevel = moduleExtension.getInheritableLanguageLevel();
 
-		myJavaSdkComboBox = new SdkComboBox(projectSdksModel, sdkTypeId -> sdkTypeId == JavaSdkType.getDefaultJavaSdkType(), true);
+        ComboBox<LanguageLevel> languageLevelBox = ComboBox.create(LanguageLevel.values());
+        languageLevelBox.setTextRenderer(languageLevel -> languageLevel == null ? LocalizeValue.empty() : languageLevel.getDescription());
+        languageLevelBox.setValue(inheritableLanguageLevel.get());
+        languageLevelBox.addValueListener(event -> {
+            LanguageLevel languageLevel = event.getValue();
+            if (languageLevel != null) {
+                inheritableLanguageLevel.set(null, languageLevel.getName());
+            }
+        });
 
-		final String javaCompilerSdkName = myModuleExtension.getJavaSdkName();
-		if(javaCompilerSdkName == null)
-		{
-			myJavaSdkComboBox.setSelectedNoneSdk();
-		}
-		else
-		{
-			myJavaSdkComboBox.setSelectedSdk(javaCompilerSdkName);
-		}
+        FormBuilder formBuilder = FormBuilder.create();
+        formBuilder.addLabeled(LocalizeValue.localizeTODO("Java SDK:"), javaSdkBox.getComponent());
+        formBuilder.addLabeled(LocalizeValue.localizeTODO("Language Level:"), languageLevelBox);
 
-		myJavaSdkComboBox.addItemListener(new ItemListener()
-		{
-			@Override
-			public void itemStateChanged(ItemEvent e)
-			{
-				myModuleExtension.setSdkForCompilation(myJavaSdkComboBox.getSelectedSdkName());
-			}
-		});
-
-		myLanguageLevelComboBox = new ComboBox();
-		myLanguageLevelComboBox.setRenderer(new ColoredListCellRenderer()
-		{
-			@Override
-			protected void customizeCellRenderer(@Nonnull JList jList, Object value, int i, boolean b, boolean b1)
-			{
-				if(value instanceof LanguageLevel)
-				{
-					final LanguageLevel languageLevel = (LanguageLevel) value;
-					append(languageLevel.getDescription().get());
-				}
-			}
-		});
-
-		for(LanguageLevel languageLevel : LanguageLevel.values())
-		{
-			myLanguageLevelComboBox.addItem(languageLevel);
-		}
-
-		final MutableModuleInheritableNamedPointer<LanguageLevel> inheritableLanguageLevel = myModuleExtension.getInheritableLanguageLevel();
-
-		myLanguageLevelComboBox.setSelectedItem(inheritableLanguageLevel.get());
-
-		myLanguageLevelComboBox.addItemListener(new ItemListener()
-		{
-			@Override
-			public void itemStateChanged(ItemEvent e)
-			{
-				final Object selectedItem = myLanguageLevelComboBox.getSelectedItem();
-				if(selectedItem instanceof LanguageLevel)
-				{
-					inheritableLanguageLevel.set(null, ((LanguageLevel) selectedItem).getName());
-				}
-				else
-				{
-					inheritableLanguageLevel.set(selectedItem.toString(), null);
-				}
-			}
-		});
-
-		add(LabeledComponent.left(myJavaSdkComboBox, "Java SDK"));
-		add(LabeledComponent.left(myLanguageLevelComboBox, "Language Level"));
-	}
+        VerticalLayout layout = VerticalLayout.create();
+        if (supportSdkPanel) {
+            layout.add(ModuleExtensionBundleBoxBuilder.createAndDefine(moduleExtension, uiDisposable, classpathUpdater).build());
+        }
+        layout.add(formBuilder.build());
+        return layout;
+    }
 }
