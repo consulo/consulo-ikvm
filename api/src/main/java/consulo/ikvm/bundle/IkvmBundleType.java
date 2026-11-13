@@ -27,6 +27,7 @@ import consulo.content.bundle.SdkModificator;
 import consulo.content.bundle.SdkType;
 import consulo.java.language.impl.JavaIcons;
 import consulo.localize.LocalizeValue;
+import consulo.platform.Platform;
 import consulo.process.ExecutionException;
 import consulo.process.cmd.GeneralCommandLine;
 import consulo.process.util.CapturingProcessUtil;
@@ -38,6 +39,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.function.Consumer;
 
 /**
  * @author VISTALL
@@ -67,13 +71,21 @@ public class IkvmBundleType extends JavaSdkType {
         }
     }
 
+    private static Path getExecutable(Platform platform, Path sdkHome) {
+        return sdkHome.resolve("bin").resolve(platform.os().isWindows() ? "java.exe" : "java");
+    }
+
     public IkvmBundleType() {
         super("IKVM", LocalizeValue.localizeTODO("IKVM.NET"), JavaIcons.Java);
     }
 
     @Override
-    public boolean isValidSdkHome(String path) {
-        return new File(getExecutable(path)).exists();
+    public void collectHomePaths(Platform platform, Consumer<Path> pathConsumer) {
+    }
+
+    @Override
+    public boolean isValidSdkHome(Platform platform, Path path) {
+        return Files.exists(getExecutable(platform, path));
     }
 
     @Override
@@ -102,9 +114,10 @@ public class IkvmBundleType extends JavaSdkType {
 
     @Nullable
     @Override
-    public String getVersionString(String sdkHome) {
+    public String getVersionString(Platform platform, Path sdkHome) {
         GeneralCommandLine commandLine = new GeneralCommandLine();
-        commandLine.setExePath(getExecutable(sdkHome));
+        commandLine.withPlatform(platform);
+        commandLine.setExePath(getExecutable(platform, sdkHome).toString());
         commandLine.addParameter("-version");
 
         try {
